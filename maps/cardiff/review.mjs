@@ -16,9 +16,11 @@ const { osm, ways, is101, toXY, sd, ll, centre: centreLL, bridgeFound } = loadFr
 const drawn = {
   nb: D.NB_TRACK.map(([s, d]) => ll(s, d)),
   sb: D.SB_TRACK.map(([s, d]) => ll(s, d)),
-  drives: D.DRIVES.map(([s, side, name]) => ({ at: ll(s, side === "E" ? -10 : 13), name })),
+  // driveways as stretches of curb: east side just outside the NB track, west side just outside the SB track
+  drives: D.DRIVES.map(([a, b, side, name, id]) => ({ id, name, line: [ll(a, side === "E" ? -11 : 13.5), ll(b, side === "E" ? -11 : 13.5)] })),
+  buildings: D.BUILDINGS.map((b) => ({ id: String(b.id), name: b.name, ring: b.pts.map(([s, d]) => ll(s, d)) })),
+  lots: D.LOTS.map((l) => ({ name: l.name, ring: l.pts.map(([s, d]) => ll(s, d)) })),
   bridges: D.BRIDGES.map(([a, b]) => [ll(a, 14), ll(b, 14), ll(b, -12), ll(a, -12)]),
-  boxes: D.BOXES.map(([k, s0, s1, d0, d1, name]) => ({ k, name, ring: [ll(s0, d0), ll(s1, d0), ll(s1, d1), ll(s0, d1)] })),
   marks: [["Solana Beach line (map)", D.LIMITS.cityLine], ["Chesterfield Dr (map)", D.LIMITS.chesterfield], ["NB track south end (map)", D.NB_TRACK[0][0]], ["SB track north end (map)", D.SB_TRACK[0][0]]].map(([name, s]) => ({ name, at: ll(s, 0) })),
 };
 const ring = (w) => w.geometry.map((g) => [+g.lat.toFixed(7), +g.lon.toFixed(7)]);
@@ -27,7 +29,9 @@ const nearRoad = (g) => { const [s, d] = sd(g); return s > D.RANGE.south - 50 &&
 const raw = ways.map((w) => ({ k: kindOf(w.tags ?? {}), id: w.id, tags: w.tags ?? {}, line: ring(w), g: w.geometry }))
   .filter((w) => ["cycle", "road", "foot", "service", "barrier", "bridge"].includes(w.k) && w.g.some(nearRoad)).map(({ g, ...w }) => w);
 const barrierNodes = osm.elements.filter((e) => e.type === "node" && e.tags?.barrier && nearRoad(e)).map((e) => ({ at: [e.lat, e.lon], tags: e.tags }));
-const DATA = { drawn, raw, barrierNodes, centre: centreLL, fetched: osm.fetched, offsetCheck: { bridgeFound } };
+const EDITS_FILE = join(ROOT, "data", "field", "cardiff-edits.json");
+const edits = existsSync(EDITS_FILE) ? JSON.parse(readFileSync(EDITS_FILE, "utf8")) : {};
+const DATA = { drawn, raw, barrierNodes, centre: centreLL, fetched: osm.fetched, offsetCheck: { bridgeFound }, edits: { buildings: edits.buildings ?? {}, driveways: { add: edits.driveways?.add ?? [], delete: edits.driveways?.delete ?? [] } } };
 
 const leafletJs = readFileSync(join(ROOT, "vendor", "leaflet", "leaflet.js"), "utf8");
 const leafletCss = readFileSync(join(ROOT, "vendor", "leaflet", "leaflet.css"), "utf8").replace(/url\(images\/[^)]*\)/g, "none");
@@ -59,7 +63,8 @@ body{background:var(--page);margin:0;color:var(--text);font:14px/1.5 ui-sans-ser
 
 const LAYERS = [
   ["drawnNb", "Map: NB track (east)", "#ff3b3b", true], ["drawnSb", "Map: SB track (west)", "#ff9f1a", true],
-  ["drawnOther", "Map: bridge, driveways, lots, ends", "#ffe14d", true],
+  ["drawnBuild", "Map: buildings and lots", "#ffe14d", true], ["drawnDrive", "Map: driveways (curb cuts)", "#ff4fd8", true],
+  ["drawnOther", "Map: bridge and track ends", "#ffe14d", true],
   ["osmCycle", "OpenStreetMap: bike tracks", "#4dd2ff", true], ["osmRoad", "OpenStreetMap: Hwy 101 lanes", "#ffffff", false],
   ["osmOther", "OpenStreetMap: paths, driveways, barriers", "#b388ff", false], ["centre", "Centreline used to straighten the road", "#7CFC00", false],
 ];
@@ -68,7 +73,7 @@ const page = `<title>Cardiff Satellite Review</title>
 <style>${leafletCss}${CSS}</style>
 <div class="rv">
 <header><h1>Cardiff 101: check the map against satellite imagery</h1>
-<p>Colored lines are what the corridor map draws, laid back onto real coordinates. Where a line misses the pavement in the photo, the map is wrong there. Tap “Add note” then tap the spot to record a correction.</p></header>
+<p>Colored lines are what the corridor map draws, laid back onto real coordinates. Where a line misses the pavement in the photo, the map is wrong there. Add a note to describe a problem, or fix buildings and driveways directly under Edit the map.</p></header>
 <div class="rv-body">
 <div id="map" role="region" aria-label="Satellite map of Coast Highway 101 in Cardiff with the map's layout drawn over it"></div>
 <aside class="rv-side">
@@ -76,6 +81,12 @@ const page = `<title>Cardiff Satellite Review</title>
 <div style="display:flex;gap:6px"><button class="rv-btn" data-base="sat" aria-pressed="true">Satellite</button><button class="rv-btn" data-base="street" aria-pressed="false">Street map</button></div>
 <h2>Layers</h2>
 ${LAYERS.map(([id, label, color, on]) => `<label><input type="checkbox" data-layer="${id}" ${on ? "checked" : ""}><span class="rv-sw" style="background:${color}"></span>${label}</label>`).join("")}
+<h2>Edit the map</h2>
+<div style="display:flex;gap:6px;flex-wrap:wrap"><button class="rv-btn" id="mode-move" aria-pressed="false">Move buildings</button><button class="rv-btn" id="mode-drive" aria-pressed="false">Mark driveway</button></div>
+<form id="drive-form" hidden><label for="drive-name" style="display:block">Driveway name (optional)</label><input id="drive-name" style="width:100%;box-sizing:border-box;font:inherit"><div style="display:flex;gap:6px;margin-top:6px"><button class="rv-btn" type="submit">Save driveway</button><button class="rv-btn" type="button" id="drive-cancel">Cancel</button></div></form>
+<div id="selected" hidden><p id="sel-text"></p><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px"><button class="rv-btn" id="sel-delete">Delete</button><button class="rv-btn" id="sel-reset">Undo move</button></div></div>
+<p id="edit-summary"></p>
+<button class="rv-btn" id="copy-edits">Copy map edits to send</button>
 <h2>Notes</h2>
 <button class="rv-btn" id="add" aria-pressed="false">Add note</button>
 <form id="note-form" hidden><label for="note-text" style="display:block">What's wrong or missing here?</label><textarea id="note-text" rows="3" style="width:100%;box-sizing:border-box;font:inherit"></textarea><div style="display:flex;gap:6px"><button class="rv-btn" type="submit">Save note</button><button class="rv-btn" type="button" id="note-cancel">Cancel</button></div></form>
@@ -108,8 +119,7 @@ tip(L.polyline(DATA.drawn.nb, { color: COLORS.drawnNb, weight: 4 }), "Map: NB tr
 tip(L.polyline(DATA.drawn.sb, { color: COLORS.drawnSb, weight: 4 }), "Map: SB track centreline").addTo(groups.drawnSb);
 const Y = COLORS.drawnOther;
 for (const r of DATA.drawn.bridges) tip(L.polygon(r, { color: Y, weight: 2, fill: false, dashArray: "6 4" }), "Map: bridge extent").addTo(groups.drawnOther);
-for (const b of DATA.drawn.boxes) tip(L.polygon(b.ring, { color: Y, weight: 1.5, fillOpacity: 0.08, dashArray: b.k === "p" ? "4 4" : null }), "Map: " + (b.k === "p" ? "parking" : "building") + (b.name ? " · " + esc(b.name) : "")).addTo(groups.drawnOther);
-for (const d of DATA.drawn.drives) tip(L.circleMarker(d.at, { radius: 5, color: Y, weight: 2, fillOpacity: 0.3 }), "Map: driveway · " + esc(d.name)).addTo(groups.drawnOther);
+for (const l of DATA.drawn.lots) tip(L.polygon(l.ring, { color: COLORS.drawnBuild, weight: 1.5, fillOpacity: 0.06, dashArray: "4 4", interactive: false }), "Map: parking").addTo(groups.drawnBuild);
 for (const m of DATA.drawn.marks) tip(L.circleMarker(m.at, { radius: 7, color: "#fff", fillColor: Y, fillOpacity: 1, weight: 2 }), esc(m.name)).addTo(groups.drawnOther);
 const tagText = (t) => Object.entries(t).filter(([k]) => !/^(source|note:|tiger)/.test(k)).slice(0, 8).map(([k, v]) => esc(k) + "=" + esc(v)).join("<br>");
 for (const w of DATA.raw) {
@@ -123,6 +133,109 @@ document.querySelectorAll("[data-layer]").forEach((c) => { const sync = () => (c
 map.fitBounds(L.latLngBounds([...DATA.drawn.nb, ...DATA.drawn.sb]).pad(0.05));
 const chk = DATA.offsetCheck;
 document.querySelector("#check").innerHTML = !chk.bridgeFound ? '<span class="rv-warn">No 101 bridge found in the OpenStreetMap data, so the drawn layers may be shifted along the road.</span>' : "Drawn layers are aligned on the lagoon bridge.";
+// ---------- map edits: move or delete buildings, add or delete driveways ----------
+const EKEY = "cardiff-review-edits";
+const clone = (o) => JSON.parse(JSON.stringify(o));
+let ed = clone(DATA.edits);
+try { const saved = JSON.parse(localStorage.getItem(EKEY) || "null"); if (saved && saved.buildings && saved.driveways) ed = saved; } catch {}
+const saveEd = () => { try { localStorage.setItem(EKEY, JSON.stringify(ed)); } catch {} };
+const baseMove = (id) => DATA.edits.buildings[id]?.move ?? [0, 0];
+const curMove = (id) => ed.buildings[id]?.move ?? [0, 0];
+const shifted = (b) => { const m = curMove(b.id), o = baseMove(b.id); return b.ring.map(([la, lo]) => [la + m[0] - o[0], lo + m[1] - o[1]]); };
+const BSTYLE = { color: COLORS.drawnBuild, weight: 2, fillOpacity: 0.15 }, SEL = { color: "#ffffff", weight: 3 };
+const DSTYLE = { color: COLORS.drawnDrive, weight: 7, opacity: 0.9, lineCap: "butt" };
+const bLayer = groups.drawnBuild, dLayer = groups.drawnDrive;
+const bPolys = {};
+let mode = null, selected = null, drag = null, pending = [], pendingLayer = null;
+const statusEl = () => document.querySelector("#status");
+function select(sel) {
+  if (selected?.layer) selected.layer.setStyle(selected.kind === "b" ? BSTYLE : DSTYLE);
+  selected = sel;
+  const box = document.querySelector("#selected");
+  box.hidden = !sel;
+  if (!sel) return;
+  sel.layer.setStyle(SEL);
+  document.querySelector("#sel-text").textContent = sel.kind === "b" ? "Building" + (sel.name ? ": " + sel.name : "") : "Driveway" + (sel.name ? ": " + sel.name : "");
+  document.querySelector("#sel-delete").textContent = sel.kind === "b" ? "Delete building" : "Delete driveway";
+  document.querySelector("#sel-reset").hidden = sel.kind !== "b";
+}
+function drawEdits() {
+  bLayer.clearLayers(); dLayer.clearLayers();
+  for (const b of DATA.drawn.buildings) {
+    if (ed.buildings[b.id]?.delete) continue;
+    const poly = L.polygon(shifted(b), BSTYLE).addTo(bLayer);
+    tip(poly, "Map: building" + (b.name ? " · " + esc(b.name) : ""));
+    bPolys[b.id] = poly;
+    poly.on("mousedown", (e) => {
+      if (mode !== "move") return;
+      L.DomEvent.stop(e); map.dragging.disable();
+      select({ kind: "b", id: b.id, name: b.name, layer: poly });
+      drag = { b, poly, start: e.latlng, from: curMove(b.id) };
+    });
+  }
+  const added = ed.driveways.add.filter((x) => !DATA.edits.driveways.add.some((y) => y.id === x.id)).map((x) => ({ id: x.id, name: x.name, line: [x.a, x.b] }));
+  for (const d of [...DATA.drawn.drives, ...added]) {
+    if (ed.driveways.delete.includes(d.id)) continue;
+    const line = L.polyline(d.line, DSTYLE).addTo(dLayer);
+    tip(line, "Map: driveway · " + esc(d.name));
+    line.on("click", (e) => { if (mode !== "drive" || pending.length) return; L.DomEvent.stop(e); select({ kind: "d", id: d.id, name: d.name, layer: line }); });
+  }
+  const moved = Object.entries(ed.buildings).filter(([id, v]) => v.move && (v.move[0] !== baseMove(id)[0] || v.move[1] !== baseMove(id)[1])).length;
+  const deleted = Object.values(ed.buildings).filter((v) => v.delete).length;
+  const changes = JSON.stringify(ed) !== JSON.stringify(DATA.edits);
+  document.querySelector("#edit-summary").textContent = changes ? "Unsent changes: " + moved + " buildings moved, " + deleted + " deleted, " + ed.driveways.add.length + " driveways added, " + ed.driveways.delete.length + " removed." : "No changes yet.";
+}
+map.on("mousemove", (e) => {
+  if (!drag) return;
+  const m = [drag.from[0] + e.latlng.lat - drag.start.lat, drag.from[1] + e.latlng.lng - drag.start.lng];
+  ed.buildings[drag.b.id] = { move: [+m[0].toFixed(7), +m[1].toFixed(7)] };
+  drag.poly.setLatLngs(shifted(drag.b));
+});
+map.on("mouseup", () => { if (!drag) return; drag = null; map.dragging.enable(); saveEd(); drawEdits(); });
+function setMode(m) {
+  mode = mode === m ? null : m;
+  setAdding(false); select(null); clearPending();
+  document.querySelector("#mode-move").setAttribute("aria-pressed", String(mode === "move"));
+  document.querySelector("#mode-drive").setAttribute("aria-pressed", String(mode === "drive"));
+  statusEl().textContent = mode === "move" ? "Drag a building to its real position. Tap one to delete it." : mode === "drive" ? "Tap where the curb cut starts, then where it ends. Tap a pink line to remove a driveway." : "";
+  map.getContainer().style.cursor = mode === "drive" ? "crosshair" : "";
+}
+function clearPending() { pending = []; if (pendingLayer) map.removeLayer(pendingLayer); pendingLayer = null; document.querySelector("#drive-form").hidden = true; }
+document.querySelector("#mode-move").addEventListener("click", () => setMode("move"));
+document.querySelector("#mode-drive").addEventListener("click", () => setMode("drive"));
+map.on("click", (e) => {
+  if (mode !== "drive" || pending.length >= 2) return;
+  pending.push([+e.latlng.lat.toFixed(6), +e.latlng.lng.toFixed(6)]);
+  if (pendingLayer) map.removeLayer(pendingLayer);
+  pendingLayer = pending.length === 1 ? L.circleMarker(pending[0], { radius: 6, color: COLORS.drawnDrive, weight: 3 }).addTo(map) : L.polyline(pending, { ...DSTYLE, dashArray: "6 4" }).addTo(map);
+  if (pending.length === 2) { document.querySelector("#drive-form").hidden = false; document.querySelector("#drive-name").focus(); }
+});
+document.querySelector("#drive-form").addEventListener("submit", (e) => {
+  e.preventDefault();
+  ed.driveways.add.push({ id: "field-" + Date.now().toString(36), a: pending[0], b: pending[1], name: document.querySelector("#drive-name").value.trim() });
+  document.querySelector("#drive-name").value = "";
+  clearPending(); saveEd(); drawEdits();
+});
+document.querySelector("#drive-cancel").addEventListener("click", clearPending);
+document.querySelector("#sel-delete").addEventListener("click", () => {
+  if (!selected) return;
+  if (selected.kind === "b") ed.buildings[selected.id] = { delete: true };
+  else if (selected.id.startsWith("field-")) ed.driveways.add = ed.driveways.add.filter((x) => x.id !== selected.id);
+  else ed.driveways.delete.push(selected.id);
+  select(null); saveEd(); drawEdits();
+});
+document.querySelector("#sel-reset").addEventListener("click", () => {
+  if (!selected || selected.kind !== "b") return;
+  if (DATA.edits.buildings[selected.id]) ed.buildings[selected.id] = clone(DATA.edits.buildings[selected.id]); else delete ed.buildings[selected.id];
+  select(null); saveEd(); drawEdits();
+});
+document.querySelector("#copy-edits").addEventListener("click", async () => {
+  const txt = "Cardiff map edits: " + JSON.stringify(ed);
+  try { await navigator.clipboard.writeText(txt); statusEl().textContent = "Copied. Paste it into the project chat."; }
+  catch { statusEl().textContent = "Couldn't copy automatically. Here it is to copy by hand: " + txt; }
+});
+drawEdits();
+
 // notes
 const KEY = "cardiff-review-notes";
 let notes = []; try { notes = JSON.parse(localStorage.getItem(KEY) || "[]"); } catch {}
@@ -145,7 +258,7 @@ drawNotes();
 const addBtn = document.querySelector("#add"), status = document.querySelector("#status");
 let adding = false;
 const setAdding = (v) => { adding = v; addBtn.setAttribute("aria-pressed", String(v)); status.textContent = v ? "Tap the spot on the map." : ""; map.getContainer().style.cursor = v ? "crosshair" : ""; };
-addBtn.addEventListener("click", () => setAdding(!adding));
+addBtn.addEventListener("click", () => { if (mode) setMode(mode); setAdding(!adding); });
 const form = document.querySelector("#note-form"), field = document.querySelector("#note-text");
 let spot = null, spotMark = null;
 const closeForm = () => { form.hidden = true; field.value = ""; spot = null; if (spotMark) map.removeLayer(spotMark); spotMark = null; };
