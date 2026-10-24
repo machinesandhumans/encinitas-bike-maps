@@ -14,7 +14,8 @@ Interactive, spatially accurate maps of four Encinitas road projects, showing wh
 | 4 | Quail Gardens Dr | Mini-roundabout at Ecke Ranch Rd, restriping, completed Sep 2025 | Not started |
 
 ## Live map
-Cardiff corridor: https://claude.ai/artifact/JL5C7n5MbsNgWLnG86go3N (shared: anyone with the link)
+Cardiff corridor: https://claude.ai/artifact/JL5C7n5MbsNgWLnG86go3N (shared: anyone with the link; republished Oct 24, 2026 from the current repo build)
+GitHub Pages: https://machinesandhumans.github.io/encinitas-bike-maps/cardiff/ (live; updates on every push)
 
 What it does: whole 1.27-mile stretch in isometric view; before/after toggle; ride north / ride south; minimap with every crash; tap a pin for the official record.
 
@@ -28,7 +29,7 @@ What it does: whole 1.27-mile stretch in isometric view; before/after toggle; ri
 - Santa Fe: state SB 114 (signed Sep 18, 2026) blocks removing the protected lanes for 5 years after completion.
 
 ## Accuracy work (Oct 24, 2026)
-- Lagoon outlet bridge now drawn: water channel under the road, edged deck, solid parapets, labels. Not yet on the live artifact.
+- Lagoon outlet bridge now drawn: water channel under the road, edged deck, solid parapets, labels.
 - Satellite review page: `node maps/cardiff/review.mjs` writes `docs/cardiff/review.html`. It puts the map's drawn layout back on real coordinates (aligned on the 101 lagoon bridge) over Esri imagery, with raw OSM layers and a notes tool. Imagery is blocked inside Claude artifacts, so open it from GitHub Pages or as a local file. OSM data with coordinates: `data/osm/cardiff-osm.json` (fetched Oct 24, 2026 via `tools/fetch-osm.mjs` on Mark's computer; the cloud environment blocks openstreetmap.org). First check: the map's city line sits 22 m north of OSM's boundary.
 - Mark has a local project folder: D:\Projects\Encinitas Bike Maps.
 - Mark judged OpenStreetMap's bike paths more accurate than the earlier hand-simplified tracks, so both tracks, the lagoon bridge (now 60 m, 1896–1956) and the Solana Beach city line (s 219, was 241) are now generated from OSM: `node maps/cardiff/osm-tracks.mjs` writes `maps/cardiff/tracks.mjs`. `maps/cardiff/geo.mjs` holds the shared OSM/straightened-road frame. OSM joins the track ends to the road centreline; those ends are moved to the curb lane. Driveways, lots, buildings and crash positions are still the earlier estimates (within ~10 m).
@@ -45,7 +46,7 @@ What it does: whole 1.27-mile stretch in isometric view; before/after toggle; ri
 3. Site photos: each end of the barrier lines, Ki's / Tower 13 driveways, south NB entrance; rough widths of track and walkway.
 4. Pre-2020 layout (2019 Street View) to make the "before" view accurate.
 5. Build corridors 2–4 on the same template.
-6. ~~Turn on GitHub Pages~~ Done Oct 24, 2026: https://machinesandhumans.github.io/encinitas-bike-maps/ (field walk at /cardiff/review.html).
+6. Mark's field walk (GitHub Pages review page): driveways, bollards, posts, barrier ends; and where the SB track starts at the north end (Chesterfield signal or further north). South entrance/exit already set from his satellite notes.
 
 ## Where things live
 - Repository: github.com/machinesandhumans/encinitas-bike-maps (see README for folder layout)
