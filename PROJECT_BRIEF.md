@@ -31,6 +31,8 @@ What it does: whole 1.27-mile stretch in isometric view; before/after toggle; ri
 - Lagoon outlet bridge now drawn: water channel under the road, edged deck, solid parapets, labels. Not yet on the live artifact.
 - Satellite review page: `node maps/cardiff/review.mjs` writes `docs/cardiff/review.html`. It puts the map's drawn layout back on real coordinates (aligned on the 101 lagoon bridge) over Esri imagery, with raw OSM layers and a notes tool. Imagery is blocked inside Claude artifacts, so open it from GitHub Pages or as a local file. OSM data with coordinates: `data/osm/cardiff-osm.json` (fetched Oct 24, 2026 via `tools/fetch-osm.mjs` on Mark's computer; the cloud environment blocks openstreetmap.org). First check: the map's city line sits 22 m north of OSM's boundary.
 - Mark has a local project folder: D:\Projects\Encinitas Bike Maps.
+- Mark judged OpenStreetMap's bike paths more accurate than the earlier hand-simplified tracks, so both tracks, the lagoon bridge (now 60 m, 1896–1956) and the Solana Beach city line (s 219, was 241) are now generated from OSM: `node maps/cardiff/osm-tracks.mjs` writes `maps/cardiff/tracks.mjs`. `maps/cardiff/geo.mjs` holds the shared OSM/straightened-road frame. OSM joins the track ends to the road centreline; those ends are moved to the curb lane. Driveways, lots, buildings and crash positions are still the earlier estimates (within ~10 m).
+- OSM shows the SB path continuing north of Chesterfield on the west side (to about s 2600); the map still starts the SB track at the Chesterfield signal.
 - Mark says the south and north track entrances/exits don't match how the path works. Waiting on his ride-through description before redrawing them.
 
 ## Open items

@@ -5,60 +5,12 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as D from "./data.mjs";
+import { OSM_FILE, loadFrame } from "./geo.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, "..", "..");
-const OSM_FILE = join(ROOT, "data", "osm", "cardiff-osm.json");
 if (!existsSync(OSM_FILE)) { console.error("missing", OSM_FILE, "- run: node tools/fetch-osm.mjs cardiff"); process.exit(1); }
-const osm = JSON.parse(readFileSync(OSM_FILE, "utf8"));
-
-// ---------- local metric frame (east, north in metres) ----------
-const ways = osm.elements.filter((e) => e.type === "way" && e.geometry);
-const lat0 = (osm.bbox[0] + osm.bbox[2]) / 2, lon0 = (osm.bbox[1] + osm.bbox[3]) / 2;
-const KY = 111320, KX = 111320 * Math.cos((lat0 * Math.PI) / 180);
-const toXY = ({ lat, lon }) => [(lon - lon0) * KX, (lat - lat0) * KY];
-const toLL = ([x, y]) => [+(lat0 + y / KY).toFixed(7), +(lon0 + x / KX).toFixed(7)];
-
-// ---------- road centreline: every Coast Hwy 101 node, ordered along the road and averaged in 15 m bins ----------
-const is101 = (t) => /^(primary|secondary|trunk|tertiary)(_link)?$/.test(t.highway ?? "") && /101|Coast H/i.test(`${t.name ?? ""} ${t.ref ?? ""}`);
-const pts = ways.filter((w) => is101(w.tags ?? {})).flatMap((w) => w.geometry.map(toXY));
-if (!pts.length) { console.error("no Coast Hwy 101 ways found in", OSM_FILE); process.exit(1); }
-const mean = pts.reduce((a, p) => [a[0] + p[0] / pts.length, a[1] + p[1] / pts.length], [0, 0]);
-let sxx = 0, sxy = 0, syy = 0;
-for (const [x, y] of pts) { const dx = x - mean[0], dy = y - mean[1]; sxx += dx * dx; sxy += dx * dy; syy += dy * dy; }
-const ang = 0.5 * Math.atan2(2 * sxy, sxx - syy);
-let ax = [Math.cos(ang), Math.sin(ang)];
-if (ax[1] < 0) ax = [-ax[0], -ax[1]]; // point the axis north
-const along = (p) => (p[0] - mean[0]) * ax[0] + (p[1] - mean[1]) * ax[1];
-const bins = new Map();
-for (const p of pts) { const k = Math.floor(along(p) / 15); const b = bins.get(k) ?? [0, 0, 0]; b[0] += p[0]; b[1] += p[1]; b[2]++; bins.set(k, b); }
-const centre = [...bins.entries()].sort((a, b) => a[0] - b[0]).map(([, b]) => [b[0] / b[2], b[1] / b[2]]);
-const cum = [0];
-for (let i = 1; i < centre.length; i++) cum.push(cum[i - 1] + Math.hypot(centre[i][0] - centre[i - 1][0], centre[i][1] - centre[i - 1][1]));
-const sOfPoint = (p) => { // nearest position along the centreline
-  let best = [Infinity, 0];
-  for (let i = 1; i < centre.length; i++) {
-    const [a, b] = [centre[i - 1], centre[i]], vx = b[0] - a[0], vy = b[1] - a[1], L = vx * vx + vy * vy || 1;
-    const t = Math.max(0, Math.min(1, ((p[0] - a[0]) * vx + (p[1] - a[1]) * vy) / L));
-    const q = [a[0] + vx * t, a[1] + vy * t], dd = Math.hypot(p[0] - q[0], p[1] - q[1]);
-    if (dd < best[0]) best = [dd, cum[i - 1] + t * Math.sqrt(L)];
-  }
-  return best[1];
-};
-
-// ---------- tie the map's s (metres north) to the centreline, using the lagoon outlet bridge on 101 ----------
-const bridge101 = ways.filter((w) => is101(w.tags ?? {}) && w.tags.bridge && w.tags.bridge !== "no");
-const bridgeMid = bridge101.length ? sOfPoint(bridge101.flatMap((w) => w.geometry.map(toXY)).reduce((a, p, _, arr) => [a[0] + p[0] / arr.length, a[1] + p[1] / arr.length], [0, 0])) : null;
-const [ba, bb] = D.BRIDGES[0];
-const OFFSET = bridgeMid != null ? bridgeMid - (ba + bb) / 2 : 0;
-const pointAt = (s, d) => { // map (s, d) -> metres; d positive west = left of the northward direction
-  const c = Math.max(0, Math.min(cum[cum.length - 1], s + OFFSET));
-  let i = 1; while (i < cum.length - 1 && cum[i] < c) i++;
-  const [a, b] = [centre[i - 1], centre[i]], L = cum[i] - cum[i - 1] || 1, t = (c - cum[i - 1]) / L;
-  const tx = (b[0] - a[0]) / L, ty = (b[1] - a[1]) / L;
-  return [a[0] + (b[0] - a[0]) * t - ty * d, a[1] + (b[1] - a[1]) * t + tx * d];
-};
-const ll = (s, d) => toLL(pointAt(s, d));
+const { osm, ways, is101, toXY, sd, ll, centre: centreLL, bridgeFound } = loadFrame();
 
 // ---------- layers ----------
 const drawn = {
@@ -71,20 +23,11 @@ const drawn = {
 };
 const ring = (w) => w.geometry.map((g) => [+g.lat.toFixed(7), +g.lon.toFixed(7)]);
 const kindOf = (t) => (t.highway === "cycleway" || t.bicycle === "designated" && t.highway === "path" ? "cycle" : is101(t) ? "road" : /footway|path|pedestrian|steps/.test(t.highway ?? "") ? "foot" : t.highway === "service" ? "service" : t.highway ? "street" : t.barrier ? "barrier" : t.amenity === "parking" ? "parking" : t.building ? "building" : t.bridge ? "bridge" : null);
-const nearRoad = (g) => { const p = toXY(g), s = sOfPoint(p) - OFFSET; if (s < D.RANGE.south - 50 || s > D.RANGE.north + 50) return false; const q = pointAt(s, 0); return Math.hypot(p[0] - q[0], p[1] - q[1]) < 120; };
+const nearRoad = (g) => { const [s, d] = sd(g); return s > D.RANGE.south - 50 && s < D.RANGE.north + 50 && Math.abs(d) < 120; };
 const raw = ways.map((w) => ({ k: kindOf(w.tags ?? {}), id: w.id, tags: w.tags ?? {}, line: ring(w), g: w.geometry }))
   .filter((w) => ["cycle", "road", "foot", "service", "barrier", "bridge"].includes(w.k) && w.g.some(nearRoad)).map(({ g, ...w }) => w);
 const barrierNodes = osm.elements.filter((e) => e.type === "node" && e.tags?.barrier && nearRoad(e)).map((e) => ({ at: [e.lat, e.lon], tags: e.tags }));
-const centreLL = centre.map(toLL);
-const cityLineCheck = (() => { // where OSM's city boundary crosses the road, compared to the map's city line
-  const rel = osm.elements.find((e) => e.type === "relation" && /Encinitas/i.test(e.tags?.name ?? ""));
-  if (!rel) return null;
-  let best = null;
-  for (const m of rel.members ?? []) for (const g of m.geometry ?? []) { const p = toXY(g), s = sOfPoint(p) - OFFSET, q = pointAt(s, 0), dd = Math.hypot(p[0] - q[0], p[1] - q[1]); if (dd < 25 && s > 0 && s < 600 && (!best || dd < best.dd)) best = { s, dd }; }
-  return best && Math.round(best.s - D.LIMITS.cityLine);
-})();
-
-const DATA = { drawn, raw, barrierNodes, centre: centreLL, fetched: osm.fetched, offsetCheck: { bridgeFound: bridgeMid != null, cityLineDiffM: cityLineCheck } };
+const DATA = { drawn, raw, barrierNodes, centre: centreLL, fetched: osm.fetched, offsetCheck: { bridgeFound } };
 
 const leafletJs = readFileSync(join(ROOT, "vendor", "leaflet", "leaflet.js"), "utf8");
 const leafletCss = readFileSync(join(ROOT, "vendor", "leaflet", "leaflet.css"), "utf8").replace(/url\(images\/[^)]*\)/g, "none");
@@ -179,7 +122,7 @@ L.polyline(DATA.centre, { color: COLORS.centre, weight: 2, dashArray: "8 6" }).a
 document.querySelectorAll("[data-layer]").forEach((c) => { const sync = () => (c.checked ? groups[c.dataset.layer].addTo(map) : map.removeLayer(groups[c.dataset.layer])); c.addEventListener("change", sync); sync(); });
 map.fitBounds(L.latLngBounds([...DATA.drawn.nb, ...DATA.drawn.sb]).pad(0.05));
 const chk = DATA.offsetCheck;
-document.querySelector("#check").innerHTML = !chk.bridgeFound ? '<span class="rv-warn">No 101 bridge found in the OpenStreetMap data, so the drawn layers may be shifted along the road.</span>' : chk.cityLineDiffM == null ? "Drawn layers are aligned on the lagoon bridge." : "Drawn layers are aligned on the lagoon bridge. Check: the map's city line is " + Math.abs(chk.cityLineDiffM) + " m " + (chk.cityLineDiffM > 0 ? "south" : "north") + " of OpenStreetMap's.";
+document.querySelector("#check").innerHTML = !chk.bridgeFound ? '<span class="rv-warn">No 101 bridge found in the OpenStreetMap data, so the drawn layers may be shifted along the road.</span>' : "Drawn layers are aligned on the lagoon bridge.";
 // notes
 const KEY = "cardiff-review-notes";
 let notes = []; try { notes = JSON.parse(localStorage.getItem(KEY) || "[]"); } catch {}
@@ -226,4 +169,4 @@ document.querySelector("#copy").addEventListener("click", async () => {
 writeFileSync(join(HERE, "cardiff-review.html"), page);
 mkdirSync(join(ROOT, "docs", "cardiff"), { recursive: true });
 writeFileSync(join(ROOT, "docs", "cardiff", "review.html"), `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body>${page}</body></html>`);
-console.log("wrote review", (page.length / 1024).toFixed(0) + " KB", "centreline", Math.round(cum[cum.length - 1]) + " m", "offset", OFFSET.toFixed(1), "city line diff", cityLineCheck);
+console.log("wrote review", (page.length / 1024).toFixed(0) + " KB");

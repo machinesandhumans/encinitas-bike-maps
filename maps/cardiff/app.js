@@ -1,6 +1,6 @@
 // Runs in the page after the inlined kit (iso, depthOf, extrude, slabOf, cylinder, solidSvg, lineSvg, onTop, fitProjection, boxCorners...).
 // DATA is injected by build.mjs.
-const { NB_TRACK, SB_TRACK, DRIVES, BOXES, COAST, POIS, CRASHES, RANGE, LIMITS, BRIDGES } = DATA;
+const { NB_TRACK, SB_TRACK, DRIVES, BOXES, COAST, POIS, CRASHES, RANGE, LIMITS, BRIDGES, UNLIT } = DATA;
 
 // ---------- geometry helpers along the road ----------
 const lerpLine = (line, s) => {
@@ -11,6 +11,8 @@ const lerpLine = (line, s) => {
 const NB = NB_TRACK, SB = [...SB_TRACK].reverse();
 const nbOn = (s) => s >= NB[0][0] && s <= NB[NB.length - 1][0];
 const sbOn = (s) => s >= SB[0][0] && s <= SB[SB.length - 1][0];
+// where each track meets the road: NB riders enter at NB_IN and are separated by NB_SEP; SB riders lose the barrier at SB_SEP and rejoin the road at SB_OUT
+const NB_IN = NB[0][0], NB_SEP = NB[1][0], SB_OUT = SB[0][0], SB_SEP = SB[1][0];
 const dNB = (s) => lerpLine(NB, s), dSB = (s) => lerpLine(SB, s), dCoast = (s) => lerpLine(COAST, s);
 const TRACK_W = 1.6, BUF = 0.7;
 const eastEdge = (s) => (nbOn(s) ? Math.min(dNB(s), -6.5) - TRACK_W / 2 : -7.6);
@@ -102,8 +104,8 @@ function render() {
   }
   if (after) {
     // south entry of the NB track: the rider leaves the lane where the barrier line begins
-    if (s0 < 272 && s1 > 236) marks.push(`<path class="risk" d="${poly(band(Math.max(236, s0), Math.min(272, s1), (s) => dNB(s) - 1.4, (s) => dNB(s) + 2.2, 2), 0.02)}"/>`);
-    if (s0 < 428 && s1 > 231) marks.push(`<path class="risk dim" d="${poly(band(Math.max(231, s0), Math.min(428, s1), (s) => dSB(s) - 1, (s) => dSB(s) + 1, 4), 0.02)}"/>`);
+    if (s0 < NB_SEP && s1 > NB_IN) marks.push(`<path class="risk" d="${poly(band(Math.max(NB_IN, s0), Math.min(NB_SEP, s1), (s) => dNB(s) - 1.4, (s) => dNB(s) + 2.2, 2), 0.02)}"/>`);
+    for (const [ua, ub] of UNLIT) if (s0 < ub && s1 > ua) marks.push(`<path class="risk dim" d="${poly(band(Math.max(ua, s0), Math.min(ub, s1), (s) => dSB(s) - 1, (s) => dSB(s) + 1, 4), 0.02)}"/>`);
   }
   // bike symbols on tracks every 60 m
   let sym = "";
@@ -113,7 +115,7 @@ function render() {
   const close = W() <= 260;
   if (after) {
     for (const [on, dfn, sign, side] of [[nbOn, dNB, 1, "E"], [sbOn, dSB, -1, "W"]]) {
-      const start = side === "E" ? 264 : 238;
+      const start = side === "E" ? NB_SEP : SB_SEP;
       for (let s = Math.ceil(lo / 6.1) * 6.1; s < hi; s += 6.1) {
         if (!on(s) || s < start || nearDrive(s, side) || onBridge(s)) continue;
         const d = dfn(s) + sign * (TRACK_W / 2 + BUF / 2);
@@ -166,9 +168,9 @@ function render() {
   // labels
   const labels = [];
   for (const [name, s, d] of POIS) if (s > s0 + 4 && s < s1 - 4 && d > SPAN.east + 4 && d < SPAN.west - 4) { const b = BOXES.find((q) => q[0] === "b" && q[5] && q[5] === name); labels.push(b ? flatText((b[1] + b[2]) / 2, (b[3] + b[4]) / 2, name, close ? 2.4 : 5, "", 4.2) : flatText(s, d, name, close ? 2.4 : 5)); }
-  if (s0 < 270 && s1 > 230 && after) labels.push(flatText(250, -15.5, "NB track begins · first wheel stop", close ? 1.6 : 3.6, "warn"));
+  if (s0 < NB_SEP && s1 > NB_IN && after) labels.push(flatText((NB_IN + NB_SEP) / 2, -15.5, "NB track begins · first wheel stop", close ? 1.6 : 3.6, "warn"));
   for (const [a, b] of BRIDGES) if (b > s0 && a < s1) { const m = (a + b) / 2; if (m > s0 + 4 && m < s1 - 4) { labels.push(flatText(m, SPAN.east + (close ? 12 : 22), "from San Elijo Lagoon", close ? 2.2 : 4.6, "water")); labels.push(flatText(m, SPAN.west - (close ? 10 : 20), "to the ocean", close ? 2.2 : 4.6, "water")); } }
-  if (s0 < 225 && s1 > 160) labels.push(flatText(190, -10.5, "NB: down the hill from Solana Beach, 45 mph posted", close ? 1.6 : 3.6));
+  if (s0 < NB_IN - 45 && s1 > NB_IN - 115) labels.push(flatText(NB_IN - 80, -30, "NB: down the hill from Solana Beach, 45 mph posted", close ? 1.6 : 3.6));
   const clip = `<clipPath id="win"><path d="${poly([[s0, SPAN.east], [s1, SPAN.east], [s1, SPAN.west], [s0, SPAN.west]])}"/></clipPath>`;
   scene.innerHTML = clip + `<g clip-path="url(#win)">${ground.join("") + marks.join("")}</g>` + items.map((i) => i.svg).join("") + labels.join("");
   drawWindow();
@@ -269,11 +271,11 @@ const still = matchMedia("(prefers-reduced-motion: reduce)");
 let rideFrame = 0, last = 0;
 function riderPath(dir, s) {
   if (dir > 0) { // northbound: comes down the hill in the right lane, joins the track at its south end
-    if (s < 231) return -5.2;
-    if (s < 264) return -5.2 + (dNB(264) + 5.2) * ((s - 231) / 33) ** 1.4;
+    if (s < NB_IN) return -5.2;
+    if (s < NB_SEP) return -5.2 + (dNB(NB_SEP) + 5.2) * ((s - NB_IN) / (NB_SEP - NB_IN)) ** 1.4;
     return nbOn(s) ? dNB(s) : -5.2;
   }
-  if (s < 236) return 5.2;
+  if (s < SB_OUT) return 5.2;
   return sbOn(s) ? dSB(s) : 5.2;
 }
 function startRide(dir) {
@@ -288,7 +290,7 @@ function startRide(dir) {
 function stopRide() { if (rideFrame) cancelAnimationFrame(rideFrame); rideFrame = 0; if (state.ride) { state.ride = null; document.querySelectorAll("[data-ride]").forEach((b) => b.setAttribute("aria-pressed", "false")); schedule(); } }
 function tickRide(now) {
   const dt = last ? Math.min(0.05, (now - last) / 1000) : 1 / 60; last = now;
-  const nearHazard = (s) => (state.ride > 0 ? Math.abs(s - 250) < 30 || DRIVES.some(([d, side]) => side === "E" && Math.abs(d - s) < 10) : DRIVES.some(([d, side]) => side === "W" && Math.abs(d - s) < 10));
+  const nearHazard = (s) => (state.ride > 0 ? Math.abs(s - (NB_IN + NB_SEP) / 2) < 30 || DRIVES.some(([d, side]) => side === "E" && Math.abs(d - s) < 10) : DRIVES.some(([d, side]) => side === "W" && Math.abs(d - s) < 10));
   const speed = nearHazard(state.riderS) ? 7 : 22;
   state.riderS += state.ride * speed * dt;
   state.riderD = riderPath(state.ride, state.riderS);

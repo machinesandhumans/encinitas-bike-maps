@@ -15,7 +15,7 @@ const slope = D.ADDRESS.reduce((a, [x, y]) => a + (x - mxA) * (y - myA), 0) / D.
 const sOfAddr = (addr) => Math.round(myA + slope * (addr - mxA));
 const crashes = CRASHES.map((c) => ({ ...c, s: c.addr != null ? sOfAddr(c.addr) : c.s }));
 
-const DATA = { NB_TRACK: D.NB_TRACK, SB_TRACK: D.SB_TRACK, DRIVES: D.DRIVES, BOXES: D.BOXES, COAST: D.COAST, POIS: D.POIS, RANGE: D.RANGE, LIMITS: D.LIMITS, BRIDGES: D.BRIDGES, CRASHES: crashes };
+const DATA = { NB_TRACK: D.NB_TRACK, SB_TRACK: D.SB_TRACK, DRIVES: D.DRIVES, BOXES: D.BOXES, COAST: D.COAST, POIS: D.POIS, RANGE: D.RANGE, LIMITS: D.LIMITS, BRIDGES: D.BRIDGES, UNLIT: D.UNLIT, CRASHES: crashes };
 
 const segCount = (era) => crashes.filter((c) => !c.edge && (era === "after") === c.date >= "2020-04").length;
 
