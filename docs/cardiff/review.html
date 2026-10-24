@@ -961,14 +961,29 @@ function drawMarks() {
 }
 drawMarks();
 const gpsEl = document.querySelector("#gps"), wrap = document.querySelector("#mapwrap");
+// iPhones refuse location silently unless Safari is allowed it in Settings, so every failure says what to change.
+const GPS_HELP = {
+  1: "Location is blocked for this page. iPhone: Settings → Privacy & Security → Location Services → turn it on, then Safari Websites → While Using, and Precise Location on. Android Chrome: tap the icon left of the address → Permissions → Location → Allow. Then reload this page.",
+  2: "Your phone can't find its position right now. Check that Location Services is on, or step outside.",
+  3: "Still waiting for a GPS fix. This can take up to a minute outdoors.",
+};
+function showFix(p) {
+  me = { at: [p.coords.latitude, p.coords.longitude], acc: Math.round(p.coords.accuracy) };
+  if (!meDot) { meRing = L.circle(me.at, { radius: me.acc, color: "#1a73e8", weight: 1, fillOpacity: 0.12, interactive: false }).addTo(map); meDot = L.circleMarker(me.at, { radius: 7, color: "#fff", weight: 2, fillColor: "#1a73e8", fillOpacity: 1, interactive: false }).addTo(map); map.setView(me.at, Math.max(map.getZoom(), 19)); }
+  else { meDot.setLatLng(me.at); meRing.setLatLng(me.at).setRadius(me.acc); }
+  gpsEl.textContent = "GPS accuracy about " + me.acc + " m. Phone GPS can be off by a few metres, so line the crosshair up with the photo before marking.";
+}
+function gpsFailed(err) { if (!me || err.code === 1) gpsEl.textContent = GPS_HELP[err.code] || "Location error: " + err.message; }
+function askOnce() { // a one-off, lower-accuracy request also gets a first fix faster and re-prompts on some phones
+  navigator.geolocation.getCurrentPosition(showFix, gpsFailed, { enableHighAccuracy: false, maximumAge: 60000, timeout: 30000 });
+}
 function startGps() {
   if (!navigator.geolocation) { gpsEl.textContent = "This browser can't share your location. Pan the map to put the crosshair on the spot instead."; return; }
-  watchId = navigator.geolocation.watchPosition((p) => {
-    me = { at: [p.coords.latitude, p.coords.longitude], acc: Math.round(p.coords.accuracy) };
-    if (!meDot) { meRing = L.circle(me.at, { radius: me.acc, color: "#1a73e8", weight: 1, fillOpacity: 0.12, interactive: false }).addTo(map); meDot = L.circleMarker(me.at, { radius: 7, color: "#fff", weight: 2, fillColor: "#1a73e8", fillOpacity: 1, interactive: false }).addTo(map); map.setView(me.at, Math.max(map.getZoom(), 19)); }
-    else { meDot.setLatLng(me.at); meRing.setLatLng(me.at).setRadius(me.acc); }
-    gpsEl.textContent = "GPS accuracy about " + me.acc + " m. Phone GPS can be off by a few metres, so line the crosshair up with the photo before marking.";
-  }, (err) => { gpsEl.textContent = err.code === 1 ? "Location is blocked for this page. You can still pan the map to put the crosshair on the spot." : "Waiting for a GPS fix…"; }, { enableHighAccuracy: true, maximumAge: 2000, timeout: 20000 });
+  if (!window.isSecureContext) { gpsEl.textContent = "Location only works when this page is opened over https (the GitHub Pages link)."; return; }
+  gpsEl.textContent = "Asking your phone for its location…";
+  askOnce();
+  if (watchId == null) watchId = navigator.geolocation.watchPosition(showFix, gpsFailed, { enableHighAccuracy: true, maximumAge: 5000, timeout: 60000 });
+  navigator.permissions?.query({ name: "geolocation" }).then((st) => { if (st.state === "denied") gpsEl.textContent = GPS_HELP[1]; }).catch(() => {});
 }
 document.querySelector("#field-toggle").addEventListener("click", (e) => {
   const on = !wrap.classList.contains("rv-field");
@@ -976,7 +991,7 @@ document.querySelector("#field-toggle").addEventListener("click", (e) => {
   if (on) { if (mode) setMode(mode); setAdding(false); startGps(); wrap.scrollIntoView({ behavior: "smooth", block: "start" }); }
   else if (watchId != null) { navigator.geolocation.clearWatch(watchId); watchId = null; }
 });
-document.querySelector("#fab-me").addEventListener("click", () => { if (me) map.setView(me.at, Math.max(map.getZoom(), 19)); else gpsEl.textContent = "No GPS fix yet."; });
+document.querySelector("#fab-me").addEventListener("click", () => { if (me) { map.setView(me.at, Math.max(map.getZoom(), 19)); return; } if (navigator.geolocation) { gpsEl.textContent = "Asking your phone for its location…"; askOnce(); } });
 document.querySelector("#fab-mark").addEventListener("click", () => {
   const c = map.getCenter(), noteEl = document.querySelector("#mark-note");
   marks.push({ type, at: [+c.lat.toFixed(6), +c.lng.toFixed(6)], note: noteEl.value.trim(), acc: me ? me.acc : null, t: new Date().toISOString() });
