@@ -46,7 +46,7 @@ What it does: whole 1.27-mile stretch in isometric view; before/after toggle; ri
 3. Site photos: each end of the barrier lines, Ki's / Tower 13 driveways, south NB entrance; rough widths of track and walkway.
 4. Pre-2020 layout (2019 Street View) to make the "before" view accurate.
 5. Build corridors 2–4 on the same template.
-6. Mark's ride-through description of the south and north track entrances/exits, then redraw them.
+6. Mark's field walk (GitHub Pages review page): driveways, bollards, posts, barrier ends; and where the SB track starts at the north end (Chesterfield signal or further north). South entrance/exit already set from his satellite notes.
 
 ## Where things live
 - Repository: github.com/machinesandhumans/encinitas-bike-maps (see README for folder layout)

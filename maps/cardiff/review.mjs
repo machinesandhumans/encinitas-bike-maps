@@ -104,6 +104,8 @@ const page = `<title>Cardiff Satellite Review</title>
 <button class="rv-btn" id="send-all">Send everything to the chat</button>
 <h2>Base</h2>
 <div style="display:flex;gap:6px"><button class="rv-btn" data-base="sat" aria-pressed="true">Satellite</button><button class="rv-btn" data-base="street" aria-pressed="false">Street map</button></div>
+<label for="sat-src" style="display:block">Satellite source</label><select id="sat-src" style="font:inherit;padding:6px;max-width:100%"></select>
+<p id="imagery">Loading imagery…</p>
 <h2>Layers</h2>
 ${LAYERS.map(([id, label, color, on]) => `<label><input type="checkbox" data-layer="${id}" ${on ? "checked" : ""}><span class="rv-sw" style="background:${color}"></span>${label}</label>`).join("")}
 <h2>Edit the map</h2>
@@ -120,20 +122,44 @@ ${LAYERS.map(([id, label, color, on]) => `<label><input type="checkbox" data-lay
 <p id="status"></p>
 <p id="check"></p>
 </aside></div>
-<p>Imagery: Esri World Imagery (Maxar, Earthstar Geographics). Street map and features: © OpenStreetMap contributors. Marks, notes and edits stay on this device until you send them.</p>
+<p>Imagery: Esri World Imagery (Maxar, Earthstar Geographics) or USGS The National Map. Street map and features: © OpenStreetMap contributors. Marks, notes and edits stay on this device until you send them.</p>
 </div>
 <script>${leafletJs}</script>
 <script>${(`
 const DATA = ${JSON.stringify(DATA)};
 const COLORS = ${JSON.stringify(Object.fromEntries(LAYERS.map(([id, , c]) => [id, c])))};
 const map = L.map("map", { zoomSnap: 0.5, maxZoom: 21 });
-const bases = {
-  sat: L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", { maxZoom: 21, maxNativeZoom: 19, attribution: "Esri, Maxar, Earthstar Geographics" }),
-  street: L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 21, maxNativeZoom: 19, attribution: "© OpenStreetMap contributors" }),
-};
-let base = bases.sat.addTo(map);
+// Satellite sources, tried in order: if a source's tiles fail and none load, the page moves to the next one and says so.
+const SAT = [
+  ["Esri World Imagery", "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", 19, "Esri, Maxar, Earthstar Geographics"],
+  ["Esri World Imagery (mirror)", "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", 19, "Esri, Maxar, Earthstar Geographics"],
+  ["USGS National Map imagery", "https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryOnly/MapServer/tile/{z}/{y}/{x}", 16, "USGS The National Map"],
+];
+const imgEl = document.querySelector("#imagery");
+let satIdx = 0, sat = null, base = null, baseKind = "sat";
+function makeSat(i) {
+  const [name, url, nz, attribution] = SAT[i];
+  const layer = L.tileLayer(url, { maxZoom: 21, maxNativeZoom: nz, attribution });
+  let ok = 0, bad = 0;
+  layer.on("tileload", () => { ok++; if (ok === 1) imgEl.textContent = "Imagery: " + name + "."; });
+  layer.on("tileerror", () => {
+    bad++;
+    if (ok === 0 && bad >= 6 && layer === sat) {
+      if (i + 1 < SAT.length) { imgEl.textContent = name + " didn't load, trying " + SAT[i + 1][0] + "…"; useSat(i + 1); }
+      else imgEl.textContent = "No satellite source loaded on this connection. Try Street map, or another network.";
+    }
+  });
+  return layer;
+}
+function useSat(i) { satIdx = i; if (base) map.removeLayer(base); sat = makeSat(i); base = sat.addTo(map); base.bringToBack(); document.querySelector("#sat-src").value = String(i); }
+const street = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 21, maxNativeZoom: 19, attribution: "© OpenStreetMap contributors" });
+const srcSel = document.querySelector("#sat-src");
+SAT.forEach(([name], i) => srcSel.append(new Option(name, String(i))));
+srcSel.addEventListener("change", () => { if (baseKind === "sat") useSat(Number(srcSel.value)); else satIdx = Number(srcSel.value); });
+useSat(0);
 document.querySelectorAll("[data-base]").forEach((b) => b.addEventListener("click", () => {
-  map.removeLayer(base); base = bases[b.dataset.base].addTo(map); base.bringToBack();
+  baseKind = b.dataset.base;
+  if (baseKind === "sat") useSat(satIdx); else { map.removeLayer(base); base = street.addTo(map); base.bringToBack(); imgEl.textContent = "Street map: OpenStreetMap."; }
   document.querySelectorAll("[data-base]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
 }));
 const groups = {};
