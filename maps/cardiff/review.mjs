@@ -71,8 +71,10 @@ const drawn = {
 };
 const ring = (w) => w.geometry.map((g) => [+g.lat.toFixed(7), +g.lon.toFixed(7)]);
 const kindOf = (t) => (t.highway === "cycleway" || t.bicycle === "designated" && t.highway === "path" ? "cycle" : is101(t) ? "road" : /footway|path|pedestrian|steps/.test(t.highway ?? "") ? "foot" : t.highway === "service" ? "service" : t.highway ? "street" : t.barrier ? "barrier" : t.amenity === "parking" ? "parking" : t.building ? "building" : t.bridge ? "bridge" : null);
-const raw = ways.map((w) => ({ k: kindOf(w.tags ?? {}), id: w.id, tags: w.tags ?? {}, line: ring(w) })).filter((w) => w.k);
-const barrierNodes = osm.elements.filter((e) => e.type === "node" && e.tags?.barrier).map((e) => ({ at: [e.lat, e.lon], tags: e.tags }));
+const nearRoad = (g) => { const p = toXY(g), s = sOfPoint(p) - OFFSET; if (s < D.RANGE.south - 50 || s > D.RANGE.north + 50) return false; const q = pointAt(s, 0); return Math.hypot(p[0] - q[0], p[1] - q[1]) < 120; };
+const raw = ways.map((w) => ({ k: kindOf(w.tags ?? {}), id: w.id, tags: w.tags ?? {}, line: ring(w), g: w.geometry }))
+  .filter((w) => ["cycle", "road", "foot", "service", "barrier", "bridge"].includes(w.k) && w.g.some(nearRoad)).map(({ g, ...w }) => w);
+const barrierNodes = osm.elements.filter((e) => e.type === "node" && e.tags?.barrier && nearRoad(e)).map((e) => ({ at: [e.lat, e.lon], tags: e.tags }));
 const centreLL = centre.map(toLL);
 const cityLineCheck = (() => { // where OSM's city boundary crosses the road, compared to the map's city line
   const rel = osm.elements.find((e) => e.type === "relation" && /Encinitas/i.test(e.tags?.name ?? ""));
@@ -133,6 +135,7 @@ const page = `<title>Cardiff Satellite Review</title>
 ${LAYERS.map(([id, label, color, on]) => `<label><input type="checkbox" data-layer="${id}" ${on ? "checked" : ""}><span class="rv-sw" style="background:${color}"></span>${label}</label>`).join("")}
 <h2>Notes</h2>
 <button class="rv-btn" id="add" aria-pressed="false">Add note</button>
+<form id="note-form" hidden><label for="note-text" style="display:block">What's wrong or missing here?</label><textarea id="note-text" rows="3" style="width:100%;box-sizing:border-box;font:inherit"></textarea><div style="display:flex;gap:6px"><button class="rv-btn" type="submit">Save note</button><button class="rv-btn" type="button" id="note-cancel">Cancel</button></div></form>
 <ol id="notes"></ol>
 <button class="rv-btn" id="copy">Copy notes to send</button>
 <p id="status"></p>
@@ -169,7 +172,7 @@ const tagText = (t) => Object.entries(t).filter(([k]) => !/^(source|note:|tiger)
 for (const w of DATA.raw) {
   const g = w.k === "cycle" ? "osmCycle" : w.k === "road" ? "osmRoad" : ["foot", "service", "barrier", "bridge"].includes(w.k) ? "osmOther" : null;
   if (!g) continue;
-  tip(L.polyline(w.line, { color: COLORS[g], weight: w.k === "road" ? 1.5 : 2.5, dashArray: w.k === "barrier" ? "2 4" : null, opacity: 0.9 }), "OSM way " + w.id + "<br>" + tagText(w.tags)).addTo(groups[g]);
+  tip(L.polyline(w.line, { color: COLORS[g], weight: w.tags.bridge && w.tags.bridge !== "no" ? 7 : w.k === "road" ? 1.5 : 2.5, dashArray: w.k === "barrier" ? "2 4" : null, opacity: 0.9 }), "OSM way " + w.id + "<br>" + tagText(w.tags)).addTo(groups[g]);
 }
 for (const n of DATA.barrierNodes) tip(L.circleMarker(n.at, { radius: 3, color: COLORS.osmOther, weight: 1, fillOpacity: 0.8 }), "OSM " + tagText(n.tags)).addTo(groups.osmOther);
 L.polyline(DATA.centre, { color: COLORS.centre, weight: 2, dashArray: "8 6" }).addTo(groups.centre);
@@ -200,13 +203,19 @@ const addBtn = document.querySelector("#add"), status = document.querySelector("
 let adding = false;
 const setAdding = (v) => { adding = v; addBtn.setAttribute("aria-pressed", String(v)); status.textContent = v ? "Tap the spot on the map." : ""; map.getContainer().style.cursor = v ? "crosshair" : ""; };
 addBtn.addEventListener("click", () => setAdding(!adding));
+const form = document.querySelector("#note-form"), field = document.querySelector("#note-text");
+let spot = null, spotMark = null;
+const closeForm = () => { form.hidden = true; field.value = ""; spot = null; if (spotMark) map.removeLayer(spotMark); spotMark = null; };
 map.on("click", (e) => {
   if (!adding) return;
   setAdding(false);
-  const text = prompt("What's wrong or missing here?");
-  if (!text) return;
-  notes.push({ at: [+e.latlng.lat.toFixed(6), +e.latlng.lng.toFixed(6)], text }); save(); drawNotes();
+  spot = [+e.latlng.lat.toFixed(6), +e.latlng.lng.toFixed(6)];
+  if (spotMark) map.removeLayer(spotMark);
+  spotMark = L.circleMarker(spot, { radius: 8, color: "#d93b3f", weight: 3, fill: false }).addTo(map);
+  form.hidden = false; field.focus();
 });
+form.addEventListener("submit", (e) => { e.preventDefault(); const text = field.value.trim(); if (spot && text) { notes.push({ at: spot, text }); save(); drawNotes(); } closeForm(); });
+document.querySelector("#note-cancel").addEventListener("click", closeForm);
 document.querySelector("#copy").addEventListener("click", async () => {
   const txt = notes.map((n, i) => (i + 1) + ". " + n.text + " (" + n.at[0] + ", " + n.at[1] + ") https://www.google.com/maps?q=" + n.at[0] + "," + n.at[1]).join("\\n");
   try { await navigator.clipboard.writeText(txt || "(no notes)"); status.textContent = "Copied " + notes.length + " notes. Paste them into the project chat."; }

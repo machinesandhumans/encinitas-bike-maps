@@ -29,6 +29,8 @@ What it does: whole 1.27-mile stretch in isometric view; before/after toggle; ri
 
 ## Accuracy work (Oct 24, 2026)
 - Lagoon outlet bridge now drawn: water channel under the road, edged deck, solid parapets, labels. Not yet on the live artifact.
+- Satellite review page: `node maps/cardiff/review.mjs` writes `docs/cardiff/review.html`. It puts the map's drawn layout back on real coordinates (aligned on the 101 lagoon bridge) over Esri imagery, with raw OSM layers and a notes tool. Imagery is blocked inside Claude artifacts, so open it from GitHub Pages or as a local file. OSM data with coordinates: `data/osm/cardiff-osm.json` (fetched Oct 24, 2026 via `tools/fetch-osm.mjs` on Mark's computer; the cloud environment blocks openstreetmap.org). First check: the map's city line sits 22 m north of OSM's boundary.
+- Mark has a local project folder: D:\Projects\Encinitas Bike Maps.
 - Mark says the south and north track entrances/exits don't match how the path works. Waiting on his ride-through description before redrawing them.
 
 ## Open items
