@@ -15,7 +15,7 @@ const slope = D.ADDRESS.reduce((a, [x, y]) => a + (x - mxA) * (y - myA), 0) / D.
 const sOfAddr = (addr) => Math.round(myA + slope * (addr - mxA));
 const crashes = CRASHES.map((c) => ({ ...c, s: c.addr != null ? sOfAddr(c.addr) : c.s }));
 
-const DATA = { NB_TRACK: D.NB_TRACK, SB_TRACK: D.SB_TRACK, DRIVES: D.DRIVES, BOXES: D.BOXES, COAST: D.COAST, POIS: D.POIS, RANGE: D.RANGE, LIMITS: D.LIMITS, BRIDGES: D.BRIDGES, CRASHES: crashes };
+const DATA = { NB_TRACK: D.NB_TRACK, SB_TRACK: D.SB_TRACK, DRIVES: D.DRIVES, BUILDINGS: D.BUILDINGS, LOTS: D.LOTS, COAST: D.COAST, POIS: D.POIS, RANGE: D.RANGE, LIMITS: D.LIMITS, BRIDGES: D.BRIDGES, UNLIT: D.UNLIT, CRASHES: crashes };
 
 const segCount = (era) => crashes.filter((c) => !c.edge && (era === "after") === c.date >= "2020-04").length;
 
@@ -43,7 +43,7 @@ body{background:var(--cx-page);margin:0}
 #stage:focus-visible{outline:2px solid var(--anatomy-hi)}
 #scene{display:block;width:100%;height:auto}
 #scene .g-land{fill:var(--land)}#scene .g-sea{fill:var(--sea)}#scene .g-sand{fill:var(--sand)}#scene .g-lot{fill:var(--lot)}
-#scene .g-road{fill:var(--road)}#scene .g-walk{fill:var(--walk)}#scene .g-drive{fill:var(--drive)}
+#scene .g-road{fill:var(--road)}#scene .g-walk{fill:var(--walk)}#scene .g-drive{fill:var(--drive)}#scene .g-bridge{fill:var(--road);stroke:var(--ink,#555);stroke-width:1.2;stroke-opacity:.55}#scene .water{fill:#2f6f8f;font-style:italic}.cx[data-theme="dark"] #scene .water{fill:#7fb3cc}
 #scene .m-yellow{stroke:var(--yellow)}
 #scene .risk{fill:var(--risk);opacity:.45}#scene .risk.dim{opacity:.18}
 #scene .cx-ground{fill:var(--anatomy-text);font-family:var(--anatomy-mono);letter-spacing:.02em}

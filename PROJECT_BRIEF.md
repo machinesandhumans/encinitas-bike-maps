@@ -1,6 +1,6 @@
 # Encinitas Bike Infrastructure Maps — Project Brief
 
-Last updated: October 23, 2026
+Last updated: October 24, 2026
 
 ## Goal
 Interactive, spatially accurate maps of four Encinitas road projects, showing where the layout narrows riders' options (barriers, blind spots, driveway crossings, entries and exits) and where official crashes happened, before and after each change. The maps must stay objective: official data kept separate from advocate reports, and gaps stated openly.
@@ -26,6 +26,18 @@ What it does: whole 1.27-mile stretch in isometric view; before/after toggle; ri
 - **March 2024 fatality:** official record says 2700 block, no coordinates, primary factor bicycling under the influence (VC 21200.5). By street number that places it near the beach lot south of Las Olas. User believes it was at the south entrance of the NB track. **Unresolved — needs a source before publishing.**
 - Advocates count 36–42 crashes since 2020 (Facebook group "Encinitas: Please Restore Safe Cycling", facebook.com/groups/556935515245051). Not yet obtained.
 - Santa Fe: state SB 114 (signed Sep 18, 2026) blocks removing the protected lanes for 5 years after completion.
+
+## Accuracy work (Oct 24, 2026)
+- Lagoon outlet bridge now drawn: water channel under the road, edged deck, solid parapets, labels. Not yet on the live artifact.
+- Satellite review page: `node maps/cardiff/review.mjs` writes `docs/cardiff/review.html`. It puts the map's drawn layout back on real coordinates (aligned on the 101 lagoon bridge) over Esri imagery, with raw OSM layers and a notes tool. Imagery is blocked inside Claude artifacts, so open it from GitHub Pages or as a local file. OSM data with coordinates: `data/osm/cardiff-osm.json` (fetched Oct 24, 2026 via `tools/fetch-osm.mjs` on Mark's computer; the cloud environment blocks openstreetmap.org). First check: the map's city line sits 22 m north of OSM's boundary.
+- Mark has a local project folder: D:\Projects\Encinitas Bike Maps.
+- Mark judged OpenStreetMap's bike paths more accurate than the earlier hand-simplified tracks, so both tracks, the lagoon bridge (now 60 m, 1896–1956) and the Solana Beach city line (s 219, was 241) are now generated from OSM: `node maps/cardiff/osm-tracks.mjs` writes `maps/cardiff/tracks.mjs`. `maps/cardiff/geo.mjs` holds the shared OSM/straightened-road frame. OSM joins the track ends to the road centreline; those ends are moved to the curb lane. Driveways, lots, buildings and crash positions are still the earlier estimates (within ~10 m).
+- Mark's satellite review notes (data/field/cardiff-review-notes-2026-10-24.json) set the south ends: NB separation starts at s 287 (33.001891, -117.276737), SB separation ends at s 245 (33.001484, -117.276654). OSM's diagonal connectors to the centreline there are not real paths. His other notes confirmed OSM's track lines over the old drawing.
+- Buildings, parking lots and driveways now also come from OSM (`node maps/cardiff/osm-layout.mjs` writes `maps/cardiff/layout.mjs`; it replaced osm-tracks.mjs/tracks.mjs). Buildings are real outlines; driveways are curb-cut stretches [s0, s1, side, name, id], 8 m wide by default. OSM lacks some driveways the old map had (e.g. around Ki's/Plastino and the west-side restaurant lots).
+- Field edits: the satellite review page has Move buildings / Mark driveway tools; Mark copies the edits and pastes them in chat. Save them to `data/field/cardiff-edits.json`, then rerun osm-layout.mjs, build.mjs and review.mjs.
+- Field walk mode (review page): GPS dot, crosshair and typed marks (driveway start/end, bollard, post, wheel stop, barrier start/end, sign, curb gap, hazard, photo). Meant for GitHub Pages on a phone (geolocation and imagery need https and are blocked in Claude artifacts). "Send everything" shares marks, notes and edits as text for the chat.
+- OSM shows the SB path continuing north of Chesterfield on the west side (to about s 2600); the map still starts the SB track at the Chesterfield signal.
+- Mark says the south and north track entrances/exits don't match how the path works. Waiting on his ride-through description before redrawing them.
 
 ## Open items
 1. Confirm location of the March 2024 fatal crash.

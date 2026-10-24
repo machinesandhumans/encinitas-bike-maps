@@ -1,0 +1,18 @@
+{
+  "source": "Mark, satellite review page (Esri imagery over OpenStreetMap and the map's drawn layout), Oct 24, 2026",
+  "context": "Notes 5-12 were made against the earlier hand-simplified tracks; 'yellow' refers to the map's drawn SB track and 'blue' to OpenStreetMap's bike paths.",
+  "notes": [
+    { "n": 1, "at": [33.001442, -117.276479], "text": "this is the middle of the road" },
+    { "n": 2, "at": [33.001891, -117.276737], "text": "separated bike lane starts here", "use": "NB separation start" },
+    { "n": 3, "at": [33.001484, -117.276654], "text": "separated lane (south bound) ends here.", "use": "SB separation end" },
+    { "n": 4, "at": [33.001507, -117.276534], "text": "this is the middle of the road, not a bike lane" },
+    { "n": 5, "at": [33.002262, -117.277165], "text": "This is too far into the roadway" },
+    { "n": 6, "at": [33.002708, -117.2772], "text": "this red line is off the road to the west" },
+    { "n": 7, "at": [33.004047, -117.277685], "text": "This is way off" },
+    { "n": 8, "at": [33.004197, -117.277884], "text": "This entire yellow line is not accurate to the road" },
+    { "n": 9, "at": [33.005048, -117.278018], "text": "the blue line represents the accurate boundary of the bike path on both sides of the road" },
+    { "n": 10, "at": [33.008766, -117.278796], "text": "the blue line is the accurate jog in the path. The yellow line is inaccurate here." },
+    { "n": 11, "at": [33.008854, -117.278853], "text": "Blue and yellow lines are matched up at the point" },
+    { "n": 12, "at": [33.008764, -117.278615], "text": "blue and yellow lines are matched up at this point and correct" }
+  ]
+}
