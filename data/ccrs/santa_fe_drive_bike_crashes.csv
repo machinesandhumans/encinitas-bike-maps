@@ -1,0 +1,18 @@
+collision_id,date,period,location_primary,location_secondary,offset_ft,offset_dir,collision_type,struck,killed,official_pcf_code,official_pcf_meaning,bike_movement,bike_direction,bike_at_fault,bike_injury,segment,notes
+3676012,2017-08-08,before,SANTA FE DR,RT 5,12,E,VEHICLE/PEDESTRIAN,BICYCLE,0,21650,riding on wrong side of road,PROCEEDING STRAIGHT,E,True,complaint of pain,west phase edge (I-5),
+2944534,2020-03-05,before,SANTA FE DR,MACKINNON AV,,,BROADSIDE,BICYCLE,0,22107,unsafe turn/lane change,PROCEEDING STRAIGHT,E,,complaint of pain,west phase,Nardo/MacKinnon intersection
+2874470,2021-08-20,before,SANTA FE DR,STRATFORD DR,,,BROADSIDE,BICYCLE,0,21717,right turn not merging into bike lane (right hook),PROCEEDING STRAIGHT,W,,minor visible,verify location,Confirm where Stratford meets Santa Fe
+2873747,2021-10-12,before,SANTA FE DR,BONITA DR,,,BROADSIDE,BICYCLE,0,21801B,left-turn yield,PROCEEDING STRAIGHT,W,True,minor visible,west phase,Bonita/Windsor intersection
+2621645,2022-02-09,before,SANTA FE DR,NARDO RD,60,W,BROADSIDE,BICYCLE,0,22107,unsafe turn/lane change,PROCEEDING STRAIGHT,W,,minor visible,west phase,
+2623399,2022-03-15,before,SANTA FE DR,EVERGREEN DR,,,BROADSIDE,BICYCLE,0,21801A,left-turn yield,PROCEEDING STRAIGHT,W,,complaint of pain,west phase edge (Evergreen),
+2623404,2022-03-18,before,SANTA FE DR,MACKINNON AV,104,W,SIDE SWIPE,BICYCLE,0,22107,unsafe turn/lane change,CHANGING LANES,E,True,minor visible,west phase,
+5164221,2025-01-01,during/after,SANTA FE DR,SANTA FE DR 453,100,W,BROADSIDE,BICYCLE,0,22107,unsafe turn/lane change,,,,possible injury,verify location,Coordinates 33.0377 -117.2834 appear west of I-5; likely outside west phase
+5055692,2025-10-09,after,SANTA FE DR,NARDO RD,,,,NON-COLLISION,0,21801,left-turn yield,,,,minor visible,west phase,Only post-completion record in west phase; 2025 party details not published
+2944535,2020-03-02,before,S EL CAMINO REAL,SANTA FE DR,37,S,BROADSIDE,BICYCLE,0,21453B,red signal,PROCEEDING STRAIGHT,S,,complaint of pain,east end (El Camino Real),Not in west phase
+3510498,2018-12-12,before,S EL CAMINO REAL,SANTA FE DR,,,SIDE SWIPE,BICYCLE,0,21456.3,signal,MAKING RIGHT TURN,S,True,minor visible,east end (El Camino Real),Not in west phase
+2513937,2023-02-15,before,SANTA FE DR,S EL CAMINO REAL,170,W,SIDE SWIPE,BICYCLE,0,22107,unsafe turn/lane change,PROCEEDING STRAIGHT,E,,minor visible,east end (El Camino Real),Not in west phase
+5054633,2024-11-13,during,SANTA FE DR,EL CAMINO REAL,120,W,BROADSIDE,BICYCLE,0,21804A,entering from driveway,PROCEEDING STRAIGHT,W,,minor,east end (El Camino Real),Not in west phase
+3476576,2018-10-01,before,SANTA FE DR,BALOUR DR,17,E,BROADSIDE,BICYCLE,0,21804A,entering from driveway,STOPPED,N,,complaint of pain,east phase,Not in west phase
+2873854,2021-12-07,before,SANTA FE DR,BALOUR DR,20,E,SIDE SWIPE,BICYCLE,0,21802A,stop sign yield,MAKING LEFT TURN,S,True,minor visible,east phase,Not in west phase
+2534761,2023-07-09,before,SANTA FE DR,PINECREST,50,E,OVERTURNED,BICYCLE,0,22350,unsafe speed,PROCEEDING STRAIGHT,E,True,severe,east phase,Not in west phase; dark no street lights
+2454082,2024-02-22,during,SANTA FE DR,SUMMIT AV,,,BROADSIDE,,0,21201D,bicycle without required night lighting,PROCEEDING STRAIGHT,E,True,minor visible,east phase,Not in west phase

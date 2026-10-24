@@ -1,0 +1,21 @@
+collision_id,date,period,location_primary,location_secondary,offset_ft,offset_dir,collision_type,struck,killed,official_pcf_code,official_pcf_meaning,bike_direction,bike_at_fault,bike_injury,in_segment,notes
+3442993,2018-08-06,before,RT 101,CHESTERFIELD DR,80,S,SIDE SWIPE,BICYCLE (motor vehicle vs bike),0,22517,dooring,S,,minor visible,yes,
+3500100,2018-11-02,before,S COAST HIGHWAY 101,SEASIDE STATE BEACH ENTRANCE,,,SIDE SWIPE,BICYCLE (motor vehicle vs bike),0,22517,dooring,S,,minor visible,yes,
+3100902,2019-02-11,before,RT 101,RT 101 2526,,,REAR END,BICYCLE (motor vehicle vs bike),0,21755A,unsafe passing on right,N,,minor visible,yes,Restaurant Row
+3178754,2019-07-07,before,RT 101,RT 101 2500 BLK,,,HIT OBJECT,PARKED MOTOR VEHICLE,0,22350,unsafe speed,N,True,severe,yes,Restaurant Row
+2947134,2020-04-22,after,RT 101,LAS OLAS,815,S,HIT OBJECT,FIXED OBJECT,0,,,S,,minor visible,yes,Weeks after cycle track installed (Apr 2020)
+2944450,2020-04-29,after,SOUTH COAST HWY 101,SOUTH COAST HWY 101 2655,,,HIT OBJECT,FIXED OBJECT,0,22350,unsafe speed,S,True,minor visible,yes,Weeks after cycle track installed
+2873756,2021-10-05,after,S COAST HWY 101,S COAST HWY 101 2600,,,SIDE SWIPE,OTHER MOTOR VEHICLE,0,22350,unsafe speed,N,,complaint of pain,yes,
+2873754,2021-10-09,after,S COAST HWY 101,CARDIFF STATE BEACH,244,N,HIT OBJECT,FIXED OBJECT,0,22107,unsafe lane change,S,True,minor visible,yes,
+2627295,2022-01-14,after,S COAST HWY 101,SEASIDE STATE BEACH,,,OVERTURNED,FIXED OBJECT,0,,,S,,minor visible,yes,
+2621885,2022-02-10,after,SOUTH COAST HWY 101,SAN ELIJO,2460,N,BROADSIDE,BICYCLE (motor vehicle vs bike),0,22107,unsafe lane change,E,True,severe,verify,Cross-street reference ambiguous
+2686951,2022-08-27,after,S COAST HIGHWAY 101,RT 101 2800 BLK,,,REAR END,PEDESTRIAN,0,22350,unsafe speed,N,True,severe,yes,Cyclist struck pedestrian
+4622805,2024-03-17,after,S COAST HWY 101,2700 BLOCK,,,HIT OBJECT,FIXED OBJECT,1,21200.5,bicycling under the influence,N,True,fatal,yes,Ryan Currie fatality; dark no street lights; bike movement recorded as making right turn
+4620213,2024-06-06,after,S COAST HWY 101,S COAST HWY 2591,11,N,HIT OBJECT,FIXED OBJECT,0,22107,unsafe lane change,N,True,possible injury,yes,Restaurant Row
+5149019,2024-11-30,after,RT 101,CHESTERFIELD DR,2131,S,OTHER,BICYCLE (motor vehicle vs bike),0,22350,unsafe speed,N,True,minor,yes,
+5059513,2025-09-29,after,S COAST HIGHWAY 101,CARDIFF STATE BEACH,440,S,BROADSIDE,BICYCLE (motor vehicle vs bike),0,22107,unsafe lane change,,,serious,yes,2025 party details not published
+3928776,2016-08-05,before,RT 101,CHESTERFIELD DR,,,HIT OBJECT,PARKED MOTOR VEHICLE,0,21658A,lane straddling,N,True,severe,intersection,At Chesterfield intersection (segment's north end)
+3309937,2018-02-14,before,RT 101,CHESTERFIELD DR,,,BROADSIDE,BICYCLE (motor vehicle vs bike),0,22450B,stop sign,W,True,minor visible,intersection,At Chesterfield intersection
+3111681,2019-03-13,before,RT 101,CHESTERFIELD DR,,,BROADSIDE,BICYCLE (motor vehicle vs bike),0,22107,unsafe lane change,N,,complaint of pain,intersection,At Chesterfield intersection
+5256340,2025-05-25,after,COAST HIGHWAY 101,CHESTERFIELD DR,,,REAR END,BICYCLE (motor vehicle vs bike),0,21703,following too closely,,,serious,intersection,At Chesterfield intersection; likely same crash as 5186534
+5186534,2025-05-25,after,RT 101,CHESTERFIELD DR,,,REAR END,BICYCLE (motor vehicle vs bike),0,21703,following too closely,,,serious,intersection,Likely duplicate report of 5256340 (one hour apart)

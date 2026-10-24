@@ -1,0 +1,1164 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body style="margin:0"><title>Cardiff Cycle Track</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+.iso{
+  --anatomy-page:#0b0b0b;--anatomy-card:#131313;--anatomy-text:#a3a3a3;--anatomy-strong:#e6e6e6;--anatomy-muted:#6e6e6e;
+  --anatomy-paper:#131313;--anatomy-face:#1b1b1b;--anatomy-top:#1c1c1c;
+  --anatomy-shade-0:#0f0f0f;--anatomy-shade-1:#121212;--anatomy-shade-2:#151515;--anatomy-shade-3:#181818;
+  --anatomy-lit-top:#262626;--anatomy-lit-shade:#1d1d1d;
+  --anatomy-hi:#d4d4d4;--anatomy-mid:#6a6a6a;--anatomy-lo:#3e3e3e;--anatomy-faint:#2a2a2a;--anatomy-lit:#ffffff;
+  --anatomy-halo:#050505;--anatomy-halo-opacity:.9;--anatomy-dot:#e6e6e6;
+  --anatomy-red:#ff6b6b;--anatomy-green:#6be0a0;--anatomy-blue:#6b9bff;
+  --anatomy-weight:.6px;--anatomy-ease:cubic-bezier(.32,.72,0,1);
+  --anatomy-mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --anatomy-lift:inset 0 1px 0 0 #ffffff0a,inset 0 0 0 1px #ffffff06,0 0 0 1px #00000026,0 1px 1px -.5px #00000014,0 3px 3px -1.5px #00000014,0 6px 6px -3px #00000014,0 12px 12px -6px #00000014;
+}
+.iso[data-theme="light"]{
+  --anatomy-page:#f2f2ef;--anatomy-card:#fbfbfa;--anatomy-text:#57575a;--anatomy-strong:#18181a;--anatomy-muted:#8c8c90;
+  --anatomy-paper:#fbfbfa;--anatomy-face:#ffffff;--anatomy-top:#ffffff;
+  --anatomy-shade-0:#dcdcd9;--anatomy-shade-1:#e5e5e2;--anatomy-shade-2:#ededea;--anatomy-shade-3:#f4f4f1;
+  --anatomy-lit-top:#ffffff;--anatomy-lit-shade:#eeeeeb;
+  --anatomy-hi:#26262a;--anatomy-mid:#8a8a8f;--anatomy-lo:#b4b4b8;--anatomy-faint:#d4d4d6;--anatomy-lit:#000000;
+  --anatomy-halo:#8a8a80;--anatomy-halo-opacity:.32;--anatomy-dot:#3a3a3e;
+  --anatomy-red:#e5484d;--anatomy-green:#30a46c;--anatomy-blue:#3e63dd;
+  --anatomy-lift:inset 0 1px 0 0 #ffffff,0 0 0 1px #0000000f,0 1px 1px -.5px #0000000a,0 3px 3px -1.5px #0000000a,0 6px 6px -3px #0000000a,0 12px 12px -6px #0000000a;
+}
+.iso-svg{display:block;width:100%;height:auto;overflow:visible}
+.iso-svg path,.iso-svg circle{vector-effect:non-scaling-stroke}
+.iso-fill{fill:var(--anatomy-paper);stroke:none}
+.iso-solid[data-lit]>.iso-fill{fill:var(--anatomy-face)}
+.iso-shade,.iso-top{stroke:none}
+.iso-shade[data-shade="0"]{fill:var(--anatomy-shade-0)}
+.iso-shade[data-shade="1"]{fill:var(--anatomy-shade-1)}
+.iso-shade[data-shade="2"]{fill:var(--anatomy-shade-2)}
+.iso-shade[data-shade="3"]{fill:var(--anatomy-shade-3)}
+.iso-top{fill:var(--anatomy-top)}
+.iso-solid[data-lit]>.iso-top{fill:var(--anatomy-lit-top)}
+.iso-solid[data-lit]>.iso-shade{fill:var(--anatomy-lit-shade)}
+.iso-solid[data-seamless]>.iso-shade,.iso-solid[data-seamless]>.iso-top{stroke-width:.4;stroke-linejoin:round}
+.iso-solid[data-seamless]>.iso-shade[data-shade="0"]{stroke:var(--anatomy-shade-0)}
+.iso-solid[data-seamless]>.iso-shade[data-shade="1"]{stroke:var(--anatomy-shade-1)}
+.iso-solid[data-seamless]>.iso-shade[data-shade="2"]{stroke:var(--anatomy-shade-2)}
+.iso-solid[data-seamless]>.iso-shade[data-shade="3"]{stroke:var(--anatomy-shade-3)}
+.iso-solid[data-seamless]>.iso-top{stroke:var(--anatomy-top)}
+.iso-solid[data-seamless][data-lit]>.iso-top{stroke:var(--anatomy-lit-top)}
+.iso-solid[data-seamless][data-lit]>.iso-shade{stroke:var(--anatomy-lit-shade)}
+.iso-solid[data-lit]>.iso-edge{stroke:var(--anatomy-lit)}
+.iso-halo{fill:var(--anatomy-halo);stroke:none;filter:blur(9px);opacity:var(--anatomy-halo-opacity);transform:translateY(3px)}
+.iso-line{fill:none;stroke:var(--anatomy-lo);stroke-width:var(--anatomy-weight);stroke-linecap:round;stroke-linejoin:round}
+.iso-line[data-tone="hi"]{stroke:var(--anatomy-hi)}
+.iso-line[data-tone="mid"]{stroke:var(--anatomy-mid)}
+.iso-line[data-tone="lo"]{stroke:var(--anatomy-lo)}
+.iso-line[data-tone="faint"]{stroke:var(--anatomy-faint)}
+.iso-line[data-tone="lit"]{stroke:var(--anatomy-lit)}
+.iso-line[data-tone="red"]{stroke:var(--anatomy-red)}
+.iso-line[data-tone="green"]{stroke:var(--anatomy-green)}
+.iso-line[data-tone="blue"]{stroke:var(--anatomy-blue)}
+.iso-line[data-dotted]{stroke-dasharray:.01 3.5;stroke-width:1}
+.iso-line[data-dashed]{stroke-dasharray:3 3}
+.iso-line[data-flow]{stroke-dasharray:2 6}
+.iso-wire-end{fill:var(--anatomy-paper);stroke:var(--anatomy-lo);stroke-width:var(--anatomy-weight)}
+.iso-wire[data-tone="hi"] .iso-wire-end{stroke:var(--anatomy-hi)}
+.iso-wire[data-tone="mid"] .iso-wire-end{stroke:var(--anatomy-mid)}
+.iso-wire[data-tone="faint"] .iso-wire-end{stroke:var(--anatomy-faint)}
+.iso-wire[data-tone="lit"] .iso-wire-end{stroke:var(--anatomy-lit)}
+.iso-dots circle{fill:var(--anatomy-dot);stroke:none;opacity:.32}
+.iso-dots[data-tone="hi"] circle{opacity:.85}
+.iso-dots[data-tone="mid"] circle{opacity:.45}
+.iso-dots[data-tone="lo"] circle{opacity:.22}
+.iso-dots[data-tone="faint"] circle{opacity:.12}
+.iso-face-text{fill:var(--anatomy-mid);font-family:var(--anatomy-mono);letter-spacing:.04em}
+.iso-face-text[data-tone="hi"]{fill:var(--anatomy-hi)}
+.iso-face-text[data-tone="lo"]{fill:var(--anatomy-lo)}
+.iso-face-text[data-tone="faint"]{fill:var(--anatomy-faint)}
+.tb-body{fill:var(--anatomy-shade-2);stroke:none}
+.tb-shine{fill:var(--anatomy-top);stroke:none}
+.tb-shade{fill:var(--anatomy-shade-0);stroke:none}
+.tb-ring{fill:none;stroke:var(--anatomy-lo);stroke-width:.45;stroke-linecap:butt;stroke-linejoin:round}
+.tb-ring[data-tone="mid"]{stroke:var(--anatomy-mid)}
+.tb-ring[data-tone="faint"]{stroke:var(--anatomy-faint)}
+.tb-ring[data-tone="hi"]{stroke:var(--anatomy-hi)}
+@keyframes iso-flow{to{stroke-dashoffset:-32}}
+@keyframes iso-pulse{0%,100%{opacity:.18}12%{opacity:1}40%{opacity:.18}}
+.iso-line[data-flow]{animation:iso-flow 1600ms linear infinite}
+.iso-dots circle[data-pulse]{animation:iso-pulse 1600ms steps(1,end) infinite;animation-delay:var(--pulse-at,0ms)}
+.iso-figure{margin:32px 0 36px}
+.iso-plate{position:relative;padding:52px 24px;border-radius:0;background:var(--anatomy-card);box-shadow:0 0 0 1px var(--anatomy-mid);--anatomy-paper:var(--anatomy-card)}
+.iso-plate-corners{position:absolute;inset:18px 20px;pointer-events:none}
+.iso-plate-corner{position:absolute;color:var(--anatomy-muted);font-family:var(--anatomy-mono);font-size:10.5px;line-height:1;letter-spacing:.04em;white-space:nowrap}
+.iso-plate-corner[data-corner="fig"]{top:0;left:0;color:var(--anatomy-text)}
+.iso-plate-corner[data-corner="title"]{top:0;right:0;text-transform:uppercase;letter-spacing:.1em}
+.iso-plate-corner[data-corner="hint"]{bottom:0;left:0;text-transform:uppercase;letter-spacing:.1em}
+.iso-plate-corner[data-corner="readout"]{right:0;bottom:0;color:var(--anatomy-text);font-variant-numeric:tabular-nums}
+.iso-plate .iso-svg{margin:0 auto}
+.iso-legend{display:grid;gap:8px;margin-top:12px;color:var(--anatomy-muted);font-size:13px;line-height:1.55}
+.iso-keys{display:flex;flex-wrap:wrap;gap:6px 18px}
+.iso-key{display:inline-flex;align-items:center;gap:7px}
+.iso-swatch{width:16px;height:10px;flex:none;overflow:visible}
+.iso-swatch path{fill:none;stroke:var(--anatomy-hi);stroke-width:1;vector-effect:non-scaling-stroke;stroke-linejoin:round;stroke-linecap:round}
+.iso-swatch[data-mark="raised"] path,.iso-swatch[data-mark="flat"] path{stroke:var(--anatomy-mid)}
+.iso-swatch[data-mark="lit"] path{stroke:var(--anatomy-lit)}
+.iso-swatch[data-mark="dim"] path{stroke:var(--anatomy-lo)}
+.iso-swatch[data-mark="dotted"] path{stroke-dasharray:.01 3;stroke-width:1.4}
+.iso-swatch[data-mark="dashed"] path{stroke-dasharray:3 2.5}
+.iso-swatch[data-mark="red"] path{stroke:var(--anatomy-red)}
+.iso-swatch[data-mark="green"] path{stroke:var(--anatomy-green)}
+.iso-swatch[data-mark="blue"] path{stroke:var(--anatomy-blue)}
+.iso-swatch-crease{stroke:var(--anatomy-lo)!important}
+@media (max-width:560px){.iso-plate{padding:48px 12px 70px}.iso-plate-corner[data-corner="hint"]{bottom:18px}}
+@media (prefers-reduced-motion:reduce){.iso-line[data-flow],.iso-dots circle[data-pulse]{animation:none}}
+
+:root{--cx-page:#f2f2ef;color-scheme:light}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--cx-page:#0b0b0b;color-scheme:dark}}
+:root[data-theme="dark"]{--cx-page:#0b0b0b;color-scheme:dark}
+body{background:var(--cx-page);margin:0}
+.cx{--sea:#c9d8e0;--sand:#ece6d6;--land:#e4e6dc;--lot:#dadad5;--road:#b9b9bd;--walk:#ddd5bf;--drive:#c8c8cb;--yellow:#c99a1b;--risk:#e5484d;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 48px;
+  background:var(--anatomy-page);color:var(--anatomy-text);font:14px/1.55 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;min-height:100vh}
+.cx[data-theme="dark"]{--sea:#13202a;--sand:#24221c;--land:#181a16;--lot:#1f1f1f;--road:#2c2c30;--walk:#2a2721;--drive:#353539;--yellow:#c9a13a;--risk:#ff6b6b}
+.cx-in{max-width:1100px;margin:0 auto;display:grid;gap:14px}
+.cx h1{margin:0;color:var(--anatomy-strong);font:600 21px/1.25 ui-sans-serif,system-ui;letter-spacing:-.01em;text-wrap:balance}
+.cx-sub{margin:2px 0 0;color:var(--anatomy-muted);font-size:13px}
+.cx-bar{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center}
+.cx-group{display:flex;gap:4px}
+.cx-btn{font:11px/1 var(--anatomy-mono);letter-spacing:.06em;text-transform:uppercase;padding:9px 11px;border:1px solid var(--anatomy-lo);background:var(--anatomy-card);color:var(--anatomy-muted);cursor:pointer;border-radius:0}
+.cx-btn[aria-pressed="true"]{color:var(--anatomy-strong);border-color:var(--anatomy-hi)}
+.cx-btn[data-era-btn="after"][aria-pressed="true"]{border-color:var(--risk);color:var(--risk)}
+.cx-btn:focus-visible{outline:2px solid var(--anatomy-hi);outline-offset:1px}
+#era-note{font-size:12.5px;color:var(--anatomy-text);flex:1 1 260px;min-width:0}
+#stage{position:relative;background:var(--anatomy-card);box-shadow:0 0 0 1px var(--anatomy-lo);touch-action:pan-y;cursor:grab;overflow:hidden}
+#stage:active{cursor:grabbing}
+#stage:focus-visible{outline:2px solid var(--anatomy-hi)}
+#scene{display:block;width:100%;height:auto}
+#scene .g-land{fill:var(--land)}#scene .g-sea{fill:var(--sea)}#scene .g-sand{fill:var(--sand)}#scene .g-lot{fill:var(--lot)}
+#scene .g-road{fill:var(--road)}#scene .g-walk{fill:var(--walk)}#scene .g-drive{fill:var(--drive)}
+#scene .m-yellow{stroke:var(--yellow)}
+#scene .risk{fill:var(--risk);opacity:.45}#scene .risk.dim{opacity:.18}
+#scene .cx-ground{fill:var(--anatomy-text);font-family:var(--anatomy-mono);letter-spacing:.02em}
+#scene .cx-ground.warn{fill:var(--risk)}
+#scene .first .iso-top,#scene .first .iso-shade{fill:var(--risk)}
+#scene .pin{cursor:pointer}
+#scene .rider-ring{fill:none;stroke:var(--risk);stroke-width:1.6}
+#scene .pin-hit{fill:transparent;stroke:none}
+#scene .pin[data-sev="serious"] .iso-solid:last-of-type .iso-top,#scene .pin[data-sev="fatal"] .iso-solid:last-of-type .iso-top{fill:var(--risk)}
+#scene .pin[data-sev="serious"] .iso-solid:last-of-type .iso-shade,#scene .pin[data-sev="fatal"] .iso-solid:last-of-type .iso-shade{fill:var(--risk);opacity:.75}
+#scene .pin[data-sev="fatal"] .iso-solid:last-of-type .iso-edge{stroke:var(--anatomy-strong);stroke-width:1.4}
+#scene .pin:focus-visible{outline:none}#scene .pin:focus-visible .iso-edge{stroke:var(--anatomy-lit)}
+#pop{position:absolute;width:250px;padding:10px 12px;background:var(--anatomy-card);box-shadow:0 0 0 1px var(--anatomy-hi),0 6px 18px #0003;font-size:12.5px;line-height:1.45;display:grid;gap:3px;pointer-events:none}
+#pop b{color:var(--anatomy-strong);font-weight:600}
+.cx-hint{position:absolute;left:12px;bottom:10px;font:10.5px var(--anatomy-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--anatomy-muted);pointer-events:none}
+#where{position:absolute;right:12px;bottom:10px;font:10.5px var(--anatomy-mono);color:var(--anatomy-text);font-variant-numeric:tabular-nums;pointer-events:none}
+#mini{display:block;width:100%;height:auto;cursor:pointer;touch-action:none}
+#mini .mm-bg{fill:var(--anatomy-card)}
+#mini .mm-track{stroke:var(--anatomy-mid);stroke-width:2.2}
+#mini .mm-tick{stroke:var(--anatomy-lo);stroke-dasharray:2 3}
+#mini .mm-lbl,#mini .mm-row{fill:var(--anatomy-muted);font:10px var(--anatomy-mono)}
+#mini .mm-dot{fill:var(--anatomy-mid);stroke:var(--anatomy-card);stroke-width:1}
+#mini .mm-dot[data-sev="serious"],#mini .mm-dot[data-sev="fatal"]{fill:var(--risk)}
+#mini .mm-dot[data-sev="fatal"]{stroke:var(--anatomy-strong);stroke-width:1.4}
+#mini .mm-dot[data-dim]{opacity:.15}
+#mini .mm-win{fill:var(--anatomy-hi);fill-opacity:.08;stroke:var(--anatomy-hi);stroke-width:1.2}
+.cx-foot{font-size:12px;color:var(--anatomy-muted)}
+.cx-foot summary{cursor:pointer;color:var(--anatomy-text)}
+.cx-foot ul{margin:6px 0 0;padding-left:18px}
+.cx-legend{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:12px;color:var(--anatomy-muted)}
+.cx-legend i{display:inline-block;width:10px;height:10px;margin-right:6px;vertical-align:-1px;border-radius:50%;background:var(--anatomy-mid)}
+.cx-legend i.r{background:var(--risk)}.cx-legend i.z{border-radius:0;background:var(--risk);opacity:.55}
+@media (max-width:600px){.cx-hint{display:none}}
+</style>
+<div class="cx iso" data-theme="light"><div class="cx-in">
+<header><h1>Coast Hwy 101 cycle track, Cardiff</h1><p class="cx-sub">Chesterfield Dr to the Solana Beach line, 1.27 miles. Layout from OpenStreetMap, straightened along the road.</p></header>
+<div class="cx-bar">
+  <div class="cx-group" role="group" aria-label="Period"><button class="cx-btn" data-era-btn="before" aria-pressed="false">Before · 4 crashes</button><button class="cx-btn" data-era-btn="after" aria-pressed="true">After · 11 crashes</button></div>
+  <div class="cx-group" role="group" aria-label="Ride along"><button class="cx-btn" data-ride="1" aria-pressed="false">Ride north</button><button class="cx-btn" data-ride="-1" aria-pressed="false">Ride south</button></div>
+  <div class="cx-group" role="group" aria-label="Zoom"><button class="cx-btn" data-zoom="0" aria-pressed="true">Close</button><button class="cx-btn" data-zoom="1" aria-pressed="false">Block</button><button class="cx-btn" data-zoom="2" aria-pressed="false">Wide</button></div>
+  <span id="era-note"></span>
+</div>
+<div id="stage" tabindex="0" aria-label="Isometric view of the corridor. Drag sideways or use the arrow keys to travel along it."><svg id="scene" class="iso-svg" viewBox="0 0 1000 560" role="img" aria-label="Isometric view of Coast Highway 101 with both cycle tracks, barriers, driveways and crash locations"></svg><div id="pop" hidden></div><span class="cx-hint">Drag to travel · tap a pin</span><span id="where"></span></div>
+<svg id="mini" viewBox="0 0 1000 96" role="img" aria-label="Whole corridor with crash locations; tap to jump there"></svg>
+<div class="cx-legend"><span><i></i>Crash, minor injury</span><span><i class="r"></i>Severe, serious or fatal</span><span><i class="z"></i>Where drivers cross the track, or riders must enter it</span></div>
+<details class="cx-foot"><summary>About the data</summary><ul>
+<li>Crashes are official records from California's crash database (CCRS, CHP and San Diego Sheriff), placed by street number or by distance from a landmark. Pins marked "position estimated" only name a landmark. One 2022 serious crash has no usable location and is not shown.</li>
+<li>Solo crashes are often not reported. Local riders count 36–42 crashes since 2020; 11 official records were found.</li>
+<li>The March 2024 fatal crash is recorded in the 2700 block with no coordinates, which by street number falls near the beach parking south of Las Olas. Its official primary factor is bicycling under the influence (VC 21200.5).</li>
+<li>Wheel-stop and post spacing, lane widths and the pre-2020 layout are estimates.</li>
+</ul></details>
+</div></div>
+<script type="module">
+const wrap = document.querySelector(".cx");
+const pick = () => { const t = document.documentElement.getAttribute("data-theme"); wrap.setAttribute("data-theme", t === "light" || t === "dark" ? t : (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")); };
+pick(); matchMedia("(prefers-color-scheme: dark)").addEventListener("change", pick);
+new MutationObserver(pick).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+const AZIMUTH = 45;
+const ELEVATION = 30;
+const SHADES = 4;
+const RADIANS = Math.PI / 180;
+const UNIT = Math.sqrt(1.6);
+function cameraOf({ scale, azimuth = AZIMUTH, elevation = ELEVATION }) {
+    const a = azimuth * RADIANS;
+    const e = elevation * RADIANS;
+    return { sinA: Math.sin(a), cosA: Math.cos(a), sinE: Math.sin(e), cosE: Math.cos(e), k: scale * UNIT };
+}
+function iso([x, y, z], projection) {
+    const { origin } = projection;
+    const { sinA, cosA, sinE, cosE, k } = cameraOf(projection);
+    return [origin[0] + (x * sinA - y * cosA) * k, origin[1] + ((x * cosA + y * sinA) * sinE - z * cosE) * k];
+}
+function towardViewer(projection) {
+    const { sinA, cosA } = cameraOf(projection);
+    return [cosA, sinA];
+}
+function depthOf([x, y, z], projection) {
+    const { sinA, cosA, sinE, cosE } = cameraOf(projection);
+    return (x * cosA + y * sinA) * cosE + z * sinE;
+}
+const tenth = (value) => {
+    const text = (Math.round(value * 10) / 10).toFixed(1).replace(/\.0$/, "");
+    return text === "-0" ? "0" : text;
+};
+function pathOf(points, closed = false) {
+    if (!points.length)
+        return "";
+    return points.map(([x, y], at) => `${at ? "L" : "M"}${tenth(x)} ${tenth(y)}`).join("") + (closed ? "Z" : "");
+}
+const joinPaths = (paths) => paths.filter(Boolean).join("");
+function roundedPlan({ x, y, w, d, r }, steps = 8) {
+    const radius = Math.max(0, Math.min(r, w / 2, d / 2));
+    const corners = [
+        [x + w - radius, y + radius, -90],
+        [x + w - radius, y + d - radius, 0],
+        [x + radius, y + d - radius, 90],
+        [x + radius, y + radius, 180],
+    ];
+    const out = [];
+    for (const [cx, cy, start] of corners) {
+        const count = radius > 0 ? steps : 0;
+        for (let step = 0; step <= count; step++) {
+            const angle = (start + (count ? (90 * step) / count : 45)) * RADIANS;
+            out.push([cx + radius * Math.cos(angle), cy + radius * Math.sin(angle)]);
+        }
+    }
+    return out;
+}
+function signedArea(points) {
+    let area = 0;
+    for (let index = 0; index < points.length; index++) {
+        const [ax, ay] = points[index];
+        const [bx, by] = points[(index + 1) % points.length];
+        area += ax * by - bx * ay;
+    }
+    return area / 2;
+}
+const oriented = (points) => (signedArea(points) < 0 ? [...points].reverse() : points);
+function convexHull(points) {
+    const sorted = [...points].sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+    if (sorted.length < 3)
+        return sorted;
+    const cross = (o, a, b) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
+    const lower = [];
+    for (const point of sorted) {
+        while (lower.length >= 2 && cross(lower[lower.length - 2], lower[lower.length - 1], point) <= 0)
+            lower.pop();
+        lower.push(point);
+    }
+    const upper = [];
+    for (let index = sorted.length - 1; index >= 0; index--) {
+        const point = sorted[index];
+        while (upper.length >= 2 && cross(upper[upper.length - 2], upper[upper.length - 1], point) <= 0)
+            upper.pop();
+        upper.push(point);
+    }
+    return [...lower.slice(0, -1), ...upper.slice(0, -1)];
+}
+function runsOf(flags, want) {
+    const count = flags.length;
+    const runs = [];
+    const start = flags.findIndex((flag, index) => flag !== flags[(index + count - 1) % count]);
+    if (start < 0)
+        return flags[0] === want ? [Array.from({ length: count + 1 }, (_, index) => index % count)] : [];
+    let run = null;
+    for (let step = 0; step < count; step++) {
+        const index = (start + step) % count;
+        if (flags[index] === want) {
+            if (!run)
+                run = [index];
+            run.push((index + 1) % count);
+        }
+        else if (run) {
+            runs.push(run);
+            run = null;
+        }
+    }
+    if (run)
+        runs.push(run);
+    return runs;
+}
+function extrude(ring, z, height, projection, options = {}) {
+    const convex = options.convex ?? true;
+    const count = ring.length;
+    const counter = signedArea(ring) > 0;
+    const [vx, vy] = towardViewer(projection);
+    const { sinA, cosA } = cameraOf(projection);
+    const normals = ring.map(([ax, ay], index) => {
+        const [bx, by] = ring[(index + 1) % count];
+        const dx = bx - ax;
+        const dy = by - ay;
+        const length = Math.hypot(dx, dy) || 1;
+        return (counter ? [dy / length, -dx / length] : [-dy / length, dx / length]);
+    });
+    const facing = normals.map(([nx, ny]) => nx * vx + ny * vy > 1e-9);
+    const top = ring.map(([x, y]) => iso([x, y, z + height], projection));
+    const bottom = ring.map(([x, y]) => iso([x, y, z], projection));
+    const outline = [];
+    const crease = [];
+    for (const run of runsOf(facing, false))
+        outline.push(pathOf(run.map((index) => top[index])));
+    for (const run of runsOf(facing, true)) {
+        crease.push(pathOf(run.map((index) => top[index])));
+        if (height > 0)
+            outline.push(pathOf(run.map((index) => bottom[index])));
+    }
+    if (height > 0) {
+        for (let index = 0; index < count; index++) {
+            if (facing[(index + count - 1) % count] !== facing[index])
+                outline.push(pathOf([top[index], bottom[index]]));
+        }
+    }
+    let fill;
+    if (convex) {
+        fill = pathOf(convexHull([...top, ...bottom]), true);
+    }
+    else {
+        const parts = [pathOf(oriented(top), true), pathOf(oriented(bottom), true)];
+        for (let index = 0; index < count; index++) {
+            if (!facing[index])
+                continue;
+            const next = (index + 1) % count;
+            parts.push(pathOf(oriented([top[index], top[next], bottom[next], bottom[index]]), true));
+        }
+        fill = parts.join("");
+    }
+    const buckets = Array.from({ length: SHADES }, () => []);
+    if (height > 0) {
+        const [lx, ly] = [-sinA, cosA];
+        for (let index = 0; index < count; index++) {
+            if (!facing[index])
+                continue;
+            const [nx, ny] = normals[index];
+            const lit = (nx * lx + ny * ly + 1) / 2;
+            const shade = Math.min(SHADES - 1, Math.max(0, Math.floor(lit * SHADES)));
+            const next = (index + 1) % count;
+            buckets[shade].push(pathOf(oriented([top[index], top[next], bottom[next], bottom[index]]), true));
+        }
+    }
+    let bevel;
+    if (options.bevel && options.bevel > 0) {
+        const by = options.bevel;
+        const inset = ring.map(([x, y], index) => {
+            const [ax, ay] = normals[(index + count - 1) % count];
+            const [bx, by2] = normals[index];
+            const mx = ax + bx;
+            const my = ay + by2;
+            const length = Math.hypot(mx, my) || 1;
+            return [x - (mx / length) * by, y - (my / length) * by];
+        });
+        const insetTop = inset.map(([x, y]) => iso([x, y, z + height], projection));
+        bevel = runsOf(facing, true)
+            .map((run) => pathOf([top[run[0]], ...run.slice(1, -1).map((index) => insetTop[index]), top[run[run.length - 1]]]))
+            .join("");
+    }
+    return {
+        fill,
+        outline: outline.join(""),
+        crease: crease.join(""),
+        top: pathOf(oriented(top), true),
+        shades: buckets.map((paths) => paths.join("")),
+        bevel,
+    };
+}
+const ringOf = (plan, steps = 8) => roundedPlan(plan, steps);
+function slabOf(plan, z, height, projection, steps = 8, bevel = 0) {
+    return extrude(ringOf(plan, steps), z, height, projection, { convex: true, bevel });
+}
+function circleRing(cx, cy, radius, steps = 40) {
+    return Array.from({ length: steps }, (_, step) => {
+        const angle = (step / steps) * Math.PI * 2;
+        return [cx + radius * Math.cos(angle), cy + radius * Math.sin(angle)];
+    });
+}
+function cylinder(cx, cy, radius, z, height, projection, steps = 32, bevel = 0) {
+    return extrude(circleRing(cx, cy, radius, steps), z, height, projection, { convex: true, bevel });
+}
+const insetPlan = ({ x, y, w, d, r }, by) => ({ x: x + by, y: y + by, w: w - by * 2, d: d - by * 2, r: Math.max(0, r - by) });
+function onTop(points, z, projection, closed = false) {
+    return pathOf(points.map(([x, y]) => iso([x, y, z], projection)), closed);
+}
+const planOutline = (plan, z, projection, steps = 8) => onTop(ringOf(plan, steps), z, projection, true);
+const lineOnTop = (from, to, z, projection) => onTop([from, to], z, projection);
+const segment = (from, to, projection) => pathOf([iso(from, projection), iso(to, projection)]);
+const rise = (at, from, to, projection) => segment([at[0], at[1], from], [at[0], at[1], to], projection);
+const ring = (cx, cy, radius, z, projection, steps = 40) => onTop(circleRing(cx, cy, radius, steps), z, projection, true);
+const pointsAt = (points, projection) => points.map((point) => iso(point, projection));
+function dotGrid(x, y, columns, rows, gap, z, projection) {
+    const dots = [];
+    for (let row = 0; row < rows; row++) {
+        for (let column = 0; column < columns; column++)
+            dots.push(iso([x + column * gap, y + row * gap, z], projection));
+    }
+    return dots;
+}
+function corners({ x, y, w, d }, inset = 0) {
+    return [
+        [x + inset, y + inset],
+        [x + w - inset, y + inset],
+        [x + inset, y + d - inset],
+        [x + w - inset, y + d - inset],
+    ];
+}
+function boxCorners({ x, y, w, d }, z0, z1) {
+    const out = [];
+    for (const px of [x, x + w])
+        for (const py of [y, y + d])
+            for (const z of [z0, z1])
+                out.push([px, py, z]);
+    return out;
+}
+function knurl(cx, cy, radius, z0, z1, count, projection, inset = 0.4) {
+    const [vx, vy] = towardViewer(projection);
+    const lines = [];
+    for (let index = 0; index < count; index++) {
+        const angle = (index / count) * Math.PI * 2;
+        const nx = Math.cos(angle);
+        const ny = Math.sin(angle);
+        if (nx * vx + ny * vy < 0.15)
+            continue;
+        lines.push(segment([cx + radius * nx, cy + radius * ny, z0 + inset], [cx + radius * nx, cy + radius * ny, z1 - inset], projection));
+    }
+    return lines.join("");
+}
+function sideArc(cx, cy, radius, z, projection, steps = 24) {
+    const [vx, vy] = towardViewer(projection);
+    const facing = Math.atan2(vy, vx);
+    const points = [];
+    for (let step = 0; step <= steps; step++) {
+        const angle = facing - Math.PI / 2 + (step / steps) * Math.PI;
+        points.push(iso([cx + radius * Math.cos(angle), cy + radius * Math.sin(angle), z], projection));
+    }
+    return pathOf(points);
+}
+function ringSeam(ring, z, projection) {
+    const count = ring.length;
+    const counter = signedArea(ring) > 0;
+    const [vx, vy] = towardViewer(projection);
+    const facing = ring.map(([ax, ay], index) => {
+        const [bx, by] = ring[(index + 1) % count];
+        const dx = bx - ax;
+        const dy = by - ay;
+        const [nx, ny] = counter ? [dy, -dx] : [-dy, dx];
+        return nx * vx + ny * vy > 1e-9;
+    });
+    return runsOf(facing, true).map((run) => pathOf(run.map((index) => iso([ring[index][0], ring[index][1], z], projection)))).join("");
+}
+const sideSeam = (plan, z, projection, steps = 8) => ringSeam(ringOf(plan, steps), z, projection);
+function sideRing(center, radius, axis, projection, steps = 20) {
+    const [px, py, pz] = center;
+    const points = [];
+    for (let step = 0; step < steps; step++) {
+        const angle = (step / steps) * Math.PI * 2;
+        const u = radius * Math.cos(angle);
+        const v = radius * Math.sin(angle);
+        points.push(iso(axis === "x" ? [px, py + u, pz + v] : [px + u, py, pz + v], projection));
+    }
+    return pathOf(points, true);
+}
+function coil(from, to, center, radius, turns, axis, projection, perTurn = 16) {
+    const count = Math.max(1, Math.round(turns * perTurn));
+    const back = [];
+    const front = [];
+    let run = [];
+    let near = null;
+    for (let index = 0; index <= count; index++) {
+        const share = index / count;
+        const angle = share * turns * Math.PI * 2;
+        const u = radius * Math.cos(angle);
+        const v = radius * Math.sin(angle);
+        const along = from + (to - from) * share;
+        const point = axis === "x" ? [along, center[0] + u, center[1] + v] : [center[0] + u, along, center[1] + v];
+        const normal = axis === "x" ? [0, Math.cos(angle), Math.sin(angle)] : [Math.cos(angle), 0, Math.sin(angle)];
+        const facing = depthOf(normal, projection) > 0;
+        const flat = iso(point, projection);
+        if (near === null)
+            near = facing;
+        if (facing !== near) {
+            run.push(flat);
+            (near ? front : back).push(pathOf(run));
+            run = [flat];
+            near = facing;
+            continue;
+        }
+        run.push(flat);
+    }
+    if (run.length > 1)
+        (near ? front : back).push(pathOf(run));
+    return { back: back.join(""), front: front.join("") };
+}
+function topTicks(from, to, step, every, edge, z, lengths, projection, axis = "x") {
+    const minor = [];
+    const major = [];
+    const first = Math.ceil(from / step) * step;
+    for (let at = first, index = Math.round(first / step); at <= to + 1e-9; at += step, index++) {
+        const big = index % every === 0;
+        const length = big ? lengths[1] : lengths[0];
+        const a = axis === "x" ? [at, edge] : [edge, at];
+        const b = axis === "x" ? [at, edge + length] : [edge + length, at];
+        (big ? major : minor).push(lineOnTop(a, b, z, projection));
+    }
+    return { minor: minor.join(""), major: major.join("") };
+}
+function sideTicks(from, to, step, every, face, top, lengths, projection, axis = "x") {
+    const minor = [];
+    const major = [];
+    const first = Math.ceil(from / step) * step;
+    for (let at = first, index = Math.round(first / step); at <= to + 1e-9; at += step, index++) {
+        const big = index % every === 0;
+        const length = big ? lengths[1] : lengths[0];
+        const a = axis === "x" ? [at, face, top] : [face, at, top];
+        const b = axis === "x" ? [at, face, top - length] : [face, at, top - length];
+        (big ? major : minor).push(segment(a, b, projection));
+    }
+    return { minor: minor.join(""), major: major.join("") };
+}
+function radialTicks(cx, cy, radius, count, every, z, lengths, projection, from = 0, span = Math.PI * 2) {
+    const minor = [];
+    const major = [];
+    const closed = Math.abs(span - Math.PI * 2) < 1e-9;
+    const steps = closed ? count : count + 1;
+    for (let index = 0; index < steps; index++) {
+        const angle = from + (index / count) * span;
+        const big = index % every === 0;
+        const inner = radius - (big ? lengths[1] : lengths[0]);
+        const sx = Math.sin(angle);
+        const sy = -Math.cos(angle);
+        (big ? major : minor).push(lineOnTop([cx + sx * inner, cy + sy * inner], [cx + sx * radius, cy + sy * radius], z, projection));
+    }
+    return { minor: minor.join(""), major: major.join("") };
+}
+const haloOf = (plan, z, height, projection) => slabOf(plan, z, height, projection).fill;
+function axisVector(projection, [dx, dy, dz]) {
+    const origin = iso([0, 0, 0], projection);
+    const moved = iso([dx, dy, dz], projection);
+    return [moved[0] - origin[0], moved[1] - origin[1]];
+}
+const fine = (value) => Math.round(value * 100) / 100;
+function translateAlong(projection, by) {
+    const [x, y] = axisVector(projection, by);
+    return `translate(${fine(x)} ${fine(y)})`;
+}
+const thousandth = (value) => Math.round(value * 1000) / 1000;
+function axesAt(at, z, projection) {
+    const origin = iso([at[0], at[1], z], projection);
+    const along = (point) => {
+        const [px, py] = iso(point, projection);
+        return [px - origin[0], py - origin[1]];
+    };
+    return { origin, x: along([at[0] + 1, at[1], z]), y: along([at[0], at[1] + 1, z]), z: along([at[0], at[1], z + 1]) };
+}
+const matrixOf = (u, v, origin) => `matrix(${thousandth(u[0])} ${thousandth(u[1])} ${thousandth(v[0])} ${thousandth(v[1])} ${thousandth(origin[0])} ${thousandth(origin[1])})`;
+function holdStill(element, [dx, dy]) {
+    const text = dx || dy ? `translate(${-dx} ${-dy})` : "";
+    element.querySelectorAll("[data-hold]").forEach((node) => (text ? node.setAttribute("transform", text) : node.removeAttribute("transform")));
+}
+function topMatrix(at, z, projection, along = "x") {
+    const { origin, x, y } = axesAt(at, z, projection);
+    return along === "x" ? matrixOf(x, y, origin) : matrixOf([-y[0], -y[1]], x, origin);
+}
+function sideMatrix(at, z, projection, face) {
+    const { origin, x, y, z: up } = axesAt(at, z, projection);
+    const down = [-up[0], -up[1]];
+    return face === "left" ? matrixOf(x, down, origin) : matrixOf([-y[0], -y[1]], down, origin);
+}
+function screenRise(height, projection) {
+    const { cosE, k } = cameraOf(projection);
+    return height * cosE * k;
+}
+function fitProjection(points, width, height, { pad = 24, headroom = 0, azimuth = AZIMUTH, elevation = ELEVATION } = {}) {
+    const unit = { origin: [0, 0], scale: 1, azimuth, elevation };
+    const flat = points.map((point) => iso(point, unit));
+    const xs = flat.map(([x]) => x);
+    const ys = flat.map(([, y]) => y);
+    const left = Math.min(...xs);
+    const right = Math.max(...xs);
+    const up = Math.min(...ys);
+    const down = Math.max(...ys);
+    const scale = Math.min((width - pad * 2) / (right - left), (height - pad * 2 - headroom) / (down - up));
+    return {
+        origin: [width / 2 - ((left + right) / 2) * scale, headroom + (height - headroom) / 2 - ((up + down) / 2) * scale],
+        scale,
+        azimuth,
+        elevation,
+    };
+}
+const escape = (text) => text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+const attrs = (pairs) => Object.entries(pairs)
+    .filter(([, value]) => value !== undefined && value !== false)
+    .map(([key, value]) => ` ${key}="${escape(String(value))}"`)
+    .join("");
+function solidSvg(paths, { tone = "hi", crease = "faint", halo = false, lit = false, flat = false, className, inner = "" } = {}) {
+    const parts = [];
+    if (halo)
+        parts.push(`<path class="iso-halo" d="${paths.fill}"/>`);
+    parts.push(`<path class="iso-fill" d="${paths.fill}"/>`);
+    if (!flat) {
+        paths.shades.forEach((d, shade) => {
+            if (d)
+                parts.push(`<path class="iso-shade" data-shade="${shade}" d="${d}"/>`);
+        });
+        parts.push(`<path class="iso-top" d="${paths.top}"/>`);
+    }
+    if (crease !== "none" && paths.crease)
+        parts.push(`<path class="iso-line iso-crease" data-tone="${crease}" d="${paths.crease}"/>`);
+    if (crease !== "none" && paths.bevel)
+        parts.push(`<path class="iso-line iso-bevel" data-tone="${crease}" d="${paths.bevel}"/>`);
+    if (inner)
+        parts.push(inner);
+    parts.push(`<path class="iso-line iso-edge" data-tone="${tone}" d="${paths.outline}"/>`);
+    return `<g${attrs({ class: className ? `iso-solid ${className}` : "iso-solid", "data-lit": lit ? "" : undefined, "data-seamless": paths.seamless ? "" : undefined })}>${parts.join("")}</g>`;
+}
+function lineSvg(d, { tone = "lo", dotted = false, dashed = false, flow = false, className, free } = {}) {
+    if (!d)
+        return "";
+    return `<path${attrs({
+        class: className ? `iso-line ${className}` : "iso-line",
+        "data-tone": tone,
+        "data-free": free === true ? "" : free || undefined,
+        "data-dotted": dotted ? "" : undefined,
+        "data-dashed": dashed ? "" : undefined,
+        "data-flow": flow ? "" : undefined,
+        d,
+    })}/>`;
+}
+function dotsSvg(points, { size = 0.5, tone = "mid", pulse = false } = {}) {
+    const dots = points
+        .map(([x, y, alpha], index) => `<circle cx="${tenth(x)}" cy="${tenth(y)}" r="${size}"${alpha !== undefined && alpha < 1 ? ` fill-opacity="${Math.max(0, alpha).toFixed(2)}"` : ""}${pulse ? ` data-pulse="" style="--pulse-at:${(index * 137) % 1600}ms"` : ""}/>`)
+        .join("");
+    return `<g class="iso-dots" data-tone="${tone}">${dots}</g>`;
+}
+function fadedSvg(list, style = {}) {
+    const groups = new Map();
+    for (const entry of list) {
+        const [d, alpha] = Array.isArray(entry) ? entry : [entry.d, entry.alpha];
+        if (!d || !(alpha > 0.02))
+            continue;
+        const level = Math.min(1, Math.round(alpha * 20) / 20);
+        groups.set(level, (groups.get(level) ?? "") + d);
+    }
+    return [...groups].map(([alpha, d]) => (alpha >= 1 ? lineSvg(d, style) : `<g opacity="${alpha.toFixed(2)}">${lineSvg(d, style)}</g>`)).join("");
+}
+function fadeLineSvg(points, { fade = [0, 0], tone = "lo", className, stops = 6 } = {}) {
+    if (points.length < 2)
+        return "";
+    const ease = (t) => t * t * (3 - 2 * t);
+    const hashOf = (text) => {
+        let hash = 2166136261;
+        for (let index = 0; index < text.length; index++)
+            hash = Math.imul(hash ^ text.charCodeAt(index), 16777619);
+        return (hash >>> 0).toString(36);
+    };
+    const lengths = [0];
+    for (let index = 1; index < points.length; index++)
+        lengths.push(lengths[index - 1] + Math.hypot(points[index][0] - points[index - 1][0], points[index][1] - points[index - 1][1]));
+    const at = (length) => {
+        let index = 1;
+        while (index < points.length - 1 && lengths[index] < length)
+            index++;
+        const span = lengths[index] - lengths[index - 1] || 1;
+        const t = Math.max(0, Math.min(1, (length - lengths[index - 1]) / span));
+        return [points[index - 1][0] + (points[index][0] - points[index - 1][0]) * t, points[index - 1][1] + (points[index][1] - points[index - 1][1]) * t];
+    };
+    const pieceOf = (from, to) => [at(from), ...points.filter((_, index) => lengths[index] > from + 1e-6 && lengths[index] < to - 1e-6), at(to)];
+    const total = lengths[lengths.length - 1];
+    if (total < 1e-6)
+        return "";
+    let [start, end] = Array.isArray(fade) ? fade : [fade, fade];
+    if (start + end > total) {
+        const share = total / (start + end);
+        start *= share;
+        end *= share;
+    }
+    const paint = `var(--anatomy-${tone})`;
+    const ramp = (piece, rising) => {
+        const d = pathOf(piece);
+        const [x1, y1] = piece[0];
+        const [x2, y2] = piece[piece.length - 1];
+        const id = `iso-fade-${hashOf(`${d}|${tone}|${rising}`)}`;
+        const marks = Array.from({ length: stops + 1 }, (_, index) => {
+            const t = index / stops;
+            const alpha = ease(rising ? t : 1 - t);
+            return `<stop offset="${t.toFixed(3)}" stop-opacity="${alpha.toFixed(3)}" style="stop-color:${paint}"/>`;
+        }).join("");
+        const gradient = `<linearGradient id="${id}" gradientUnits="userSpaceOnUse" x1="${tenth(x1)}" y1="${tenth(y1)}" x2="${tenth(x2)}" y2="${tenth(y2)}">${marks}</linearGradient>`;
+        return `<defs>${gradient}</defs><path${attrs({ class: className ? `iso-line ${className}` : "iso-line", "data-tone": tone, "data-free": rising ? "start" : "end", d, style: `stroke:url(#${id})` })}/>`;
+    };
+    const parts = [];
+    if (start > 0.05)
+        parts.push(ramp(pieceOf(0, start), true));
+    if (total - end - start > 0.05)
+        parts.push(lineSvg(pathOf(pieceOf(start, total - end)), { tone, className }));
+    if (end > 0.05)
+        parts.push(ramp(pieceOf(total - end, total), false));
+    return `<g class="iso-fade">${parts.join("")}</g>`;
+}
+function wireSvg(from, to, { via = [], tone = "lo", dotted = false, dashed = false, flow = false, ends = "both", size = 1.2 } = {}) {
+    const d = pathOf([from, ...via, to]);
+    const end = ([x, y]) => `<circle class="iso-wire-end" cx="${tenth(x)}" cy="${tenth(y)}" r="${size}"/>`;
+    return `<g class="iso-wire" data-tone="${tone}">${lineSvg(d, { tone, dotted, dashed, flow })}${ends === "both" || ends === "from" ? end(from) : ""}${ends === "both" || ends === "to" ? end(to) : ""}</g>`;
+}
+function faceTextSvg(transform, text, { size = 3, tone = "mid", anchor = "start" } = {}) {
+    return `<text class="iso-face-text" data-tone="${tone}" transform="${transform}" font-size="${size}" text-anchor="${anchor}">${escape(text)}</text>`;
+}
+function groupSvg(children, extra = {}) {
+    return `<g${attrs(extra)}>${Array.isArray(children) ? children.join("") : children}</g>`;
+}
+function figureSvg({ width, height, label, body, standalone = false, className }) {
+    const style = standalone ? `<style>${ISO_CSS}</style>` : "";
+    return `<svg${attrs({
+        xmlns: "http://www.w3.org/2000/svg",
+        class: `iso-svg${standalone ? " iso" : ""}${className ? ` ${className}` : ""}`,
+        "data-theme": standalone || undefined,
+        viewBox: `0 0 ${width} ${height}`,
+        role: "img",
+        "aria-label": label,
+    })}>${style}${Array.isArray(body) ? body.join("") : body}</svg>`;
+}
+function swatchSvg(mark) {
+    if (mark === "raised" || mark === "flat" || mark === "lit") {
+        const body = mark === "flat" ? "M2 6.5 8 3.5 14 6.5 8 9.5Z" : "M2 4.5 8 1.5 14 4.5 14 6 8 9 2 6Z";
+        const crease = mark === "flat" ? "" : `<path class="iso-swatch-crease" d="M2 4.5 8 7.5 14 4.5"/>`;
+        return `<svg class="iso-swatch" data-mark="${mark}" viewBox="0 0 16 10" aria-hidden="true"><path d="${body}"/>${crease}</svg>`;
+    }
+    return `<svg class="iso-swatch" data-mark="${mark}" viewBox="0 0 16 10" aria-hidden="true"><path d="M1.5 5h13"/></svg>`;
+}
+function plateHtml({ fig, title, hint, readout = "", keys = [], caption, body }) {
+    const corner = (name, text, extra = "") => `<span class="iso-plate-corner" data-corner="${name}"${extra}>${escape(text)}</span>`;
+    const legend = keys.length || caption
+        ? `<figcaption class="iso-legend">${keys.length ? `<span class="iso-keys">${keys.map((key) => `<span class="iso-key">${swatchSvg(key.mark)}${escape(key.label)}</span>`).join("")}</span>` : ""}${caption ? `<span class="iso-caption">${escape(caption)}</span>` : ""}</figcaption>`
+        : "";
+    return `<figure class="iso-figure"><div class="iso-plate"><div class="iso-plate-corners" aria-hidden="true">${corner("fig", fig)}${title ? corner("title", title) : ""}${hint ? corner("hint", hint) : ""}${corner("readout", readout, " data-readout")}</div>${body}</div>${legend}</figure>`;
+}
+function pageHtml({ title, theme = "dark", body, script = "", width = 650 }) {
+    return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${escape(title)}</title><style>${ISO_CSS}${PAGE_CSS.replace("__WIDTH__", String(width))}</style></head><body class="iso" data-theme="${theme}"><main class="iso-page">${body}</main>${script ? `<script type="module">${script.replace(/<\/(script)/gi, "<\\/$1")}<\/script>` : ""}</body></html>`;
+}
+const PAGE_CSS = `
+*{box-sizing:border-box}
+html{color-scheme:dark}
+body[data-theme="light"]{color-scheme:light}
+body{margin:0;background:var(--anatomy-page);color:var(--anatomy-text);font:14px/1.6 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+.iso-page{width:min(__WIDTH__px,100% - 32px);margin:64px auto 96px}
+`;
+const ISO_CSS = `
+.iso{
+  --anatomy-page:#0b0b0b;--anatomy-card:#131313;--anatomy-text:#a3a3a3;--anatomy-strong:#e6e6e6;--anatomy-muted:#6e6e6e;
+  --anatomy-paper:#131313;--anatomy-face:#1b1b1b;--anatomy-top:#1c1c1c;
+  --anatomy-shade-0:#0f0f0f;--anatomy-shade-1:#121212;--anatomy-shade-2:#151515;--anatomy-shade-3:#181818;
+  --anatomy-lit-top:#262626;--anatomy-lit-shade:#1d1d1d;
+  --anatomy-hi:#d4d4d4;--anatomy-mid:#6a6a6a;--anatomy-lo:#3e3e3e;--anatomy-faint:#2a2a2a;--anatomy-lit:#ffffff;
+  --anatomy-halo:#050505;--anatomy-halo-opacity:.9;--anatomy-dot:#e6e6e6;
+  --anatomy-red:#ff6b6b;--anatomy-green:#6be0a0;--anatomy-blue:#6b9bff;
+  --anatomy-weight:.6px;--anatomy-ease:cubic-bezier(.32,.72,0,1);
+  --anatomy-mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --anatomy-lift:inset 0 1px 0 0 #ffffff0a,inset 0 0 0 1px #ffffff06,0 0 0 1px #00000026,0 1px 1px -.5px #00000014,0 3px 3px -1.5px #00000014,0 6px 6px -3px #00000014,0 12px 12px -6px #00000014;
+}
+.iso[data-theme="light"]{
+  --anatomy-page:#f2f2ef;--anatomy-card:#fbfbfa;--anatomy-text:#57575a;--anatomy-strong:#18181a;--anatomy-muted:#8c8c90;
+  --anatomy-paper:#fbfbfa;--anatomy-face:#ffffff;--anatomy-top:#ffffff;
+  --anatomy-shade-0:#dcdcd9;--anatomy-shade-1:#e5e5e2;--anatomy-shade-2:#ededea;--anatomy-shade-3:#f4f4f1;
+  --anatomy-lit-top:#ffffff;--anatomy-lit-shade:#eeeeeb;
+  --anatomy-hi:#26262a;--anatomy-mid:#8a8a8f;--anatomy-lo:#b4b4b8;--anatomy-faint:#d4d4d6;--anatomy-lit:#000000;
+  --anatomy-halo:#8a8a80;--anatomy-halo-opacity:.32;--anatomy-dot:#3a3a3e;
+  --anatomy-red:#e5484d;--anatomy-green:#30a46c;--anatomy-blue:#3e63dd;
+  --anatomy-lift:inset 0 1px 0 0 #ffffff,0 0 0 1px #0000000f,0 1px 1px -.5px #0000000a,0 3px 3px -1.5px #0000000a,0 6px 6px -3px #0000000a,0 12px 12px -6px #0000000a;
+}
+.iso-svg{display:block;width:100%;height:auto;overflow:visible}
+.iso-svg path,.iso-svg circle{vector-effect:non-scaling-stroke}
+.iso-fill{fill:var(--anatomy-paper);stroke:none}
+.iso-solid[data-lit]>.iso-fill{fill:var(--anatomy-face)}
+.iso-shade,.iso-top{stroke:none}
+.iso-shade[data-shade="0"]{fill:var(--anatomy-shade-0)}
+.iso-shade[data-shade="1"]{fill:var(--anatomy-shade-1)}
+.iso-shade[data-shade="2"]{fill:var(--anatomy-shade-2)}
+.iso-shade[data-shade="3"]{fill:var(--anatomy-shade-3)}
+.iso-top{fill:var(--anatomy-top)}
+.iso-solid[data-lit]>.iso-top{fill:var(--anatomy-lit-top)}
+.iso-solid[data-lit]>.iso-shade{fill:var(--anatomy-lit-shade)}
+.iso-solid[data-seamless]>.iso-shade,.iso-solid[data-seamless]>.iso-top{stroke-width:.4;stroke-linejoin:round}
+.iso-solid[data-seamless]>.iso-shade[data-shade="0"]{stroke:var(--anatomy-shade-0)}
+.iso-solid[data-seamless]>.iso-shade[data-shade="1"]{stroke:var(--anatomy-shade-1)}
+.iso-solid[data-seamless]>.iso-shade[data-shade="2"]{stroke:var(--anatomy-shade-2)}
+.iso-solid[data-seamless]>.iso-shade[data-shade="3"]{stroke:var(--anatomy-shade-3)}
+.iso-solid[data-seamless]>.iso-top{stroke:var(--anatomy-top)}
+.iso-solid[data-seamless][data-lit]>.iso-top{stroke:var(--anatomy-lit-top)}
+.iso-solid[data-seamless][data-lit]>.iso-shade{stroke:var(--anatomy-lit-shade)}
+.iso-solid[data-lit]>.iso-edge{stroke:var(--anatomy-lit)}
+.iso-halo{fill:var(--anatomy-halo);stroke:none;filter:blur(9px);opacity:var(--anatomy-halo-opacity);transform:translateY(3px)}
+.iso-line{fill:none;stroke:var(--anatomy-lo);stroke-width:var(--anatomy-weight);stroke-linecap:round;stroke-linejoin:round}
+.iso-line[data-tone="hi"]{stroke:var(--anatomy-hi)}
+.iso-line[data-tone="mid"]{stroke:var(--anatomy-mid)}
+.iso-line[data-tone="lo"]{stroke:var(--anatomy-lo)}
+.iso-line[data-tone="faint"]{stroke:var(--anatomy-faint)}
+.iso-line[data-tone="lit"]{stroke:var(--anatomy-lit)}
+.iso-line[data-tone="red"]{stroke:var(--anatomy-red)}
+.iso-line[data-tone="green"]{stroke:var(--anatomy-green)}
+.iso-line[data-tone="blue"]{stroke:var(--anatomy-blue)}
+.iso-line[data-dotted]{stroke-dasharray:.01 3.5;stroke-width:1}
+.iso-line[data-dashed]{stroke-dasharray:3 3}
+.iso-line[data-flow]{stroke-dasharray:2 6}
+.iso-wire-end{fill:var(--anatomy-paper);stroke:var(--anatomy-lo);stroke-width:var(--anatomy-weight)}
+.iso-wire[data-tone="hi"] .iso-wire-end{stroke:var(--anatomy-hi)}
+.iso-wire[data-tone="mid"] .iso-wire-end{stroke:var(--anatomy-mid)}
+.iso-wire[data-tone="faint"] .iso-wire-end{stroke:var(--anatomy-faint)}
+.iso-wire[data-tone="lit"] .iso-wire-end{stroke:var(--anatomy-lit)}
+.iso-dots circle{fill:var(--anatomy-dot);stroke:none;opacity:.32}
+.iso-dots[data-tone="hi"] circle{opacity:.85}
+.iso-dots[data-tone="mid"] circle{opacity:.45}
+.iso-dots[data-tone="lo"] circle{opacity:.22}
+.iso-dots[data-tone="faint"] circle{opacity:.12}
+.iso-face-text{fill:var(--anatomy-mid);font-family:var(--anatomy-mono);letter-spacing:.04em}
+.iso-face-text[data-tone="hi"]{fill:var(--anatomy-hi)}
+.iso-face-text[data-tone="lo"]{fill:var(--anatomy-lo)}
+.iso-face-text[data-tone="faint"]{fill:var(--anatomy-faint)}
+.tb-body{fill:var(--anatomy-shade-2);stroke:none}
+.tb-shine{fill:var(--anatomy-top);stroke:none}
+.tb-shade{fill:var(--anatomy-shade-0);stroke:none}
+.tb-ring{fill:none;stroke:var(--anatomy-lo);stroke-width:.45;stroke-linecap:butt;stroke-linejoin:round}
+.tb-ring[data-tone="mid"]{stroke:var(--anatomy-mid)}
+.tb-ring[data-tone="faint"]{stroke:var(--anatomy-faint)}
+.tb-ring[data-tone="hi"]{stroke:var(--anatomy-hi)}
+@keyframes iso-flow{to{stroke-dashoffset:-32}}
+@keyframes iso-pulse{0%,100%{opacity:.18}12%{opacity:1}40%{opacity:.18}}
+.iso-line[data-flow]{animation:iso-flow 1600ms linear infinite}
+.iso-dots circle[data-pulse]{animation:iso-pulse 1600ms steps(1,end) infinite;animation-delay:var(--pulse-at,0ms)}
+.iso-figure{margin:32px 0 36px}
+.iso-plate{position:relative;padding:52px 24px;border-radius:0;background:var(--anatomy-card);box-shadow:0 0 0 1px var(--anatomy-mid);--anatomy-paper:var(--anatomy-card)}
+.iso-plate-corners{position:absolute;inset:18px 20px;pointer-events:none}
+.iso-plate-corner{position:absolute;color:var(--anatomy-muted);font-family:var(--anatomy-mono);font-size:10.5px;line-height:1;letter-spacing:.04em;white-space:nowrap}
+.iso-plate-corner[data-corner="fig"]{top:0;left:0;color:var(--anatomy-text)}
+.iso-plate-corner[data-corner="title"]{top:0;right:0;text-transform:uppercase;letter-spacing:.1em}
+.iso-plate-corner[data-corner="hint"]{bottom:0;left:0;text-transform:uppercase;letter-spacing:.1em}
+.iso-plate-corner[data-corner="readout"]{right:0;bottom:0;color:var(--anatomy-text);font-variant-numeric:tabular-nums}
+.iso-plate .iso-svg{margin:0 auto}
+.iso-legend{display:grid;gap:8px;margin-top:12px;color:var(--anatomy-muted);font-size:13px;line-height:1.55}
+.iso-keys{display:flex;flex-wrap:wrap;gap:6px 18px}
+.iso-key{display:inline-flex;align-items:center;gap:7px}
+.iso-swatch{width:16px;height:10px;flex:none;overflow:visible}
+.iso-swatch path{fill:none;stroke:var(--anatomy-hi);stroke-width:1;vector-effect:non-scaling-stroke;stroke-linejoin:round;stroke-linecap:round}
+.iso-swatch[data-mark="raised"] path,.iso-swatch[data-mark="flat"] path{stroke:var(--anatomy-mid)}
+.iso-swatch[data-mark="lit"] path{stroke:var(--anatomy-lit)}
+.iso-swatch[data-mark="dim"] path{stroke:var(--anatomy-lo)}
+.iso-swatch[data-mark="dotted"] path{stroke-dasharray:.01 3;stroke-width:1.4}
+.iso-swatch[data-mark="dashed"] path{stroke-dasharray:3 2.5}
+.iso-swatch[data-mark="red"] path{stroke:var(--anatomy-red)}
+.iso-swatch[data-mark="green"] path{stroke:var(--anatomy-green)}
+.iso-swatch[data-mark="blue"] path{stroke:var(--anatomy-blue)}
+.iso-swatch-crease{stroke:var(--anatomy-lo)!important}
+@media (max-width:560px){.iso-plate{padding:48px 12px 70px}.iso-plate-corner[data-corner="hint"]{bottom:18px}}
+@media (prefers-reduced-motion:reduce){.iso-line[data-flow],.iso-dots circle[data-pulse]{animation:none}}
+`;
+
+const DATA = {"NB_TRACK":[[231,0.5],[264,-8.5],[309,-9.5],[424.5,-8],[684,-9.5],[1072,-7.5],[1444.5,-7.5],[1587,-10.5],[1752.5,-10],[1885,-7.5],[1910,-8],[1941.5,-7.5],[2189,0]],"SB_TRACK":[[2287.5,11.5],[1967,12.5],[1946.5,10],[1913.5,9],[1883,9],[1677,11.5],[1637.5,11],[1586,11.5],[1521.5,10.5],[1461.5,12],[1430,11.5],[1420,15],[1289,12.5],[1083,12.5],[1074.5,9.5],[1037,10],[966,10],[915,8],[818.5,8.5],[434,13],[428,13],[267.5,11.5],[231,0.5]],"DRIVES":[[428,"W","Cardiff State Beach (south lot)"],[434,"W","Cardiff State Beach (south lot)"],[1332,"E","Las Olas lot"],[1364,"E","Las Olas lot"],[1410,"E","Tower 13"],[1445,"E","Tower 13 / Ki's"],[1461,"W","Chart House lot"],[1501,"E","Ki's lot"],[1520,"E","Ki's / Plastino lot"],[1531,"W","Chart House lot"],[1549,"W","Restaurant lot"],[1581,"W","Restaurant lot"],[1585,"W","Restaurant lot"],[1617,"E","The Kraken"],[1629,"W","Pacific Coast Grill"],[1659,"W","Cardiff State Beach (north lot)"],[2262,"E","Chesterfield Dr"],[2276,"E","Chesterfield Dr"]],"BOXES":[["p",243,413,19,136,"Cardiff State Beach (south lot)"],["b",416,419,51,54,"Fee booth"],["b",282,295,32,43,""],["p",1349,1380,-66,-12,""],["b",1335,1351,-47,-22,"Las Olas"],["b",1382,1402,-44,-12,"Tower 13"],["b",1417,1447,-44,-24,""],["b",1452,1477,-46,-26,"Ki's"],["b",1519,1588,-47,-24,""],["b",1591,1607,-43,-18,"The Kraken"],["b",1472,1509,21,46,"Chart House"],["b",1507,1517,-39,-20,""],["p",1540,1603,13,48,""],["p",1453,1560,-62,-14,""],["p",1508,1542,13,47,""],["p",1453,1473,13,46,""],["p",1244,1351,-62,-10,""],["p",1414,1449,-24,-13,""],["p",1401,1413,-44,-13,""],["b",1611,1652,16,52,"Pacific Coast Grill"],["b",1579,1615,19,48,""],["b",1461,1471,-26,-19,""],["p",1699,1855,16,40,"Cardiff State Beach (north lot)"],["b",2077,2090,54,67,""],["b",2229,2240,57,67,""],["b",2083,2110,67,90,"Lifeguards"],["b",2073,2082,86,95,""]],"COAST":[[150,240],[250,217],[300,178],[350,153],[400,135],[425,127],[450,113],[525,88],[600,70],[625,63],[675,62],[700,64],[725,64],[825,49],[875,52],[900,53],[925,52],[1000,53],[1175,58],[1200,53],[1225,52],[1325,53],[1350,52],[1375,55],[1400,56],[1550,77],[1575,77],[1650,90],[1725,91],[1750,94],[1825,96],[1900,132],[1950,150],[1975,177],[2250,174],[2330,174]],"POIS":[["Chesterfield Dr",2287,-14],["Encinitas / Solana Beach line",241,-12],["Cardiff State Beach (south lot)",330,60],["Las Olas",1342,-35],["Tower 13",1392,-28],["Ki's",1465,-36],["Chart House",1490,33],["The Kraken",1599,-31],["Pacific Coast Grill",1631,34],["Cardiff State Beach (north lot)",1777,28],["Lagoon outlet bridge",1926,-20],["Cardiff Kook",2269,19]],"RANGE":{"south":150,"north":2330},"LIMITS":{"cityLine":241,"chesterfield":2287},"BRIDGES":[[1910,1942]],"CRASHES":[{"id":3442993,"date":"2018-08-06","side":"SB","s":2263,"hit":"Car door","injury":"Minor","factor":"Dooring (VC 22517)","where":"80 ft south of Chesterfield Dr"},{"id":3500100,"date":"2018-11-02","side":"SB","s":431,"hit":"Car door","injury":"Minor","factor":"Dooring (VC 22517)","where":"Seaside / south lot entrance","approx":true},{"id":3100902,"date":"2019-02-11","side":"NB","addr":2526,"hit":"Car (rear end)","injury":"Minor","factor":"Passing on the right (VC 21755)","where":"2526 S Coast Hwy","s":1628},{"id":3178754,"date":"2019-07-07","side":"NB","addr":2550,"hit":"Parked car","injury":"Severe","factor":"Unsafe speed (VC 22350)","where":"2500 block","s":1574},{"id":2947134,"date":"2020-04-22","side":"SB","s":1094,"hit":"Fixed object","injury":"Minor","factor":"Not recorded","where":"815 ft south of Las Olas"},{"id":2944450,"date":"2020-04-29","side":"SB","addr":2655,"hit":"Fixed object","injury":"Minor","factor":"Unsafe speed (VC 22350)","where":"2655 S Coast Hwy","s":1337},{"id":2873756,"date":"2021-10-05","side":"NB","addr":2650,"hit":"Car (sideswipe)","injury":"Complaint of pain","factor":"Unsafe speed (VC 22350)","where":"2600 block","s":1348},{"id":2873754,"date":"2021-10-09","side":"SB","s":1733,"hit":"Fixed object","injury":"Minor","factor":"Unsafe turn / lane change (VC 22107)","where":"244 ft north of Cardiff State Beach","approx":true},{"id":2627295,"date":"2022-01-14","side":"SB","s":431,"hit":"Fixed object (overturned)","injury":"Minor","factor":"Not recorded","where":"Seaside State Beach","approx":true},{"id":2686951,"date":"2022-08-27","side":"NB","addr":2850,"hit":"Pedestrian","injury":"Severe","factor":"Unsafe speed (VC 22350)","where":"2800 block","s":896},{"id":4622805,"date":"2024-03-17","side":"NB","addr":2750,"hit":"Fixed object (solo)","injury":"Fatal","factor":"Bicycling under the influence (VC 21200.5)","where":"2700 block, dark, no street lights","s":1122},{"id":4620213,"date":"2024-06-06","side":"NB","addr":2591,"hit":"Fixed object","injury":"Possible","factor":"Unsafe turn / lane change (VC 22107)","where":"2591 S Coast Hwy (Ki's)","s":1481},{"id":5149019,"date":"2024-11-30","side":"NB","s":1637,"hit":"Car","injury":"Minor","factor":"Unsafe speed (VC 22350)","where":"2131 ft south of Chesterfield Dr"},{"id":5059513,"date":"2025-09-29","side":"SB","s":1525,"hit":"Car (broadside)","injury":"Serious","factor":"Unsafe turn / lane change (VC 22107)","where":"440 ft south of Cardiff State Beach","approx":true,"dirUnknown":true},{"id":2621885,"date":"2022-02-10","side":"SB","dirText":"Eastbound (crossing)","s":null,"hit":"Car (broadside)","injury":"Severe","factor":"Unsafe turn / lane change (VC 22107)","where":"Reference 'San Elijo, 2460 ft N' (location unclear)"},{"id":3928776,"date":"2016-08-05","side":"NB","s":2287,"hit":"Parked car","injury":"Severe","factor":"Lane straddling (VC 21658)","where":"At Chesterfield Dr","edge":true},{"id":3309937,"date":"2018-02-14","side":"SB","dirText":"Westbound (crossing)","s":2287,"hit":"Car (broadside)","injury":"Minor","factor":"Stop sign (VC 22450)","where":"At Chesterfield Dr","edge":true},{"id":3111681,"date":"2019-03-13","side":"NB","s":2287,"hit":"Car (broadside)","injury":"Complaint of pain","factor":"Unsafe turn / lane change (VC 22107)","where":"At Chesterfield Dr","edge":true},{"id":5256340,"date":"2025-05-25","side":"NB","s":2287,"hit":"Car (rear end)","injury":"Serious","factor":"Following too closely (VC 21703)","where":"At Chesterfield Dr (filed twice)","edge":true,"dirUnknown":true}]};
+// Runs in the page after the inlined kit (iso, depthOf, extrude, slabOf, cylinder, solidSvg, lineSvg, onTop, fitProjection, boxCorners...).
+// DATA is injected by build.mjs.
+const { NB_TRACK, SB_TRACK, DRIVES, BOXES, COAST, POIS, CRASHES, RANGE, LIMITS, BRIDGES } = DATA;
+
+// ---------- geometry helpers along the road ----------
+const lerpLine = (line, s) => {
+  if (s <= line[0][0]) return line[0][1];
+  for (let i = 1; i < line.length; i++) if (s <= line[i][0]) { const [a, da] = line[i - 1], [b, db] = line[i]; return da + (db - da) * (s - a) / (b - a || 1); }
+  return line[line.length - 1][1];
+};
+const NB = NB_TRACK, SB = [...SB_TRACK].reverse();
+const nbOn = (s) => s >= NB[0][0] && s <= NB[NB.length - 1][0];
+const sbOn = (s) => s >= SB[0][0] && s <= SB[SB.length - 1][0];
+const dNB = (s) => lerpLine(NB, s), dSB = (s) => lerpLine(SB, s), dCoast = (s) => lerpLine(COAST, s);
+const TRACK_W = 1.6, BUF = 0.7;
+const eastEdge = (s) => (nbOn(s) ? Math.min(dNB(s), -6.5) - TRACK_W / 2 : -7.6);
+const westEdge = (s) => (sbOn(s) ? Math.max(dSB(s), 6.5) + TRACK_W / 2 : 7.6);
+const nearDrive = (s, side, pad = 5) => DRIVES.some(([ds, dside]) => dside === side && Math.abs(ds - s) < pad);
+const onBridge = (s) => BRIDGES.some(([a, b]) => s > a && s < b);
+const SEV = (c) => (/Fatal/.test(c.injury) ? "fatal" : /Severe|Serious/.test(c.injury) ? "serious" : "minor");
+const ERA = (c) => (c.edge ? "edge" : c.date >= "2020-04" ? "after" : "before");
+
+// ---------- camera ----------
+const VW = 1000, VH = 560;
+const ZOOMS = [{ win: 100, label: "Close", east: -42, west: 50 }, { win: 240, label: "Block", east: -60, west: 75 }, { win: 560, label: "Wide", east: -90, west: 120 }];
+let zoom = 0, P = null;
+const SPAN = { east: -42, west: 50 };
+function camera() {
+  const z = ZOOMS[zoom];
+  SPAN.east = z.east; SPAN.west = z.west;
+  P = fitProjection(boxCorners({ x: 0, y: -SPAN.west, w: z.win, d: SPAN.west - SPAN.east }, -0.5, 4), VW, VH, { pad: 4, azimuth: 99, elevation: 40 });
+}
+camera();
+
+// state
+const state = { s0: 180, era: "after", ride: null, riderS: 0, riderD: 0, riderDir: 1 };
+const W = () => ZOOMS[zoom].win;
+const toK = (s, d, z = 0) => [s - state.s0, -d, z];
+const at = (s, d, z = 0) => iso(toK(s, d, z), P);
+const poly = (pts, z = 0) => onTop(pts.map(([s, d]) => [s - state.s0, -d]), z, P, true);
+const line = (pts, z = 0) => onTop(pts.map(([s, d]) => [s - state.s0, -d]), z, P, false);
+const depthAt = (s, d, z = 0) => depthOf(toK(s, d, z), P);
+const flatText = (s, d, text, size, cls = "", z = 0) => {
+  const o = at(s, d, z), ex = at(s + 1, d, z);
+  const dir = ex[0] >= o[0] ? 1 : -1;
+  const x1 = at(s + dir, d, z), y1 = at(s, d - dir, z);
+  const a = [x1[0] - o[0], x1[1] - o[1]], c = [y1[0] - o[0], y1[1] - o[1]];
+  return `<text class="cx-ground ${cls}" transform="matrix(${a[0].toFixed(3)} ${a[1].toFixed(3)} ${c[0].toFixed(3)} ${c[1].toFixed(3)} ${o[0].toFixed(1)} ${o[1].toFixed(1)})" font-size="${size}" text-anchor="middle">${text}</text>`;
+};
+
+// ---------- scene ----------
+function band(s0, s1, fnA, fnB, step = 4) {
+  const a = [], b = [];
+  for (let s = s0; s <= s1 + 1e-6; s += step) { a.push([s, fnA(s)]); b.push([s, fnB(s)]); }
+  return [...a, ...b.reverse()];
+}
+function render() {
+  const s0 = state.s0, s1 = s0 + W();
+  const lo = Math.max(s0, RANGE.south), hi = Math.min(s1, RANGE.north);
+  const ground = [], marks = [], items = [];
+  const after = state.era === "after";
+  // land, sea, sand
+  ground.push(`<path class="g-land" d="${poly([[s0, SPAN.east], [s1, SPAN.east], [s1, SPAN.west], [s0, SPAN.west]])}"/>`);
+  ground.push(`<path class="g-sand" d="${poly(band(s0, s1, (s) => Math.min(westEdge(s) + (sbOn(s) ? 1.4 : 0), SPAN.west), (s) => Math.min(dCoast(s), SPAN.west)))}"/>`);
+  ground.push(`<path class="g-sea" d="${poly(band(s0, s1, (s) => Math.min(dCoast(s), SPAN.west), () => SPAN.west))}"/>`);
+  // lots
+  for (const [k, a, b, d0, d1] of BOXES) if (k === "p" && b > s0 && a < s1) ground.push(`<path class="g-lot" d="${poly([[Math.max(a, s0), Math.max(d0, SPAN.east)], [Math.min(b, s1), Math.max(d0, SPAN.east)], [Math.min(b, s1), Math.min(d1, SPAN.west)], [Math.max(a, s0), Math.min(d1, SPAN.west)]])}"/>`);
+  // road surface (travel lanes + both tracks)
+  ground.push(`<path class="g-road" d="${poly(band(lo, hi, eastEdge, westEdge, 3))}"/>`);
+  // walkway west of the SB track
+  const wl = Math.max(lo, SB[0][0] + 30), wh = Math.min(hi, SB[SB.length - 1][0]);
+  if (wh > wl) ground.push(`<path class="g-walk" d="${poly(band(wl, wh, (s) => westEdge(s), (s) => westEdge(s) + 1.4))}"/>`);
+  // driveways
+  for (const [ds, side] of DRIVES) if (ds > s0 - 8 && ds < s1 + 8) {
+    const dd = side === "E" ? [eastEdge(ds) + 0.2, Math.max(eastEdge(ds) - 14, SPAN.east)] : [westEdge(ds) - 0.2, Math.min(westEdge(ds) + 16, SPAN.west)];
+    ground.push(`<path class="g-drive" d="${poly([[ds - 4, dd[0]], [ds + 4, dd[0]], [ds + 4, dd[1]], [ds - 4, dd[1]]])}"/>`);
+  }
+  // lane markings
+  const dash = (d, len = 3, gap = 9) => { let p = ""; for (let s = Math.ceil(lo / (len + gap)) * (len + gap); s < hi; s += len + gap) p += line([[s, d], [Math.min(s + len, hi), d]], 0.01); return p; };
+  marks.push(lineSvg(line([[lo, 0.12], [hi, 0.12]], 0.01) + line([[lo, -0.12], [hi, -0.12]], 0.01), { tone: "hi", className: "m-yellow" }));
+  marks.push(lineSvg(dash(3.6) + dash(-3.6), { tone: "hi" }));
+  // track edges and buffers
+  const runs = (on, from, to, step = 3) => { const out = []; let cur = null; for (let s = from; s <= to; s += step) { if (on(s)) { (cur ||= []).push(s); } else if (cur) { out.push(cur); cur = null; } } if (cur) out.push(cur); return out; };
+  for (const [on, dfn, sign, side] of [[nbOn, dNB, 1, "E"], [sbOn, dSB, -1, "W"]]) {
+    for (const r of runs(on, lo, hi)) {
+      const inner = r.map((s) => [s, dfn(s) + sign * (TRACK_W / 2)]);
+      const bufIn = r.map((s) => [s, dfn(s) + sign * (TRACK_W / 2 + BUF)]);
+      const outer = r.map((s) => [s, dfn(s) - sign * (TRACK_W / 2)]);
+      marks.push(lineSvg(line(inner, 0.01) + line(outer, 0.01), { tone: "hi" }));
+      if (after) {
+        marks.push(lineSvg(line(bufIn, 0.01), { tone: "hi" }));
+        let hatch = ""; for (const s of r) if (Math.round(s) % 3 === 0 && !nearDrive(s, side, 4)) hatch += line([[s, dfn(s) + sign * (TRACK_W / 2)], [s + 1.2, dfn(s) + sign * (TRACK_W / 2 + BUF)]], 0.01);
+        marks.push(lineSvg(hatch, { tone: "faint" }));
+        // risk patches where drivers cross the track
+        for (const [ds, dside] of DRIVES) if (dside === side && ds > s0 - 5 && ds < s1 + 5 && on(ds)) marks.push(`<path class="risk" d="${poly([[ds - 4, dfn(ds) - 1.2], [ds + 4, dfn(ds) - 1.2], [ds + 4, dfn(ds) + 1.2], [ds - 4, dfn(ds) + 1.2]], 0.02)}"/>`);
+      }
+    }
+  }
+  if (after) {
+    // south entry of the NB track: the rider leaves the lane where the barrier line begins
+    if (s0 < 272 && s1 > 236) marks.push(`<path class="risk" d="${poly(band(Math.max(236, s0), Math.min(272, s1), (s) => dNB(s) - 1.4, (s) => dNB(s) + 2.2, 2), 0.02)}"/>`);
+    if (s0 < 428 && s1 > 231) marks.push(`<path class="risk dim" d="${poly(band(Math.max(231, s0), Math.min(428, s1), (s) => dSB(s) - 1, (s) => dSB(s) + 1, 4), 0.02)}"/>`);
+  }
+  // bike symbols on tracks every 60 m
+  let sym = "";
+  for (let s = Math.ceil(lo / 60) * 60; s < hi; s += 60) for (const [on, dfn] of [[nbOn, dNB], [sbOn, dSB]]) if (on(s) && on(s + 3)) { const d = dfn(s); sym += onTop([[s - state.s0 - 0.6, -d], [s - state.s0 + 0.6, -d]], 0.01, P) + ring(s - state.s0 - 0.6, -d, 0.35, 0.01, P, 10) + ring(s - state.s0 + 0.6, -d, 0.35, 0.01, P, 10); }
+  marks.push(lineSvg(sym, { tone: "mid" }));
+  // ---------- solids ----------
+  const close = W() <= 260;
+  if (after) {
+    for (const [on, dfn, sign, side] of [[nbOn, dNB, 1, "E"], [sbOn, dSB, -1, "W"]]) {
+      const start = side === "E" ? 264 : 238;
+      for (let s = Math.ceil(lo / 6.1) * 6.1; s < hi; s += 6.1) {
+        if (!on(s) || s < start || nearDrive(s, side) || onBridge(s)) continue;
+        const d = dfn(s) + sign * (TRACK_W / 2 + BUF / 2);
+        const first = side === "E" && s < start + 6.1;
+        if (close) {
+          const k = toK(s, d);
+          items.push({ key: depthAt(s + 0.9, d), svg: `<g class="${first ? "first" : ""}">${solidSvg(slabOf({ x: k[0], y: k[1] - 0.14, w: 1.8, d: 0.28, r: 0.05 }, 0, 0.15, P, 2), { tone: "hi", lit: first })}</g>` });
+          const kp = toK(s + 3.9, d);
+          if (on(s + 3.9) && !nearDrive(s + 3.9, side)) items.push({ key: depthAt(s + 3.9, d), svg: solidSvg(cylinder(kp[0], kp[1], 0.08, 0, 0.95, P, 10), { tone: "hi", crease: "none" }) + lineSvg(sideArc(kp[0], kp[1], 0.08, 0.8, P, 8), { tone: "lit" }) });
+        } else {
+          items.push({ key: depthAt(s, d), svg: lineSvg(segment(toK(s, d, 0), toK(s, d, 0.9), P), { tone: "hi" }) });
+        }
+      }
+    }
+  }
+  // bridge railings
+  for (const [a, b] of BRIDGES) if (b > s0 && a < s1) for (const d of [eastEdge((a + b) / 2), westEdge((a + b) / 2)]) items.push({ key: depthAt((a + b) / 2, d), svg: lineSvg(segment(toK(a, d, 1.1), toK(b, d, 1.1), P) + segment(toK(a, d, 0), toK(a, d, 1.1), P) + segment(toK(b, d, 0), toK(b, d, 1.1), P), { tone: "mid" }) });
+  // buildings
+  for (const [k, a, b, d0, d1, name] of BOXES) if (k === "b" && b > s0 - 5 && a < s1 + 5) {
+    const ka = Math.max(a, s0 - 5), kb = Math.min(b, s1 + 5);
+    const dd0 = Math.max(d0, SPAN.east), dd1 = Math.min(d1, SPAN.west);
+    if (dd1 <= dd0) continue;
+    const plan = { x: ka - state.s0, y: -dd1, w: kb - ka, d: dd1 - dd0, r: 0.4 };
+    const h = name === "Fee booth" ? 2.6 : 4.2;
+    items.push({ key: depthAt((ka + kb) / 2, (dd0 + dd1) / 2) - 3, svg: solidSvg(slabOf(plan, 0, h, P, 2, 0.3), { tone: "mid" }) });
+  }
+  // crash pins
+  const showEra = after ? ["after", "edge"] : ["before", "edge"];
+  for (const c of CRASHES) {
+    if (c.s == null || c.s < s0 - 2 || c.s > s1 + 2 || !showEra.includes(ERA(c))) continue;
+    const d = c.side === "NB" ? (nbOn(c.s) ? dNB(c.s) : -5) : (sbOn(c.s) ? dSB(c.s) : 5);
+    const k = toK(c.s, d);
+    const sev = SEV(c);
+    const hgt = close ? 5.5 : 14;
+    const r = close ? 1.1 : 2.6;
+    items.push({ key: depthAt(c.s, d) + 0.5, svg: `<g class="pin" data-sev="${sev}" data-era="${ERA(c)}" data-id="${c.id}" tabindex="0" role="button" aria-label="${c.date} ${c.injury}: ${c.where}">${solidSvg(cylinder(k[0], k[1], close ? 0.1 : 0.3, 0, hgt, P, 8), { tone: "mid", crease: "none" })}${solidSvg(cylinder(k[0], k[1], r, hgt, close ? 0.45 : 1.2, P, 24), { tone: "hi" })}<path class="pin-hit" d="${solidSvgHit(k, hgt, r)}"/></g>` });
+  }
+  // rider
+  if (state.ride) {
+    const k = toK(state.riderS, state.riderD);
+    const dir = state.riderDir;
+    const box = (u0, u1, v0, v1) => [[k[0] + u0 * dir, k[1] + v0], [k[0] + u1 * dir, k[1] + v0], [k[0] + u1 * dir, k[1] + v1], [k[0] + u0 * dir, k[1] + v1]];
+    const rs = [solidSvg(extrude(box(-0.85, 0.85, -0.08, 0.08), 0, 0.9, P), { tone: "hi", lit: true }), solidSvg(extrude(box(-0.35, 0.15, -0.22, 0.22), 0.9, 0.75, P), { tone: "hi", lit: true }), solidSvg(cylinder(k[0] + 0.05 * dir, k[1], 0.16, 1.65, 0.28, P, 12), { tone: "hi", lit: true })];
+    items.push({ key: depthAt(state.riderS, state.riderD) + 0.2, svg: `<g class="rider"><path class="rider-ring" d="${ring(k[0], k[1], 2.4, 0.02, P, 28)}"/><path class="iso-halo" d="${extrude(box(-1, 1, -0.4, 0.4), 0, 0.05, P).fill}" style="filter:blur(2px)"/>${rs.join("")}</g>` });
+  }
+  items.sort((a, b) => a.key - b.key);
+  // labels
+  const labels = [];
+  for (const [name, s, d] of POIS) if (s > s0 + 4 && s < s1 - 4 && d > SPAN.east + 4 && d < SPAN.west - 4) { const b = BOXES.find((q) => q[0] === "b" && q[5] && q[5] === name); labels.push(b ? flatText((b[1] + b[2]) / 2, (b[3] + b[4]) / 2, name, close ? 2.4 : 5, "", 4.2) : flatText(s, d, name, close ? 2.4 : 5)); }
+  if (s0 < 270 && s1 > 230 && after) labels.push(flatText(250, -15.5, "NB track begins · first wheel stop", close ? 1.6 : 3.6, "warn"));
+  if (s0 < 225 && s1 > 160) labels.push(flatText(190, -10.5, "NB: down the hill from Solana Beach, 45 mph posted", close ? 1.6 : 3.6));
+  const clip = `<clipPath id="win"><path d="${poly([[s0, SPAN.east], [s1, SPAN.east], [s1, SPAN.west], [s0, SPAN.west]])}"/></clipPath>`;
+  scene.innerHTML = clip + `<g clip-path="url(#win)">${ground.join("") + marks.join("")}</g>` + items.map((i) => i.svg).join("") + labels.join("");
+  drawWindow();
+}
+function solidSvgHit(k, h, r) {
+  const a = iso([k[0], k[1], 0], P), b = iso([k[0], k[1], h + 0.6], P);
+  const rr = Math.max(9, Math.abs(iso([k[0] + r, k[1], 0], P)[0] - a[0]) + 6);
+  return `M${(b[0] - rr).toFixed(1)} ${(b[1] - rr).toFixed(1)}h${2 * rr}v${(a[1] - b[1] + 2 * rr).toFixed(1)}h${-2 * rr}Z`;
+}
+
+// ---------- minimap ----------
+const MW = 1000, MH = 96, MPAD = 14;
+const mx = (s) => MPAD + ((s - RANGE.south) / (RANGE.north - RANGE.south)) * (MW - 2 * MPAD);
+const sOfMx = (x) => RANGE.south + ((x - MPAD) / (MW - 2 * MPAD)) * (RANGE.north - RANGE.south);
+const ROW = { SB: 34, NB: 62 };
+function buildMini() {
+  const out = [];
+  out.push(`<rect class="mm-bg" x="0" y="0" width="${MW}" height="${MH}"/>`);
+  const trk = (lineArr, y) => `<path class="mm-track" d="M${mx(lineArr[0][0]).toFixed(1)} ${y}H${mx(lineArr[lineArr.length - 1][0]).toFixed(1)}"/>`;
+  out.push(trk(SB, ROW.SB), trk(NB, ROW.NB));
+  out.push(`<text class="mm-row" x="${MW - 4}" y="${ROW.SB - 6}" text-anchor="end">SB track · west</text><text class="mm-row" x="${MW - 4}" y="${ROW.NB + 14}" text-anchor="end">NB track · east</text>`);
+  const tick = (s, label, y, anchor = "middle") => `<line class="mm-tick" x1="${mx(s)}" y1="${ROW.SB - 4}" x2="${mx(s)}" y2="${ROW.NB + 4}"/><text class="mm-lbl" x="${mx(s)}" y="${y}" text-anchor="${anchor}">${label}</text>`;
+  out.push(tick(LIMITS.cityLine, "Solana Beach line", 12, "start"), tick(300, "", 12), tick(1342, "Las Olas", 12), tick(1430, "Tower 13 · Ki's", 90), tick(1631, "Restaurants", 12), tick(1926, "Bridge", 90), tick(LIMITS.chesterfield, "Chesterfield", 12, "end"));
+  out.push(`<text class="mm-lbl" x="4" y="90">S</text><text class="mm-lbl" x="${MW - 4}" y="90" text-anchor="end">N</text>`);
+  const stack = {};
+  for (const c of CRASHES) {
+    if (c.s == null) continue;
+    const x = mx(c.s), row = c.side === "NB" ? "NB" : "SB";
+    const key = row + Math.round(x / 8);
+    const n = (stack[key] = (stack[key] ?? 0) + 1) - 1;
+    const y = ROW[row] + (row === "SB" ? -1 : 1) * (n * 7);
+    out.push(`<circle class="mm-dot" data-sev="${SEV(c)}" data-era="${ERA(c)}" data-id="${c.id}" cx="${x.toFixed(1)}" cy="${y}" r="${SEV(c) === "fatal" ? 4.6 : 3.4}"/>`);
+  }
+  out.push(`<rect class="mm-win" data-win x="0" y="2" width="10" height="${MH - 4}"/>`);
+  mini.innerHTML = out.join("");
+}
+function drawWindow() {
+  const r = mini.querySelector("[data-win]");
+  r.setAttribute("x", mx(state.s0).toFixed(1));
+  r.setAttribute("width", Math.max(6, mx(state.s0 + W()) - mx(state.s0)).toFixed(1));
+  mini.querySelectorAll(".mm-dot").forEach((d) => d.toggleAttribute("data-dim", !(state.era === "after" ? ["after", "edge"] : ["before", "edge"]).includes(d.dataset.era)));
+  { const m = Math.round(state.s0 + W() / 2 - LIMITS.cityLine); readout.textContent = m <= 0 ? "At the Solana Beach line" : `${(m * 3.281).toLocaleString("en-US", { maximumFractionDigits: 0 })} ft north of the Solana Beach line`; }
+}
+
+// ---------- interaction ----------
+const scene = document.querySelector("#scene");
+const mini = document.querySelector("#mini");
+const pop = document.querySelector("#pop");
+const readout = document.querySelector("#where");
+const clampS = (s) => Math.max(RANGE.south - 20, Math.min(RANGE.north - W() + 20, s));
+let pending = 0;
+const schedule = () => { if (!pending) pending = requestAnimationFrame(() => { pending = 0; render(); }); };
+const goTo = (s) => { state.s0 = clampS(s); schedule(); };
+const scaleX = () => { const a = iso([0, 0, 0], P), b = iso([1, 0, 0], P); return Math.hypot(b[0] - a[0], b[1] - a[1]); };
+let drag = null;
+const stage = document.querySelector("#stage");
+stage.addEventListener("pointerdown", (e) => { if (e.target.closest(".pin")) return; drag = { x: e.clientX, s: state.s0 }; stage.setPointerCapture(e.pointerId); stopRide(); hidePop(); });
+stage.addEventListener("pointermove", (e) => { if (!drag) return; const px = scene.getBoundingClientRect().width / VW; goTo(drag.s - (e.clientX - drag.x) / px / scaleX()); });
+stage.addEventListener("pointerup", () => (drag = null));
+stage.addEventListener("wheel", (e) => { const dx = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY; if (!e.shiftKey && Math.abs(e.deltaX) <= Math.abs(e.deltaY) && !e.ctrlKey) return; e.preventDefault(); goTo(state.s0 + dx * W() / 900); }, { passive: false });
+stage.addEventListener("keydown", (e) => { if (e.key === "ArrowRight") { goTo(state.s0 + W() * 0.2); e.preventDefault(); } if (e.key === "ArrowLeft") { goTo(state.s0 - W() * 0.2); e.preventDefault(); } });
+let mdrag = false;
+const fromMini = (e) => { const r = mini.getBoundingClientRect(); goTo(sOfMx(((e.clientX - r.left) / r.width) * MW) - W() / 2); };
+mini.addEventListener("pointerdown", (e) => { mdrag = true; mini.setPointerCapture(e.pointerId); stopRide(); hidePop(); fromMini(e); });
+mini.addEventListener("pointermove", (e) => mdrag && fromMini(e));
+mini.addEventListener("pointerup", () => (mdrag = false));
+
+// crash popover
+const fmt = (c) => `<b>${c.date} · ${c.injury}</b><span>${c.dirText ? c.dirText : c.dirUnknown ? "Direction not recorded (2025 detail not yet published)," : c.side === "NB" ? "Northbound" : "Southbound"} rider · hit ${c.hit.toLowerCase()}</span><span>Official factor: ${c.factor}</span><span>${c.where}${c.approx ? " (position estimated)" : ""}</span>`;
+function showPop(id, x, y) {
+  const c = CRASHES.find((k) => String(k.id) === String(id)); if (!c) return;
+  pop.innerHTML = fmt(c); pop.hidden = false;
+  const box = stage.getBoundingClientRect();
+  pop.style.left = Math.min(box.width - 260, Math.max(8, x - box.left - 120)) + "px";
+  pop.style.top = Math.max(8, y - box.top - pop.offsetHeight - 14) + "px";
+}
+function hidePop() { pop.hidden = true; }
+scene.addEventListener("click", (e) => { const p = e.target.closest(".pin"); if (p) { showPop(p.dataset.id, e.clientX, e.clientY); e.stopPropagation(); } });
+scene.addEventListener("keydown", (e) => { const p = e.target.closest?.(".pin"); if (p && (e.key === "Enter" || e.key === " ")) { const r = p.getBoundingClientRect(); showPop(p.dataset.id, r.left + r.width / 2, r.top); e.preventDefault(); } });
+mini.addEventListener("click", (e) => { const d = e.target.closest(".mm-dot"); if (!d) return; const c = CRASHES.find((k) => String(k.id) === d.dataset.id); if (c && ERA(c) !== "edge" && ERA(c) !== state.era) setEra(ERA(c)); });
+
+// era toggle
+function setEra(era) {
+  state.era = era;
+  document.querySelectorAll("[data-era-btn]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.eraBtn === era)));
+  document.querySelector("#era-note").textContent = era === "after" ? "Since April 2020: wheel stops and flexible posts separate both tracks from traffic." : "January 2016 to March 2020: painted bike lanes with no barriers (lane positions assumed the same).";
+  hidePop(); schedule();
+}
+document.querySelectorAll("[data-era-btn]").forEach((b) => b.addEventListener("click", () => setEra(b.dataset.eraBtn)));
+document.querySelectorAll("[data-zoom]").forEach((b) => b.addEventListener("click", () => {
+  const mid = state.s0 + W() / 2; zoom = Number(b.dataset.zoom); camera();
+  document.querySelectorAll("[data-zoom]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+  state.s0 = clampS(mid - W() / 2); schedule();
+}));
+
+// ride along a track
+const still = matchMedia("(prefers-reduced-motion: reduce)");
+let rideFrame = 0, last = 0;
+function riderPath(dir, s) {
+  if (dir > 0) { // northbound: comes down the hill in the right lane, joins the track at its south end
+    if (s < 231) return -5.2;
+    if (s < 264) return -5.2 + (dNB(264) + 5.2) * ((s - 231) / 33) ** 1.4;
+    return nbOn(s) ? dNB(s) : -5.2;
+  }
+  if (s < 236) return 5.2;
+  return sbOn(s) ? dSB(s) : 5.2;
+}
+function startRide(dir) {
+  stopRide();
+  state.ride = dir; state.riderDir = dir;
+  state.riderS = dir > 0 ? RANGE.south + 10 : LIMITS.chesterfield - 5;
+  document.querySelectorAll("[data-ride]").forEach((b) => b.setAttribute("aria-pressed", String(Number(b.dataset.ride) === dir)));
+  hidePop();
+  if (still.matches) { state.riderD = riderPath(dir, state.riderS); state.s0 = clampS(state.riderS - W() * 0.4); schedule(); return; }
+  last = 0; rideFrame = requestAnimationFrame(tickRide);
+}
+function stopRide() { if (rideFrame) cancelAnimationFrame(rideFrame); rideFrame = 0; if (state.ride) { state.ride = null; document.querySelectorAll("[data-ride]").forEach((b) => b.setAttribute("aria-pressed", "false")); schedule(); } }
+function tickRide(now) {
+  const dt = last ? Math.min(0.05, (now - last) / 1000) : 1 / 60; last = now;
+  const nearHazard = (s) => (state.ride > 0 ? Math.abs(s - 250) < 30 || DRIVES.some(([d, side]) => side === "E" && Math.abs(d - s) < 10) : DRIVES.some(([d, side]) => side === "W" && Math.abs(d - s) < 10));
+  const speed = nearHazard(state.riderS) ? 7 : 22;
+  state.riderS += state.ride * speed * dt;
+  state.riderD = riderPath(state.ride, state.riderS);
+  state.s0 = clampS(state.riderS - W() * (state.ride > 0 ? 0.35 : 0.65));
+  render();
+  const done = state.ride > 0 ? state.riderS > NB[NB.length - 1][0] + 20 : state.riderS < 200;
+  if (done) { stopRide(); return; }
+  rideFrame = requestAnimationFrame(tickRide);
+}
+document.querySelectorAll("[data-ride]").forEach((b) => b.addEventListener("click", () => (state.ride === Number(b.dataset.ride) ? stopRide() : startRide(Number(b.dataset.ride)))));
+
+buildMini();
+setEra("after");
+</script></body></html>
