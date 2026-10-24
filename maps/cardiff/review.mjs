@@ -323,7 +323,7 @@ const TYPES = ["Driveway start", "Driveway end", "Bollard", "Flexible post", "Wh
 const MKEY = "cardiff-field-marks";
 let marks = []; try { marks = JSON.parse(localStorage.getItem(MKEY) || "[]"); } catch {}
 const saveMarks = () => { try { localStorage.setItem(MKEY, JSON.stringify(marks)); } catch {} };
-let type = TYPES[0], me = null, meDot = null, meRing = null, watchId = null;
+let type = TYPES[0], me = null, meDot = null, meRing = null, watchId = null, follow = true;
 const typesEl = document.querySelector("#types");
 const fabType = document.querySelector("#fab-type");
 const setType = (t) => { type = t; fabType.value = t; typesEl.querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", String(x.textContent === t))); };
@@ -353,8 +353,11 @@ function showFix(p) {
   me = { at: [p.coords.latitude, p.coords.longitude], acc: Math.round(p.coords.accuracy) };
   if (!meDot) { meRing = L.circle(me.at, { radius: me.acc, color: "#1a73e8", weight: 1, fillOpacity: 0.12, interactive: false }).addTo(map); meDot = L.circleMarker(me.at, { radius: 7, color: "#fff", weight: 2, fillColor: "#1a73e8", fillOpacity: 1, interactive: false }).addTo(map); map.setView(me.at, Math.max(map.getZoom(), 19)); }
   else { meDot.setLatLng(me.at); meRing.setLatLng(me.at).setRadius(me.acc); }
-  gpsEl.textContent = "GPS accuracy about " + me.acc + " m. Phone GPS can be off by a few metres, so line the crosshair up with the photo before marking.";
+  // the crosshair rides along with you until you drag the map to place it by hand
+  if (follow && wrap.classList.contains("rv-field")) map.panTo(me.at, { animate: false });
+  gpsEl.textContent = "GPS accuracy about " + me.acc + " m. " + (follow ? "The crosshair follows you. Drag the map to place a mark by hand." : "Crosshair placed by hand. Tap Center on me to follow GPS again.");
 }
+map.on("dragstart", () => { follow = false; });
 function gpsFailed(err) { if (!me || err.code === 1) gpsEl.textContent = GPS_HELP[err.code] || "Location error: " + err.message; }
 function askOnce() { // a one-off, lower-accuracy request also gets a first fix faster and re-prompts on some phones
   navigator.geolocation.getCurrentPosition(showFix, gpsFailed, { enableHighAccuracy: false, maximumAge: 60000, timeout: 30000 });
@@ -373,17 +376,17 @@ document.querySelector("#field-toggle").addEventListener("click", (e) => {
   if (on) { if (mode) setMode(mode); setAdding(false); startGps(); wrap.scrollIntoView({ behavior: "smooth", block: "start" }); }
   else if (watchId != null) { navigator.geolocation.clearWatch(watchId); watchId = null; }
 });
-document.querySelector("#fab-me").addEventListener("click", () => { if (me) { map.setView(me.at, Math.max(map.getZoom(), 19)); return; } if (navigator.geolocation) { gpsEl.textContent = "Asking your phone for its location…"; askOnce(); } });
+document.querySelector("#fab-me").addEventListener("click", () => { follow = true; if (me) { map.setView(me.at, Math.max(map.getZoom(), 19)); return; } if (navigator.geolocation) { gpsEl.textContent = "Asking your phone for its location…"; askOnce(); } });
 document.querySelector("#fab-mark").addEventListener("click", () => {
   const c = map.getCenter(), noteEl = document.querySelector("#mark-note");
-  marks.push({ type, at: [+c.lat.toFixed(6), +c.lng.toFixed(6)], note: noteEl.value.trim(), acc: me ? me.acc : null, t: new Date().toISOString() });
+  marks.push({ type, at: [+c.lat.toFixed(6), +c.lng.toFixed(6)], note: noteEl.value.trim(), acc: me ? me.acc : null, gps: me ? me.at.map((v) => +v.toFixed(6)) : null, t: new Date().toISOString() });
   noteEl.value = ""; saveMarks(); drawMarks();
   status.textContent = "Marked " + type + " (" + marks.length + " so far).";
 });
 // ---------- send everything: field marks, notes and map edits as one message ----------
 document.querySelector("#send-all").addEventListener("click", async () => {
   const lines = [];
-  if (marks.length) lines.push("Field marks:", ...marks.map((m, i) => (i + 1) + ". " + m.type + (m.note ? ": " + m.note : "") + " (" + m.at[0] + ", " + m.at[1] + (m.acc ? ", GPS ±" + m.acc + " m" : "") + ")"));
+  if (marks.length) lines.push("Field marks:", ...marks.map((m, i) => (i + 1) + ". " + m.type + (m.note ? ": " + m.note : "") + " (" + m.at[0] + ", " + m.at[1] + (m.acc ? ", GPS ±" + m.acc + " m" : "") + (m.gps ? ", GPS at " + m.gps[0] + ", " + m.gps[1] : "") + (m.t ? ", " + m.t.slice(11, 19) + "Z" : "") + ")"));
   if (notes.length) lines.push("Notes:", ...notes.map((n, i) => (i + 1) + ". " + n.text + " (" + n.at[0] + ", " + n.at[1] + ")"));
   if (JSON.stringify(ed) !== JSON.stringify(DATA.edits)) lines.push("Cardiff map edits: " + JSON.stringify(ed));
   const txt = lines.join("\\n") || "(nothing marked yet)";

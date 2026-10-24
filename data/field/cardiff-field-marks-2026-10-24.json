@@ -1,0 +1,714 @@
+{
+ "source": "Mark's field walk, 2026-10-24, review page Send everything",
+ "caveat": "Positions are the map crosshair at the moment of each tap, not the GPS fix. The map did not follow GPS after the first fix, so many marks share one position. Order of marks is reliable; positions are not.",
+ "marks": [
+  {
+   "n": 1,
+   "type": "Photo taken",
+   "note": "",
+   "at": [
+    33.01857,
+    -117.282267
+   ],
+   "acc": 11,
+   "s": 2230,
+   "d": 16
+  },
+  {
+   "n": 2,
+   "type": "Photo taken",
+   "note": "",
+   "at": [
+    33.01857,
+    -117.282267
+   ],
+   "acc": 11,
+   "s": 2230,
+   "d": 16
+  },
+  {
+   "n": 3,
+   "type": "Photo taken",
+   "note": "",
+   "at": [
+    33.018608,
+    -117.282216
+   ],
+   "acc": 11,
+   "s": 2232,
+   "d": 10
+  },
+  {
+   "n": 4,
+   "type": "Barrier starts",
+   "note": "",
+   "at": [
+    33.018608,
+    -117.282216
+   ],
+   "acc": 10,
+   "s": 2232,
+   "d": 10
+  },
+  {
+   "n": 5,
+   "type": "Photo taken",
+   "note": "",
+   "at": [
+    33.015745,
+    -117.281017
+   ],
+   "acc": 5,
+   "s": 1893,
+   "d": 16
+  },
+  {
+   "n": 6,
+   "type": "Barrier ends",
+   "note": "",
+   "at": [
+    33.015745,
+    -117.281017
+   ],
+   "acc": 9,
+   "s": 1893,
+   "d": 16
+  },
+  {
+   "n": 7,
+   "type": "Driveway start",
+   "note": "",
+   "at": [
+    33.015745,
+    -117.281017
+   ],
+   "acc": 8,
+   "s": 1893,
+   "d": 16
+  },
+  {
+   "n": 8,
+   "type": "Driveway end",
+   "note": "",
+   "at": [
+    33.015745,
+    -117.281017
+   ],
+   "acc": 9,
+   "s": 1893,
+   "d": 16
+  },
+  {
+   "n": 9,
+   "type": "Driveway start",
+   "note": "",
+   "at": [
+    33.012987,
+    -117.279852
+   ],
+   "acc": 5,
+   "s": 1566,
+   "d": 14
+  },
+  {
+   "n": 10,
+   "type": "Driveway end",
+   "note": "",
+   "at": [
+    33.012987,
+    -117.279852
+   ],
+   "acc": 7,
+   "s": 1566,
+   "d": 14
+  },
+  {
+   "n": 11,
+   "type": "Driveway start",
+   "note": "",
+   "at": [
+    33.012987,
+    -117.279852
+   ],
+   "acc": 8,
+   "s": 1566,
+   "d": 14
+  },
+  {
+   "n": 12,
+   "type": "Driveway end",
+   "note": "",
+   "at": [
+    33.012987,
+    -117.279852
+   ],
+   "acc": 10,
+   "s": 1566,
+   "d": 14
+  },
+  {
+   "n": 13,
+   "type": "Barrier ends",
+   "note": "",
+   "at": [
+    33.012987,
+    -117.279852
+   ],
+   "acc": 9,
+   "s": 1566,
+   "d": 14
+  },
+  {
+   "n": 14,
+   "type": "Driveway end",
+   "note": "",
+   "at": [
+    33.012987,
+    -117.279852
+   ],
+   "acc": 9,
+   "s": 1566,
+   "d": 14
+  },
+  {
+   "n": 15,
+   "type": "Barrier starts",
+   "note": "",
+   "at": [
+    33.012987,
+    -117.279852
+   ],
+   "acc": 9,
+   "s": 1566,
+   "d": 14
+  },
+  {
+   "n": 16,
+   "type": "Other",
+   "note": "Crosswalk",
+   "at": [
+    33.011829,
+    -117.279556
+   ],
+   "acc": 10,
+   "s": 1433,
+   "d": 16
+  },
+  {
+   "n": 17,
+   "type": "Photo taken",
+   "note": "",
+   "at": [
+    33.01188,
+    -117.279479
+   ],
+   "acc": 4,
+   "s": 1438,
+   "d": 8
+  },
+  {
+   "n": 18,
+   "type": "Photo taken",
+   "note": "Surf crossing",
+   "at": [
+    33.011907,
+    -117.279393
+   ],
+   "acc": 2,
+   "s": 1439,
+   "d": -1
+  },
+  {
+   "n": 19,
+   "type": "Other",
+   "note": "Cars and",
+   "at": [
+    33.011907,
+    -117.279393
+   ],
+   "acc": 2,
+   "s": 1439,
+   "d": -1
+  },
+  {
+   "n": 20,
+   "type": "Barrier ends",
+   "note": "",
+   "at": [
+    33.011907,
+    -117.279393
+   ],
+   "acc": 5,
+   "s": 1439,
+   "d": -1
+  },
+  {
+   "n": 21,
+   "type": "Hazard",
+   "note": "Traffic crosses over to Seaside Beach turn lane",
+   "at": [
+    33.011907,
+    -117.279393
+   ],
+   "acc": 10,
+   "s": 1439,
+   "d": -1
+  },
+  {
+   "n": 22,
+   "type": "Photo taken",
+   "note": "Traffic Cross Over to Seaside Beach",
+   "at": [
+    33.004011,
+    -117.277839
+   ],
+   "acc": 11,
+   "s": 547,
+   "d": -3
+  },
+  {
+   "n": 23,
+   "type": "Barrier starts",
+   "note": "",
+   "at": [
+    33.004011,
+    -117.277839
+   ],
+   "acc": 9,
+   "s": 547,
+   "d": -3
+  },
+  {
+   "n": 24,
+   "type": "Barrier ends",
+   "note": "",
+   "at": [
+    33.004011,
+    -117.277839
+   ],
+   "acc": 8,
+   "s": 547,
+   "d": -3
+  },
+  {
+   "n": 25,
+   "type": "Driveway start",
+   "note": "",
+   "at": [
+    33.004011,
+    -117.277839
+   ],
+   "acc": 8,
+   "s": 547,
+   "d": -3
+  },
+  {
+   "n": 26,
+   "type": "Driveway end",
+   "note": "",
+   "at": [
+    33.004011,
+    -117.277839
+   ],
+   "acc": 7,
+   "s": 547,
+   "d": -3
+  },
+  {
+   "n": 27,
+   "type": "Barrier starts",
+   "note": "",
+   "at": [
+    33.004011,
+    -117.277839
+   ],
+   "acc": 6,
+   "s": 547,
+   "d": -3
+  },
+  {
+   "n": 28,
+   "type": "Other",
+   "note": "Seaside Beach Crossing. There is no safe way to cross the road here and the barriers North Bound make it difficult to get out of traffic",
+   "at": [
+    33.003982,
+    -117.277834
+   ],
+   "acc": 4,
+   "s": 544,
+   "d": -3
+  },
+  {
+   "n": 29,
+   "type": "Barrier ends",
+   "note": "",
+   "at": [
+    33.003982,
+    -117.277834
+   ],
+   "acc": 10,
+   "s": 544,
+   "d": -3
+  },
+  {
+   "n": 30,
+   "type": "Photo taken",
+   "note": "Lane split",
+   "at": [
+    33.001586,
+    -117.276487
+   ],
+   "acc": 7,
+   "s": 246,
+   "d": -8
+  },
+  {
+   "n": 31,
+   "type": "Barrier starts",
+   "note": "",
+   "at": [
+    33.001586,
+    -117.276487
+   ],
+   "acc": 9,
+   "s": 246,
+   "d": -8
+  },
+  {
+   "n": 32,
+   "type": "Barrier ends",
+   "note": "",
+   "at": [
+    33.003694,
+    -117.277681
+   ],
+   "acc": 7,
+   "s": 509,
+   "d": -8
+  },
+  {
+   "n": 33,
+   "type": "Driveway start",
+   "note": "",
+   "at": [
+    33.003694,
+    -117.277681
+   ],
+   "acc": 7,
+   "s": 509,
+   "d": -8
+  },
+  {
+   "n": 34,
+   "type": "Driveway end",
+   "note": "",
+   "at": [
+    33.003694,
+    -117.277681
+   ],
+   "acc": 6,
+   "s": 509,
+   "d": -8
+  },
+  {
+   "n": 35,
+   "type": "Other",
+   "note": "Cross walk and stop light",
+   "at": [
+    33.003694,
+    -117.277681
+   ],
+   "acc": 7,
+   "s": 509,
+   "d": -8
+  },
+  {
+   "n": 36,
+   "type": "Driveway start",
+   "note": "",
+   "at": [
+    33.003694,
+    -117.277681
+   ],
+   "acc": 5,
+   "s": 509,
+   "d": -8
+  },
+  {
+   "n": 37,
+   "type": "Driveway end",
+   "note": "",
+   "at": [
+    33.003694,
+    -117.277681
+   ],
+   "acc": 5,
+   "s": 509,
+   "d": -8
+  },
+  {
+   "n": 38,
+   "type": "Barrier starts",
+   "note": "",
+   "at": [
+    33.003694,
+    -117.277681
+   ],
+   "acc": 4,
+   "s": 509,
+   "d": -8
+  },
+  {
+   "n": 39,
+   "type": "Driveway start",
+   "note": "",
+   "at": [
+    33.003694,
+    -117.277681
+   ],
+   "acc": 8,
+   "s": 509,
+   "d": -8
+  },
+  {
+   "n": 40,
+   "type": "Driveway end",
+   "note": "",
+   "at": [
+    33.003694,
+    -117.277681
+   ],
+   "acc": 7,
+   "s": 509,
+   "d": -8
+  },
+  {
+   "n": 41,
+   "type": "Barrier starts",
+   "note": "",
+   "at": [
+    33.003694,
+    -117.277681
+   ],
+   "acc": 7,
+   "s": 509,
+   "d": -8
+  },
+  {
+   "n": 42,
+   "type": "Barrier ends",
+   "note": "",
+   "at": [
+    33.003694,
+    -117.277681
+   ],
+   "acc": 8,
+   "s": 509,
+   "d": -8
+  },
+  {
+   "n": 43,
+   "type": "Driveway start",
+   "note": "",
+   "at": [
+    33.003694,
+    -117.277681
+   ],
+   "acc": 7,
+   "s": 509,
+   "d": -8
+  },
+  {
+   "n": 44,
+   "type": "Barrier starts",
+   "note": "",
+   "at": [
+    33.003694,
+    -117.277681
+   ],
+   "acc": 7,
+   "s": 509,
+   "d": -8
+  },
+  {
+   "n": 45,
+   "type": "Barrier ends",
+   "note": "",
+   "at": [
+    33.003694,
+    -117.277681
+   ],
+   "acc": 7,
+   "s": 509,
+   "d": -8
+  },
+  {
+   "n": 46,
+   "type": "Driveway start",
+   "note": "",
+   "at": [
+    33.003694,
+    -117.277681
+   ],
+   "acc": 7,
+   "s": 509,
+   "d": -8
+  },
+  {
+   "n": 47,
+   "type": "Driveway start",
+   "note": "",
+   "at": [
+    33.003694,
+    -117.277681
+   ],
+   "acc": 6,
+   "s": 509,
+   "d": -8
+  },
+  {
+   "n": 48,
+   "type": "Driveway end",
+   "note": "",
+   "at": [
+    33.003694,
+    -117.277681
+   ],
+   "acc": 6,
+   "s": 509,
+   "d": -8
+  },
+  {
+   "n": 49,
+   "type": "Driveway end",
+   "note": "",
+   "at": [
+    33.003694,
+    -117.277681
+   ],
+   "acc": 6,
+   "s": 509,
+   "d": -8
+  },
+  {
+   "n": 50,
+   "type": "Driveway end",
+   "note": "",
+   "at": [
+    33.003694,
+    -117.277681
+   ],
+   "acc": 6,
+   "s": 509,
+   "d": -8
+  },
+  {
+   "n": 51,
+   "type": "Barrier ends",
+   "note": "",
+   "at": [
+    33.013628,
+    -117.279814
+   ],
+   "acc": 7,
+   "s": 1634,
+   "d": -10
+  },
+  {
+   "n": 52,
+   "type": "Other",
+   "note": "Crosswalk and light",
+   "at": [
+    33.013628,
+    -117.279814
+   ],
+   "acc": 7,
+   "s": 1634,
+   "d": -10
+  },
+  {
+   "n": 53,
+   "type": "Photo taken",
+   "note": "Crosswalk and light Cardiff state beach",
+   "at": [
+    33.013628,
+    -117.279814
+   ],
+   "acc": 7,
+   "s": 1634,
+   "d": -10
+  },
+  {
+   "n": 54,
+   "type": "Barrier starts",
+   "note": "",
+   "at": [
+    33.013628,
+    -117.279814
+   ],
+   "acc": 5,
+   "s": 1634,
+   "d": -10
+  },
+  {
+   "n": 55,
+   "type": "Other",
+   "note": "Bridge start",
+   "at": [
+    33.013628,
+    -117.279814
+   ],
+   "acc": 6,
+   "s": 1634,
+   "d": -10
+  },
+  {
+   "n": 56,
+   "type": "Other",
+   "note": "Bridge end",
+   "at": [
+    33.013628,
+    -117.279814
+   ],
+   "acc": 6,
+   "s": 1634,
+   "d": -10
+  },
+  {
+   "n": 57,
+   "type": "Barrier ends",
+   "note": "",
+   "at": [
+    33.013628,
+    -117.279814
+   ],
+   "acc": 6,
+   "s": 1634,
+   "d": -10
+  },
+  {
+   "n": 58,
+   "type": "Photo taken",
+   "note": "Crossover for Chesterfield",
+   "at": [
+    33.013628,
+    -117.279814
+   ],
+   "acc": 3,
+   "s": 1634,
+   "d": -10
+  },
+  {
+   "n": 59,
+   "type": "Other",
+   "note": "Chesterfield",
+   "at": [
+    33.013629,
+    -117.279813
+   ],
+   "acc": 8,
+   "s": 1634,
+   "d": -10
+  }
+ ]
+}
