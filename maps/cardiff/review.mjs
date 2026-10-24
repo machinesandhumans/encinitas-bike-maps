@@ -46,7 +46,24 @@ body{background:var(--page);margin:0;color:var(--text);font:14px/1.5 ui-sans-ser
 .rv p{margin:0;color:var(--muted);font-size:13px}
 .rv-body{display:grid;grid-template-columns:1fr 300px;gap:12px}
 @media (max-width:760px){.rv-body{grid-template-columns:1fr}}
+.rv-mapwrap{position:relative;min-width:0}
 #map{height:min(78vh,760px);min-height:420px;box-shadow:0 0 0 1px var(--line);background:#333}
+@media (max-width:760px){#map{height:72vh;min-height:360px}}
+.rv-cross{position:absolute;left:50%;top:50%;width:28px;height:28px;margin:-14px 0 0 -14px;pointer-events:none;z-index:500;display:none}
+.rv-cross::before,.rv-cross::after{content:"";position:absolute;background:#fff;box-shadow:0 0 0 1px #000a}
+.rv-cross::before{left:13px;top:0;width:2px;height:28px}.rv-cross::after{top:13px;left:0;height:2px;width:28px}
+.rv-field .rv-cross{display:block}
+.rv-fab{position:absolute;z-index:600;right:10px;bottom:24px;display:none;gap:8px;flex-direction:column;align-items:flex-end}
+.rv-field .rv-fab{display:flex}
+.rv-fab button{font:600 15px/1 inherit;padding:14px 16px;border-radius:24px;border:0;background:var(--card);color:var(--text);box-shadow:0 2px 8px #0006;cursor:pointer}
+.rv-fab .rv-primary{background:var(--accent);color:#fff}
+.rv-fab select{font:600 15px/1.2 inherit;padding:10px 12px;border-radius:20px;border:0;background:var(--card);color:var(--text);box-shadow:0 2px 8px #0006}
+.rv-vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.rv-types{display:flex;flex-wrap:wrap;gap:6px}
+.rv-types button{font:13px/1 inherit;padding:9px 10px;border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:16px;cursor:pointer}
+.rv-types button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent);color:#fff}
+#marks{margin:0;padding-left:18px;display:grid;gap:6px}
+#marks li button{border:0;background:none;color:var(--muted);cursor:pointer;padding:0 4px}
 .rv-side{background:var(--card);box-shadow:0 0 0 1px var(--line);padding:12px;display:grid;gap:10px;align-content:start;font-size:13px}
 .rv-side h2{margin:0;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
 .rv-side label{display:flex;gap:8px;align-items:center;cursor:pointer}
@@ -75,8 +92,16 @@ const page = `<title>Cardiff Satellite Review</title>
 <header><h1>Cardiff 101: check the map against satellite imagery</h1>
 <p>Colored lines are what the corridor map draws, laid back onto real coordinates. Where a line misses the pavement in the photo, the map is wrong there. Add a note to describe a problem, or fix buildings and driveways directly under Edit the map.</p></header>
 <div class="rv-body">
-<div id="map" role="region" aria-label="Satellite map of Coast Highway 101 in Cardiff with the map's layout drawn over it"></div>
+<div class="rv-mapwrap" id="mapwrap"><div id="map" role="region" aria-label="Satellite map of Coast Highway 101 in Cardiff with the map's layout drawn over it"></div><div class="rv-cross" aria-hidden="true"></div>
+<div class="rv-fab"><label for="fab-type" class="rv-vh">What to mark</label><select id="fab-type"></select><button id="fab-me" type="button">Center on me</button><button id="fab-mark" class="rv-primary" type="button">Mark here</button></div></div>
 <aside class="rv-side">
+<h2>Field walk</h2>
+<button class="rv-btn" id="field-toggle" aria-pressed="false">Start field walk</button>
+<p id="gps">Shows your position and a crosshair. Pick what you're marking, line the crosshair up, then tap Mark here.</p>
+<div class="rv-types" id="types" role="group" aria-label="What to mark"></div>
+<label for="mark-note" style="display:block">Note for the next mark (optional)</label><input id="mark-note" style="width:100%;box-sizing:border-box;font:inherit;padding:6px">
+<ol id="marks"></ol>
+<button class="rv-btn" id="send-all">Send everything to the chat</button>
 <h2>Base</h2>
 <div style="display:flex;gap:6px"><button class="rv-btn" data-base="sat" aria-pressed="true">Satellite</button><button class="rv-btn" data-base="street" aria-pressed="false">Street map</button></div>
 <h2>Layers</h2>
@@ -86,16 +111,16 @@ ${LAYERS.map(([id, label, color, on]) => `<label><input type="checkbox" data-lay
 <form id="drive-form" hidden><label for="drive-name" style="display:block">Driveway name (optional)</label><input id="drive-name" style="width:100%;box-sizing:border-box;font:inherit"><div style="display:flex;gap:6px;margin-top:6px"><button class="rv-btn" type="submit">Save driveway</button><button class="rv-btn" type="button" id="drive-cancel">Cancel</button></div></form>
 <div id="selected" hidden><p id="sel-text"></p><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px"><button class="rv-btn" id="sel-delete">Delete</button><button class="rv-btn" id="sel-reset">Undo move</button></div></div>
 <p id="edit-summary"></p>
-<button class="rv-btn" id="copy-edits">Copy map edits to send</button>
+
 <h2>Notes</h2>
 <button class="rv-btn" id="add" aria-pressed="false">Add note</button>
 <form id="note-form" hidden><label for="note-text" style="display:block">What's wrong or missing here?</label><textarea id="note-text" rows="3" style="width:100%;box-sizing:border-box;font:inherit"></textarea><div style="display:flex;gap:6px"><button class="rv-btn" type="submit">Save note</button><button class="rv-btn" type="button" id="note-cancel">Cancel</button></div></form>
 <ol id="notes"></ol>
-<button class="rv-btn" id="copy">Copy notes to send</button>
+
 <p id="status"></p>
 <p id="check"></p>
 </aside></div>
-<p>Imagery: Esri World Imagery (Maxar, Earthstar Geographics). Street map and features: © OpenStreetMap contributors. Notes stay in this browser until you copy and send them.</p>
+<p>Imagery: Esri World Imagery (Maxar, Earthstar Geographics). Street map and features: © OpenStreetMap contributors. Marks, notes and edits stay on this device until you send them.</p>
 </div>
 <script>${leafletJs}</script>
 <script>${(`
@@ -229,11 +254,6 @@ document.querySelector("#sel-reset").addEventListener("click", () => {
   if (DATA.edits.buildings[selected.id]) ed.buildings[selected.id] = clone(DATA.edits.buildings[selected.id]); else delete ed.buildings[selected.id];
   select(null); saveEd(); drawEdits();
 });
-document.querySelector("#copy-edits").addEventListener("click", async () => {
-  const txt = "Cardiff map edits: " + JSON.stringify(ed);
-  try { await navigator.clipboard.writeText(txt); statusEl().textContent = "Copied. Paste it into the project chat."; }
-  catch { statusEl().textContent = "Couldn't copy automatically. Here it is to copy by hand: " + txt; }
-});
 drawEdits();
 
 // notes
@@ -272,10 +292,63 @@ map.on("click", (e) => {
 });
 form.addEventListener("submit", (e) => { e.preventDefault(); const text = field.value.trim(); if (spot && text) { notes.push({ at: spot, text }); save(); drawNotes(); } closeForm(); });
 document.querySelector("#note-cancel").addEventListener("click", closeForm);
-document.querySelector("#copy").addEventListener("click", async () => {
-  const txt = notes.map((n, i) => (i + 1) + ". " + n.text + " (" + n.at[0] + ", " + n.at[1] + ") https://www.google.com/maps?q=" + n.at[0] + "," + n.at[1]).join("\\n");
-  try { await navigator.clipboard.writeText(txt || "(no notes)"); status.textContent = "Copied " + notes.length + " notes. Paste them into the project chat."; }
-  catch { status.textContent = "Couldn't copy automatically; select the list and copy it."; }
+// ---------- field walk: GPS position, crosshair and typed marks ----------
+const TYPES = ["Driveway start", "Driveway end", "Bollard", "Flexible post", "Wheel stop", "Barrier starts", "Barrier ends", "Sign", "Curb / gap", "Hazard", "Photo taken", "Other"];
+const MKEY = "cardiff-field-marks";
+let marks = []; try { marks = JSON.parse(localStorage.getItem(MKEY) || "[]"); } catch {}
+const saveMarks = () => { try { localStorage.setItem(MKEY, JSON.stringify(marks)); } catch {} };
+let type = TYPES[0], me = null, meDot = null, meRing = null, watchId = null;
+const typesEl = document.querySelector("#types");
+const fabType = document.querySelector("#fab-type");
+const setType = (t) => { type = t; fabType.value = t; typesEl.querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", String(x.textContent === t))); };
+for (const t of TYPES) { const b = document.createElement("button"); b.type = "button"; b.textContent = t; b.addEventListener("click", () => setType(t)); typesEl.append(b); fabType.append(new Option(t, t)); }
+fabType.addEventListener("change", () => setType(fabType.value));
+setType(type);
+const markLayer = L.layerGroup().addTo(map);
+function drawMarks() {
+  markLayer.clearLayers();
+  const list = document.querySelector("#marks"); list.innerHTML = "";
+  marks.forEach((m, i) => {
+    L.circleMarker(m.at, { radius: 6, color: "#fff", weight: 2, fillColor: "#00b3ff", fillOpacity: 1 }).bindTooltip((i + 1) + ". " + esc(m.type) + (m.note ? " · " + esc(m.note) : ""), { direction: "top" }).addTo(markLayer);
+    const li = document.createElement("li"); li.innerHTML = esc(m.type) + (m.note ? ": " + esc(m.note) : "") + (m.acc ? ' <span style="color:var(--muted)">±' + m.acc + " m</span>" : "") + ' <button aria-label="Delete mark">×</button>';
+    li.querySelector("button").addEventListener("click", () => { marks.splice(i, 1); saveMarks(); drawMarks(); });
+    list.append(li);
+  });
+}
+drawMarks();
+const gpsEl = document.querySelector("#gps"), wrap = document.querySelector("#mapwrap");
+function startGps() {
+  if (!navigator.geolocation) { gpsEl.textContent = "This browser can't share your location. Pan the map to put the crosshair on the spot instead."; return; }
+  watchId = navigator.geolocation.watchPosition((p) => {
+    me = { at: [p.coords.latitude, p.coords.longitude], acc: Math.round(p.coords.accuracy) };
+    if (!meDot) { meRing = L.circle(me.at, { radius: me.acc, color: "#1a73e8", weight: 1, fillOpacity: 0.12, interactive: false }).addTo(map); meDot = L.circleMarker(me.at, { radius: 7, color: "#fff", weight: 2, fillColor: "#1a73e8", fillOpacity: 1, interactive: false }).addTo(map); map.setView(me.at, Math.max(map.getZoom(), 19)); }
+    else { meDot.setLatLng(me.at); meRing.setLatLng(me.at).setRadius(me.acc); }
+    gpsEl.textContent = "GPS accuracy about " + me.acc + " m. Phone GPS can be off by a few metres, so line the crosshair up with the photo before marking.";
+  }, (err) => { gpsEl.textContent = err.code === 1 ? "Location is blocked for this page. You can still pan the map to put the crosshair on the spot." : "Waiting for a GPS fix…"; }, { enableHighAccuracy: true, maximumAge: 2000, timeout: 20000 });
+}
+document.querySelector("#field-toggle").addEventListener("click", (e) => {
+  const on = !wrap.classList.contains("rv-field");
+  wrap.classList.toggle("rv-field", on); e.currentTarget.setAttribute("aria-pressed", String(on)); e.currentTarget.textContent = on ? "Stop field walk" : "Start field walk";
+  if (on) { if (mode) setMode(mode); setAdding(false); startGps(); wrap.scrollIntoView({ behavior: "smooth", block: "start" }); }
+  else if (watchId != null) { navigator.geolocation.clearWatch(watchId); watchId = null; }
+});
+document.querySelector("#fab-me").addEventListener("click", () => { if (me) map.setView(me.at, Math.max(map.getZoom(), 19)); else gpsEl.textContent = "No GPS fix yet."; });
+document.querySelector("#fab-mark").addEventListener("click", () => {
+  const c = map.getCenter(), noteEl = document.querySelector("#mark-note");
+  marks.push({ type, at: [+c.lat.toFixed(6), +c.lng.toFixed(6)], note: noteEl.value.trim(), acc: me ? me.acc : null, t: new Date().toISOString() });
+  noteEl.value = ""; saveMarks(); drawMarks();
+  status.textContent = "Marked " + type + " (" + marks.length + " so far).";
+});
+// ---------- send everything: field marks, notes and map edits as one message ----------
+document.querySelector("#send-all").addEventListener("click", async () => {
+  const lines = [];
+  if (marks.length) lines.push("Field marks:", ...marks.map((m, i) => (i + 1) + ". " + m.type + (m.note ? ": " + m.note : "") + " (" + m.at[0] + ", " + m.at[1] + (m.acc ? ", GPS ±" + m.acc + " m" : "") + ")"));
+  if (notes.length) lines.push("Notes:", ...notes.map((n, i) => (i + 1) + ". " + n.text + " (" + n.at[0] + ", " + n.at[1] + ")"));
+  if (JSON.stringify(ed) !== JSON.stringify(DATA.edits)) lines.push("Cardiff map edits: " + JSON.stringify(ed));
+  const txt = lines.join("\\n") || "(nothing marked yet)";
+  try { if (navigator.share && matchMedia("(pointer: coarse)").matches) { await navigator.share({ title: "Cardiff map marks", text: txt }); status.textContent = "Shared. Pick the Claude app (or paste it into the chat)."; return; } } catch (e) { if (e.name === "AbortError") return; }
+  try { await navigator.clipboard.writeText(txt); status.textContent = "Copied. Paste it into the project chat."; }
+  catch { status.textContent = "Couldn't copy automatically. Select and copy this: " + txt; }
 });
 `).replace(/<\/(script)/gi, "<\\/$1")}</script>`;
 
