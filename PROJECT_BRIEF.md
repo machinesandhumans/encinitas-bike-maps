@@ -45,7 +45,7 @@ What it does: whole 1.27-mile stretch in isometric view; before/after toggle; ri
 3. Site photos: each end of the barrier lines, Ki's / Tower 13 driveways, south NB entrance; rough widths of track and walkway.
 4. Pre-2020 layout (2019 Street View) to make the "before" view accurate.
 5. Build corridors 2–4 on the same template.
-6. Turn on GitHub Pages (Settings → Pages → Deploy from branch `main`, folder `/docs`).
+6. ~~Turn on GitHub Pages~~ Done Oct 24, 2026: https://machinesandhumans.github.io/encinitas-bike-maps/ (field walk at /cardiff/review.html).
 
 ## Where things live
 - Repository: github.com/machinesandhumans/encinitas-bike-maps (see README for folder layout)
