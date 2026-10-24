@@ -165,6 +165,8 @@ document.querySelectorAll("[data-base]").forEach((b) => b.addEventListener("clic
 const groups = {};
 for (const id of Object.keys(COLORS)) groups[id] = L.layerGroup();
 const tip = (layer, text) => layer.bindTooltip(text, { sticky: true });
+// on a phone a tapped tooltip stays open, so a tap on empty map closes it (numbered note tags stay)
+map.on("click", () => map.eachLayer((l) => { const t = l.getTooltip?.(); if (t && !t.options.permanent) l.closeTooltip(); }));
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 tip(L.polyline(DATA.drawn.nb, { color: COLORS.drawnNb, weight: 4 }), "Map: NB track centreline").addTo(groups.drawnNb);
 tip(L.polyline(DATA.drawn.sb, { color: COLORS.drawnSb, weight: 4 }), "Map: SB track centreline").addTo(groups.drawnSb);

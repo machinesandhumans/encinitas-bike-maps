@@ -56,7 +56,9 @@ body{background:var(--cx-page);margin:0}
 #scene .pin[data-sev="serious"] .iso-solid:last-of-type .iso-shade,#scene .pin[data-sev="fatal"] .iso-solid:last-of-type .iso-shade{fill:var(--risk);opacity:.75}
 #scene .pin[data-sev="fatal"] .iso-solid:last-of-type .iso-edge{stroke:var(--anatomy-strong);stroke-width:1.4}
 #scene .pin:focus-visible{outline:none}#scene .pin:focus-visible .iso-edge{stroke:var(--anatomy-lit)}
-#pop{position:absolute;width:250px;padding:10px 12px;background:var(--anatomy-card);box-shadow:0 0 0 1px var(--anatomy-hi),0 6px 18px #0003;font-size:12.5px;line-height:1.45;display:grid;gap:3px;pointer-events:none}
+#pop{position:absolute;width:250px;padding:10px 12px;background:var(--anatomy-card);box-shadow:0 0 0 1px var(--anatomy-hi),0 6px 18px #0003;font-size:12.5px;line-height:1.45;display:grid;gap:3px}
+#pop b{padding-right:28px}
+.pop-x{position:absolute;top:2px;right:2px;width:32px;height:32px;border:0;background:none;color:inherit;font-size:20px;line-height:1;cursor:pointer}
 #pop b{color:var(--anatomy-strong);font-weight:600}
 .cx-hint{position:absolute;left:12px;bottom:10px;font:10.5px var(--anatomy-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--anatomy-muted);pointer-events:none}
 #where{position:absolute;right:12px;bottom:10px;font:10.5px var(--anatomy-mono);color:var(--anatomy-text);font-variant-numeric:tabular-nums;pointer-events:none}
@@ -85,7 +87,7 @@ const page = `<title>Cardiff Cycle Track</title>
 <div class="cx iso" data-theme="light"><div class="cx-in">
 <header><h1>Coast Hwy 101 cycle track, Cardiff</h1><p class="cx-sub">Chesterfield Dr to the Solana Beach line, 1.27 miles. Layout from OpenStreetMap, straightened along the road.</p></header>
 <div class="cx-bar">
-  <div class="cx-group" role="group" aria-label="Period"><button class="cx-btn" data-era-btn="before" aria-pressed="false">Before · ${segCount("before")} crashes</button><button class="cx-btn" data-era-btn="after" aria-pressed="true">After · ${segCount("after")} crashes</button></div>
+  <div class="cx-group" role="group" aria-label="Period"><button class="cx-btn" data-era-btn="before" aria-pressed="false">Jan ’16–Mar ’20 · ${segCount("before")} crashes</button><button class="cx-btn" data-era-btn="after" aria-pressed="true">Apr ’20–Present · ${segCount("after")} crashes</button></div>
   <div class="cx-group" role="group" aria-label="Ride along"><button class="cx-btn" data-ride="1" aria-pressed="false">Ride north</button><button class="cx-btn" data-ride="-1" aria-pressed="false">Ride south</button></div>
   <div class="cx-group" role="group" aria-label="Zoom"><button class="cx-btn" data-zoom="0" aria-pressed="true">Close</button><button class="cx-btn" data-zoom="1" aria-pressed="false">Block</button><button class="cx-btn" data-zoom="2" aria-pressed="false">Wide</button></div>
   <span id="era-note"></span>

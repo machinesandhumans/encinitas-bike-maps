@@ -144,7 +144,9 @@ body{background:var(--cx-page);margin:0}
 #scene .pin[data-sev="serious"] .iso-solid:last-of-type .iso-shade,#scene .pin[data-sev="fatal"] .iso-solid:last-of-type .iso-shade{fill:var(--risk);opacity:.75}
 #scene .pin[data-sev="fatal"] .iso-solid:last-of-type .iso-edge{stroke:var(--anatomy-strong);stroke-width:1.4}
 #scene .pin:focus-visible{outline:none}#scene .pin:focus-visible .iso-edge{stroke:var(--anatomy-lit)}
-#pop{position:absolute;width:250px;padding:10px 12px;background:var(--anatomy-card);box-shadow:0 0 0 1px var(--anatomy-hi),0 6px 18px #0003;font-size:12.5px;line-height:1.45;display:grid;gap:3px;pointer-events:none}
+#pop{position:absolute;width:250px;padding:10px 12px;background:var(--anatomy-card);box-shadow:0 0 0 1px var(--anatomy-hi),0 6px 18px #0003;font-size:12.5px;line-height:1.45;display:grid;gap:3px}
+#pop b{padding-right:28px}
+.pop-x{position:absolute;top:2px;right:2px;width:32px;height:32px;border:0;background:none;color:inherit;font-size:20px;line-height:1;cursor:pointer}
 #pop b{color:var(--anatomy-strong);font-weight:600}
 .cx-hint{position:absolute;left:12px;bottom:10px;font:10.5px var(--anatomy-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--anatomy-muted);pointer-events:none}
 #where{position:absolute;right:12px;bottom:10px;font:10.5px var(--anatomy-mono);color:var(--anatomy-text);font-variant-numeric:tabular-nums;pointer-events:none}
@@ -169,7 +171,7 @@ body{background:var(--cx-page);margin:0}
 <div class="cx iso" data-theme="light"><div class="cx-in">
 <header><h1>Coast Hwy 101 cycle track, Cardiff</h1><p class="cx-sub">Chesterfield Dr to the Solana Beach line, 1.27 miles. Layout from OpenStreetMap, straightened along the road.</p></header>
 <div class="cx-bar">
-  <div class="cx-group" role="group" aria-label="Period"><button class="cx-btn" data-era-btn="before" aria-pressed="false">Before · 4 crashes</button><button class="cx-btn" data-era-btn="after" aria-pressed="true">After · 11 crashes</button></div>
+  <div class="cx-group" role="group" aria-label="Period"><button class="cx-btn" data-era-btn="before" aria-pressed="false">Jan ’16–Mar ’20 · 4 crashes</button><button class="cx-btn" data-era-btn="after" aria-pressed="true">Apr ’20–Present · 11 crashes</button></div>
   <div class="cx-group" role="group" aria-label="Ride along"><button class="cx-btn" data-ride="1" aria-pressed="false">Ride north</button><button class="cx-btn" data-ride="-1" aria-pressed="false">Ride south</button></div>
   <div class="cx-group" role="group" aria-label="Zoom"><button class="cx-btn" data-zoom="0" aria-pressed="true">Close</button><button class="cx-btn" data-zoom="1" aria-pressed="false">Block</button><button class="cx-btn" data-zoom="2" aria-pressed="false">Wide</button></div>
   <span id="era-note"></span>
@@ -1114,12 +1116,15 @@ mini.addEventListener("pointerup", () => (mdrag = false));
 const fmt = (c) => `<b>${c.date} · ${c.injury}</b><span>${c.dirText ? c.dirText : c.dirUnknown ? "Direction not recorded (2025 detail not yet published)," : c.side === "NB" ? "Northbound" : "Southbound"} rider · hit ${c.hit.toLowerCase()}</span><span>Official factor: ${c.factor}</span><span>${c.where}${c.approx ? " (position estimated)" : ""}</span>`;
 function showPop(id, x, y) {
   const c = CRASHES.find((k) => String(k.id) === String(id)); if (!c) return;
-  pop.innerHTML = fmt(c); pop.hidden = false;
+  pop.innerHTML = fmt(c) + '<button type="button" class="pop-x" aria-label="Close">×</button>'; pop.hidden = false;
   const box = stage.getBoundingClientRect();
   pop.style.left = Math.min(box.width - 260, Math.max(8, x - box.left - 120)) + "px";
   pop.style.top = Math.max(8, y - box.top - pop.offsetHeight - 14) + "px";
 }
 function hidePop() { pop.hidden = true; }
+pop.addEventListener("pointerdown", (e) => e.stopPropagation());
+pop.addEventListener("click", (e) => { if (e.target.closest(".pop-x")) hidePop(); });
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") hidePop(); });
 scene.addEventListener("click", (e) => { const p = e.target.closest(".pin"); if (p) { showPop(p.dataset.id, e.clientX, e.clientY); e.stopPropagation(); } });
 scene.addEventListener("keydown", (e) => { const p = e.target.closest?.(".pin"); if (p && (e.key === "Enter" || e.key === " ")) { const r = p.getBoundingClientRect(); showPop(p.dataset.id, r.left + r.width / 2, r.top); e.preventDefault(); } });
 mini.addEventListener("click", (e) => { const d = e.target.closest(".mm-dot"); if (!d) return; const c = CRASHES.find((k) => String(k.id) === d.dataset.id); if (c && ERA(c) !== "edge" && ERA(c) !== state.era) setEra(ERA(c)); });
