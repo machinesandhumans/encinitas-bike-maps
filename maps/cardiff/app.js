@@ -247,12 +247,15 @@ mini.addEventListener("pointerup", () => (mdrag = false));
 const fmt = (c) => `<b>${c.date} · ${c.injury}</b><span>${c.dirText ? c.dirText : c.dirUnknown ? "Direction not recorded (2025 detail not yet published)," : c.side === "NB" ? "Northbound" : "Southbound"} rider · hit ${c.hit.toLowerCase()}</span><span>Official factor: ${c.factor}</span><span>${c.where}${c.approx ? " (position estimated)" : ""}</span>`;
 function showPop(id, x, y) {
   const c = CRASHES.find((k) => String(k.id) === String(id)); if (!c) return;
-  pop.innerHTML = fmt(c); pop.hidden = false;
+  pop.innerHTML = fmt(c) + '<button type="button" class="pop-x" aria-label="Close">×</button>'; pop.hidden = false;
   const box = stage.getBoundingClientRect();
   pop.style.left = Math.min(box.width - 260, Math.max(8, x - box.left - 120)) + "px";
   pop.style.top = Math.max(8, y - box.top - pop.offsetHeight - 14) + "px";
 }
 function hidePop() { pop.hidden = true; }
+pop.addEventListener("pointerdown", (e) => e.stopPropagation());
+pop.addEventListener("click", (e) => { if (e.target.closest(".pop-x")) hidePop(); });
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") hidePop(); });
 scene.addEventListener("click", (e) => { const p = e.target.closest(".pin"); if (p) { showPop(p.dataset.id, e.clientX, e.clientY); e.stopPropagation(); } });
 scene.addEventListener("keydown", (e) => { const p = e.target.closest?.(".pin"); if (p && (e.key === "Enter" || e.key === " ")) { const r = p.getBoundingClientRect(); showPop(p.dataset.id, r.left + r.width / 2, r.top); e.preventDefault(); } });
 mini.addEventListener("click", (e) => { const d = e.target.closest(".mm-dot"); if (!d) return; const c = CRASHES.find((k) => String(k.id) === d.dataset.id); if (c && ERA(c) !== "edge" && ERA(c) !== state.era) setEra(ERA(c)); });

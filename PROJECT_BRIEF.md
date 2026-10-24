@@ -36,7 +36,7 @@ What it does: whole 1.27-mile stretch in isometric view; before/after toggle; ri
 - Mark's satellite review notes (data/field/cardiff-review-notes-2026-10-24.json) set the south ends: NB separation starts at s 287 (33.001891, -117.276737), SB separation ends at s 245 (33.001484, -117.276654). OSM's diagonal connectors to the centreline there are not real paths. His other notes confirmed OSM's track lines over the old drawing.
 - Buildings, parking lots and driveways now also come from OSM (`node maps/cardiff/osm-layout.mjs` writes `maps/cardiff/layout.mjs`; it replaced osm-tracks.mjs/tracks.mjs). Buildings are real outlines; driveways are curb-cut stretches [s0, s1, side, name, id], 8 m wide by default. OSM lacks some driveways the old map had (e.g. around Ki's/Plastino and the west-side restaurant lots).
 - Field edits: the satellite review page has Move buildings / Mark driveway tools; Mark copies the edits and pastes them in chat. Save them to `data/field/cardiff-edits.json`, then rerun osm-layout.mjs, build.mjs and review.mjs.
-- Field walk mode (review page): GPS dot, crosshair and typed marks (driveway start/end, bollard, post, wheel stop, barrier start/end, sign, curb gap, hazard, photo). Meant for GitHub Pages on a phone (geolocation and imagery need https and are blocked in Claude artifacts). "Send everything" shares marks, notes and edits as text for the chat.
+- Field walk mode (review page): GPS dot, crosshair and typed marks (driveway start/end, bollard, post, wheel stop, barrier start/end, sign, curb gap, hazard, photo). Meant for GitHub Pages on a phone (geolocation and imagery need https and are blocked in Claude artifacts). "Send everything" shares marks, notes and edits as text for the chat. The crosshair follows GPS until the map is dragged; each mark stores the crosshair, the GPS fix and the time.
 - OSM shows the SB path continuing north of Chesterfield on the west side (to about s 2600); the map still starts the SB track at the Chesterfield signal.
 - Mark says the south and north track entrances/exits don't match how the path works. Waiting on his ride-through description before redrawing them.
 
@@ -46,7 +46,7 @@ What it does: whole 1.27-mile stretch in isometric view; before/after toggle; ri
 3. Site photos: each end of the barrier lines, Ki's / Tower 13 driveways, south NB entrance; rough widths of track and walkway.
 4. Pre-2020 layout (2019 Street View) to make the "before" view accurate.
 5. Build corridors 2–4 on the same template.
-6. Mark's field walk (GitHub Pages review page): driveways, bollards, posts, barrier ends; and where the SB track starts at the north end (Chesterfield signal or further north). South entrance/exit already set from his satellite notes.
+6. Mark's field walk (GitHub Pages review page): first walk 2026-10-24 saved in data/field/cardiff-field-marks-2026-10-24.json (59 marks, order reliable but positions not: the crosshair didn't follow GPS then, so marks bunch on a few points; not applied to the map; photos not to be mapped yet). Needs a second walk with the fixed page for driveways, bollards, posts, barrier ends; and where the SB track starts at the north end (Chesterfield signal or further north). South entrance/exit already set from his satellite notes.
 
 ## Where things live
 - Repository: github.com/machinesandhumans/encinitas-bike-maps (see README for folder layout)
