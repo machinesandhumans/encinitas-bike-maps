@@ -1,6 +1,6 @@
 # Encinitas Bike Infrastructure Maps — Project Brief
 
-Last updated: October 23, 2026
+Last updated: October 24, 2026
 
 ## Goal
 Interactive, spatially accurate maps of four Encinitas road projects, showing where the layout narrows riders' options (barriers, blind spots, driveway crossings, entries and exits) and where official crashes happened, before and after each change. The maps must stay objective: official data kept separate from advocate reports, and gaps stated openly.
@@ -26,6 +26,10 @@ What it does: whole 1.27-mile stretch in isometric view; before/after toggle; ri
 - **March 2024 fatality:** official record says 2700 block, no coordinates, primary factor bicycling under the influence (VC 21200.5). By street number that places it near the beach lot south of Las Olas. User believes it was at the south entrance of the NB track. **Unresolved — needs a source before publishing.**
 - Advocates count 36–42 crashes since 2020 (Facebook group "Encinitas: Please Restore Safe Cycling", facebook.com/groups/556935515245051). Not yet obtained.
 - Santa Fe: state SB 114 (signed Sep 18, 2026) blocks removing the protected lanes for 5 years after completion.
+
+## Accuracy work (Oct 24, 2026)
+- Lagoon outlet bridge now drawn: water channel under the road, edged deck, solid parapets, labels. Not yet on the live artifact.
+- Mark says the south and north track entrances/exits don't match how the path works. Waiting on his ride-through description before redrawing them.
 
 ## Open items
 1. Confirm location of the March 2024 fatal crash.

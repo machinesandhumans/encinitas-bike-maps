@@ -131,7 +131,7 @@ body{background:var(--cx-page);margin:0}
 #stage:focus-visible{outline:2px solid var(--anatomy-hi)}
 #scene{display:block;width:100%;height:auto}
 #scene .g-land{fill:var(--land)}#scene .g-sea{fill:var(--sea)}#scene .g-sand{fill:var(--sand)}#scene .g-lot{fill:var(--lot)}
-#scene .g-road{fill:var(--road)}#scene .g-walk{fill:var(--walk)}#scene .g-drive{fill:var(--drive)}
+#scene .g-road{fill:var(--road)}#scene .g-walk{fill:var(--walk)}#scene .g-drive{fill:var(--drive)}#scene .g-bridge{fill:var(--road);stroke:var(--ink,#555);stroke-width:1.2;stroke-opacity:.55}#scene .water{fill:#2f6f8f;font-style:italic}.cx[data-theme="dark"] #scene .water{fill:#7fb3cc}
 #scene .m-yellow{stroke:var(--yellow)}
 #scene .risk{fill:var(--risk);opacity:.45}#scene .risk.dim{opacity:.18}
 #scene .cx-ground{fill:var(--anatomy-text);font-family:var(--anatomy-mono);letter-spacing:.02em}
@@ -932,8 +932,12 @@ function render() {
   ground.push(`<path class="g-sea" d="${poly(band(s0, s1, (s) => Math.min(dCoast(s), SPAN.west), () => SPAN.west))}"/>`);
   // lots
   for (const [k, a, b, d0, d1] of BOXES) if (k === "p" && b > s0 && a < s1) ground.push(`<path class="g-lot" d="${poly([[Math.max(a, s0), Math.max(d0, SPAN.east)], [Math.min(b, s1), Math.max(d0, SPAN.east)], [Math.min(b, s1), Math.min(d1, SPAN.west)], [Math.max(a, s0), Math.min(d1, SPAN.west)]])}"/>`);
+  // lagoon outlet: water runs under the bridges from the lagoon (east) to the sea
+  for (const [a, b] of BRIDGES) if (b > s0 && a < s1) ground.push(`<path class="g-sea" d="${poly([[Math.max(a + 2, s0), SPAN.east], [Math.min(b - 2, s1), SPAN.east], [Math.min(b - 2, s1), SPAN.west], [Math.max(a + 2, s0), SPAN.west]])}"/>`);
   // road surface (travel lanes + both tracks)
   ground.push(`<path class="g-road" d="${poly(band(lo, hi, eastEdge, westEdge, 3))}"/>`);
+  // bridge deck, edged so it reads as a structure over the water
+  for (const [a, b] of BRIDGES) if (b > s0 && a < s1) { const ba = Math.max(a, s0), bb = Math.min(b, s1); ground.push(`<path class="g-bridge" d="${poly(band(ba, bb, (s) => eastEdge(s) - 0.4, (s) => westEdge(s) + 0.4, 2))}"/>`); }
   // walkway west of the SB track
   const wl = Math.max(lo, SB[0][0] + 30), wh = Math.min(hi, SB[SB.length - 1][0]);
   if (wh > wl) ground.push(`<path class="g-walk" d="${poly(band(wl, wh, (s) => westEdge(s), (s) => westEdge(s) + 1.4))}"/>`);
@@ -992,8 +996,11 @@ function render() {
       }
     }
   }
-  // bridge railings
-  for (const [a, b] of BRIDGES) if (b > s0 && a < s1) for (const d of [eastEdge((a + b) / 2), westEdge((a + b) / 2)]) items.push({ key: depthAt((a + b) / 2, d), svg: lineSvg(segment(toK(a, d, 1.1), toK(b, d, 1.1), P) + segment(toK(a, d, 0), toK(a, d, 1.1), P) + segment(toK(b, d, 0), toK(b, d, 1.1), P), { tone: "mid" }) });
+  // bridge railings: solid parapets along both outer edges
+  for (const [a, b] of BRIDGES) if (b > s0 && a < s1) for (const [d, out] of [[eastEdge((a + b) / 2) - 0.4, -0.35], [westEdge((a + b) / 2) + 0.4, 0]]) {
+    const ka = Math.max(a, s0 - 5), kb = Math.min(b, s1 + 5), k = toK(ka, d + out);
+    items.push({ key: depthAt((ka + kb) / 2, d), svg: solidSvg(slabOf({ x: k[0], y: k[1], w: kb - ka, d: 0.35, r: 0.05 }, 0, 1.1, P, 2), { tone: "mid" }) });
+  }
   // buildings
   for (const [k, a, b, d0, d1, name] of BOXES) if (k === "b" && b > s0 - 5 && a < s1 + 5) {
     const ka = Math.max(a, s0 - 5), kb = Math.min(b, s1 + 5);
@@ -1027,6 +1034,7 @@ function render() {
   const labels = [];
   for (const [name, s, d] of POIS) if (s > s0 + 4 && s < s1 - 4 && d > SPAN.east + 4 && d < SPAN.west - 4) { const b = BOXES.find((q) => q[0] === "b" && q[5] && q[5] === name); labels.push(b ? flatText((b[1] + b[2]) / 2, (b[3] + b[4]) / 2, name, close ? 2.4 : 5, "", 4.2) : flatText(s, d, name, close ? 2.4 : 5)); }
   if (s0 < 270 && s1 > 230 && after) labels.push(flatText(250, -15.5, "NB track begins · first wheel stop", close ? 1.6 : 3.6, "warn"));
+  for (const [a, b] of BRIDGES) if (b > s0 && a < s1) { const m = (a + b) / 2; if (m > s0 + 4 && m < s1 - 4) { labels.push(flatText(m, SPAN.east + (close ? 12 : 22), "from San Elijo Lagoon", close ? 2.2 : 4.6, "water")); labels.push(flatText(m, SPAN.west - (close ? 10 : 20), "to the ocean", close ? 2.2 : 4.6, "water")); } }
   if (s0 < 225 && s1 > 160) labels.push(flatText(190, -10.5, "NB: down the hill from Solana Beach, 45 mph posted", close ? 1.6 : 3.6));
   const clip = `<clipPath id="win"><path d="${poly([[s0, SPAN.east], [s1, SPAN.east], [s1, SPAN.west], [s0, SPAN.west]])}"/></clipPath>`;
   scene.innerHTML = clip + `<g clip-path="url(#win)">${ground.join("") + marks.join("")}</g>` + items.map((i) => i.svg).join("") + labels.join("");

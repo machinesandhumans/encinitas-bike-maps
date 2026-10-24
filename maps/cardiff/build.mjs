@@ -43,7 +43,7 @@ body{background:var(--cx-page);margin:0}
 #stage:focus-visible{outline:2px solid var(--anatomy-hi)}
 #scene{display:block;width:100%;height:auto}
 #scene .g-land{fill:var(--land)}#scene .g-sea{fill:var(--sea)}#scene .g-sand{fill:var(--sand)}#scene .g-lot{fill:var(--lot)}
-#scene .g-road{fill:var(--road)}#scene .g-walk{fill:var(--walk)}#scene .g-drive{fill:var(--drive)}
+#scene .g-road{fill:var(--road)}#scene .g-walk{fill:var(--walk)}#scene .g-drive{fill:var(--drive)}#scene .g-bridge{fill:var(--road);stroke:var(--ink,#555);stroke-width:1.2;stroke-opacity:.55}#scene .water{fill:#2f6f8f;font-style:italic}.cx[data-theme="dark"] #scene .water{fill:#7fb3cc}
 #scene .m-yellow{stroke:var(--yellow)}
 #scene .risk{fill:var(--risk);opacity:.45}#scene .risk.dim{opacity:.18}
 #scene .cx-ground{fill:var(--anatomy-text);font-family:var(--anatomy-mono);letter-spacing:.02em}
