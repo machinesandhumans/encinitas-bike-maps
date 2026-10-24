@@ -36,6 +36,6 @@ What it does: whole 1.27-mile stretch in isometric view; before/after toggle; ri
 6. Turn on GitHub Pages (Settings → Pages → Deploy from branch `main`, folder `/docs`).
 
 ## Where things live
-- Repository: github.com/all-nor-null/encinitas-bike-maps (see README for folder layout)
+- Repository: github.com/machinesandhumans/encinitas-bike-maps (see README for folder layout)
 - Rebuild the Cardiff map: `node maps/cardiff/build.mjs` (writes `docs/cardiff/index.html` for GitHub Pages and `maps/cardiff/cardiff-corridor.html` for the Claude artifact)
 - Crash data: `data/ccrs/`
