@@ -1,5 +1,7 @@
 # Encinitas Bike Maps
 
+**▶ Live maps: [machinesandhumans.github.io/encinitas-bike-maps](https://machinesandhumans.github.io/encinitas-bike-maps/)** · [Cardiff cycle track](https://machinesandhumans.github.io/encinitas-bike-maps/cardiff/)
+
 Interactive, spatially accurate maps of four Encinitas road projects, showing where each layout narrows riders' options and where official crashes happened before and after the change.
 
 **Start with [PROJECT_BRIEF.md](PROJECT_BRIEF.md)** for status, data sources, decisions and open items.
