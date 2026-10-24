@@ -11,8 +11,8 @@ const lerpLine = (line, s) => {
 const NB = NB_TRACK, SB = [...SB_TRACK].reverse();
 const nbOn = (s) => s >= NB[0][0] && s <= NB[NB.length - 1][0];
 const sbOn = (s) => s >= SB[0][0] && s <= SB[SB.length - 1][0];
-// where each track meets the road: NB riders enter at NB_IN and are separated by NB_SEP; SB riders lose the barrier at SB_SEP and rejoin the road at SB_OUT
-const NB_IN = NB[0][0], NB_SEP = NB[1][0], SB_OUT = SB[0][0], SB_SEP = SB[1][0];
+// where each track meets the road: NB riders move over from NB_IN and the barrier begins at NB_SEP; the SB barrier and track end together at SB_OUT
+const NB_SEP = NB[0][0], NB_IN = NB_SEP - 30, SB_OUT = SB[0][0], SB_SEP = SB_OUT;
 const dNB = (s) => lerpLine(NB, s), dSB = (s) => lerpLine(SB, s), dCoast = (s) => lerpLine(COAST, s);
 const TRACK_W = 1.6, BUF = 0.7;
 const eastEdge = (s) => (nbOn(s) ? Math.min(dNB(s), -6.5) - TRACK_W / 2 : -7.6);
