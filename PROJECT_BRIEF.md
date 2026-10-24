@@ -33,9 +33,9 @@ What it does: whole 1.27-mile stretch in isometric view; before/after toggle; ri
 3. Site photos: each end of the barrier lines, Ki's / Tower 13 driveways, south NB entrance; rough widths of track and walkway.
 4. Pre-2020 layout (2019 Street View) to make the "before" view accurate.
 5. Build corridors 2–4 on the same template.
-6. Decide permanent hosting (current: Claude artifact; option: GitHub Pages).
+6. Turn on GitHub Pages (Settings → Pages → Deploy from branch `main`, folder `/docs`).
 
-## Files in the bundle
-- `cardiff2/` — current map: `data.mjs` (road geometry), `crashes.mjs` (crash records and placement), `app.js` (interactive view), `build.mjs` (builds the page). Rebuild with `node build.mjs`; requires the anatomy kit (github.com/wheresryan22/anatomy) in `../../vendor/anatomy`.
-- `cardiff/` — first prototype (three slices), superseded.
-- `encinitas_crash_data/` — CCRS extracts by corridor plus citywide yearly counts, with methods notes.
+## Where things live
+- Repository: github.com/MarfSalamander/encinitas-bike-maps (see README for folder layout)
+- Rebuild the Cardiff map: `node maps/cardiff/build.mjs` (writes `docs/cardiff/index.html` for GitHub Pages and `maps/cardiff/cardiff-corridor.html` for the Claude artifact)
+- Crash data: `data/ccrs/`
