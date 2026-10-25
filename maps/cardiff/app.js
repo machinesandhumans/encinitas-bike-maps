@@ -35,7 +35,8 @@ const ICON = {
   fatal: `<g class="ic-bones" stroke="currentColor" fill="currentColor" stroke-linecap="round">${BONE(4.5, 13.5, 19.5, 22)}${BONE(19.5, 13.5, 4.5, 22)}</g><path class="ic-head" d="M12 2.2C7.6 2.2 4.6 5.3 4.6 9.3c0 2.5 1.2 4.3 2.9 5.3V17.6h9V14.6c1.7-1 2.9-2.8 2.9-5.3C19.4 5.3 16.4 2.2 12 2.2Z"/><path class="ic-cut" d="M9 7.9a1.9 1.9 0 1 0 0.01 0ZM15 7.9a1.9 1.9 0 1 0 0.01 0ZM12 11.8l-1.1 2h2.2ZM9.7 15.6v2M12 15.6v2M14.3 15.6v2"/>`,
   injury: `<g stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${CRUTCH(8.6, -11)}${CRUTCH(15.4, 11)}</g>`,
 };
-const iconSvg = (c, size, x = 0, y = 0, cls = "") => `<svg class="ic ${cls}" data-sev="${SEV(c)}" x="${x}" y="${y}" width="${size}" height="${size}" viewBox="0 0 24 24" aria-hidden="true">${ICON[SEV(c) === "fatal" ? "fatal" : "injury"]}</svg>`;
+ICON.minor = `<g transform="rotate(-45 12 12)"><rect x="1.2" y="7.4" width="21.6" height="9.2" rx="4.6" fill="none" stroke="currentColor" stroke-width="1.7"/><rect x="8.2" y="8.6" width="7.6" height="6.8" rx="1" fill="currentColor"/><g fill="currentColor"><circle cx="4.6" cy="10.6" r=".8"/><circle cx="4.6" cy="13.4" r=".8"/><circle cx="19.4" cy="10.6" r=".8"/><circle cx="19.4" cy="13.4" r=".8"/></g></g>`;
+const iconSvg = (c, size, x = 0, y = 0, cls = "") => `<svg class="ic ${cls}" data-sev="${SEV(c)}" x="${x}" y="${y}" width="${size}" height="${size}" viewBox="0 0 24 24" aria-hidden="true">${ICON[SEV(c) === "fatal" ? "fatal" : SEV(c) === "minor" ? "minor" : "injury"]}</svg>`;
 
 // ---------- camera ----------
 const VW = 1000, VH = 560;
