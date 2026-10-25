@@ -17,6 +17,9 @@ const crashes = CRASHES.map((c) => ({ ...c, s: c.addr != null ? sOfAddr(c.addr) 
 
 const DATA = { NB_TRACK: D.NB_TRACK, SB_TRACK: D.SB_TRACK, DRIVES: D.DRIVES, BUILDINGS: D.BUILDINGS, LOTS: D.LOTS, COAST: D.COAST, POIS: D.POIS, RANGE: D.RANGE, LIMITS: D.LIMITS, BRIDGES: D.BRIDGES, UNLIT: D.UNLIT, CRASHES: crashes };
 
+const inWin = (c, a, b) => !c.edge && c.s != null && c.date >= a && c.date < b;
+const eqBefore = crashes.filter((c) => inWin(c, "2015-01", "2020-04")).length, eqAfter = crashes.filter((c) => inWin(c, "2020-04", "2025-07")).length;
+const fixedIn = (era) => crashes.filter((c) => (era === "after" ? inWin(c, "2020-04", "2025-07") : inWin(c, "2015-01", "2020-04")) && /^Fixed object/.test(c.hit)).length;
 const segCount = (era) => crashes.filter((c) => !c.edge && (era === "after") === c.date >= "2020-04").length;
 
 const CSS = `
@@ -52,15 +55,18 @@ body{background:var(--cx-page);margin:0}
 #scene .pin{cursor:pointer}
 #scene .rider-ring{fill:none;stroke:var(--risk);stroke-width:1.6}
 #scene .pin-hit{fill:transparent;stroke:none}
-#scene .pin[data-sev="serious"] .iso-solid:last-of-type .iso-top,#scene .pin[data-sev="fatal"] .iso-solid:last-of-type .iso-top{fill:var(--risk)}
-#scene .pin[data-sev="serious"] .iso-solid:last-of-type .iso-shade,#scene .pin[data-sev="fatal"] .iso-solid:last-of-type .iso-shade{fill:var(--risk);opacity:.75}
-#scene .pin[data-sev="fatal"] .iso-solid:last-of-type .iso-edge{stroke:var(--anatomy-strong);stroke-width:1.4}
-#scene .pin:focus-visible{outline:none}#scene .pin:focus-visible .iso-edge{stroke:var(--anatomy-lit)}
+.ic{overflow:visible;color:var(--anatomy-mid)}.ic[data-sev="serious"]{color:var(--risk)}.ic[data-sev="fatal"]{color:var(--anatomy-strong)}
+.ic .ic-head{fill:currentColor}.ic .ic-cut{fill:var(--anatomy-card);stroke:var(--anatomy-card);stroke-width:.9;stroke-linecap:round}.ic .ic-bones circle{stroke:none}
+#scene .pin-badge,#mini .mm-badge{fill:var(--anatomy-card);stroke:var(--anatomy-mid);stroke-width:1.2}
+#scene .pin[data-sev="serious"] .pin-badge,#mini .mm-dot[data-sev="serious"] .mm-badge{stroke:var(--risk)}
+#scene .pin[data-sev="fatal"] .pin-badge,#mini .mm-dot[data-sev="fatal"] .mm-badge{stroke:var(--risk);stroke-width:2.2}
+#scene .pin:focus-visible{outline:none}#scene .pin:focus-visible .pin-badge{stroke:var(--anatomy-lit);stroke-width:2.4}
 #pop{position:absolute;width:250px;padding:10px 12px;background:var(--anatomy-card);box-shadow:0 0 0 1px var(--anatomy-hi),0 6px 18px #0003;font-size:12.5px;line-height:1.45;display:grid;gap:3px}
 #pop b{padding-right:28px}
 .pop-x{position:absolute;top:2px;right:2px;width:32px;height:32px;border:0;background:none;color:inherit;font-size:20px;line-height:1;cursor:pointer}
 #pop[hidden]{display:none}
 #pop b{color:var(--anatomy-strong);font-weight:600}
+#pop .pop-h{display:flex;align-items:center;gap:8px}#pop .pop-ic{flex:none;width:26px;height:26px}
 .cx-hint{position:absolute;left:12px;bottom:10px;font:10.5px var(--anatomy-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--anatomy-muted);pointer-events:none}
 #where{position:absolute;right:12px;bottom:10px;font:10.5px var(--anatomy-mono);color:var(--anatomy-text);font-variant-numeric:tabular-nums;pointer-events:none}
 #mini{display:block;width:100%;height:auto;cursor:pointer;touch-action:none}
@@ -68,17 +74,14 @@ body{background:var(--cx-page);margin:0}
 #mini .mm-track{stroke:var(--anatomy-mid);stroke-width:2.2}
 #mini .mm-tick{stroke:var(--anatomy-lo);stroke-dasharray:2 3}
 #mini .mm-lbl,#mini .mm-row{fill:var(--anatomy-muted);font:10px var(--anatomy-mono)}
-#mini .mm-dot{fill:var(--anatomy-mid);stroke:var(--anatomy-card);stroke-width:1}
-#mini .mm-dot[data-sev="serious"],#mini .mm-dot[data-sev="fatal"]{fill:var(--risk)}
-#mini .mm-dot[data-sev="fatal"]{stroke:var(--anatomy-strong);stroke-width:1.4}
 #mini .mm-dot[data-dim]{opacity:.15}
 #mini .mm-win{fill:var(--anatomy-hi);fill-opacity:.08;stroke:var(--anatomy-hi);stroke-width:1.2}
 .cx-foot{font-size:12px;color:var(--anatomy-muted)}
 .cx-foot summary{cursor:pointer;color:var(--anatomy-text)}
 .cx-foot ul{margin:6px 0 0;padding-left:18px}
 .cx-legend{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:12px;color:var(--anatomy-muted)}
-.cx-legend i{display:inline-block;width:10px;height:10px;margin-right:6px;vertical-align:-1px;border-radius:50%;background:var(--anatomy-mid)}
-.cx-legend i.r{background:var(--risk)}.cx-legend i.z{border-radius:0;background:var(--risk);opacity:.55}
+.cx-legend>span{display:inline-flex;align-items:center;gap:6px}.cx-legend [data-legend-icon]{display:inline-flex}
+.cx-legend i.z{display:inline-block;width:10px;height:10px;background:var(--risk);opacity:.55}
 @media (max-width:600px){.cx-hint{display:none}}
 `;
 
@@ -88,16 +91,17 @@ const page = `<title>Cardiff Cycle Track</title>
 <div class="cx iso" data-theme="light"><div class="cx-in">
 <header><h1>Coast Hwy 101 cycle track, Cardiff</h1><p class="cx-sub">Chesterfield Dr to the Solana Beach line, 1.27 miles. Layout from OpenStreetMap, straightened along the road.</p></header>
 <div class="cx-bar">
-  <div class="cx-group" role="group" aria-label="Period"><button class="cx-btn" data-era-btn="before" aria-pressed="false">Jan ’16–Mar ’20 · ${segCount("before")} crashes</button><button class="cx-btn" data-era-btn="after" aria-pressed="true">Apr ’20–Present · ${segCount("after")} crashes</button></div>
+  <div class="cx-group" role="group" aria-label="Period"><button class="cx-btn" data-era-btn="before" aria-pressed="false">Jan ’15–Mar ’20 · ${segCount("before")} crashes</button><button class="cx-btn" data-era-btn="after" aria-pressed="true">Apr ’20–Present · ${segCount("after")} crashes</button></div>
   <div class="cx-group" role="group" aria-label="Ride along"><button class="cx-btn" data-ride="1" aria-pressed="false">Ride north</button><button class="cx-btn" data-ride="-1" aria-pressed="false">Ride south</button></div>
   <div class="cx-group" role="group" aria-label="Zoom"><button class="cx-btn" data-zoom="0" aria-pressed="true">Close</button><button class="cx-btn" data-zoom="1" aria-pressed="false">Block</button><button class="cx-btn" data-zoom="2" aria-pressed="false">Wide</button></div>
   <span id="era-note"></span>
 </div>
 <div id="stage" tabindex="0" aria-label="Isometric view of the corridor. Drag sideways or use the arrow keys to travel along it."><svg id="scene" class="iso-svg" viewBox="0 0 1000 560" role="img" aria-label="Isometric view of Coast Highway 101 with both cycle tracks, barriers, driveways and crash locations"></svg><div id="pop" hidden></div><span class="cx-hint">Drag to travel · tap a pin</span><span id="where"></span></div>
 <svg id="mini" viewBox="0 0 1000 96" role="img" aria-label="Whole corridor with crash locations; tap to jump there"></svg>
-<div class="cx-legend"><span><i></i>Crash, minor injury</span><span><i class="r"></i>Severe, serious or fatal</span><span><i class="z"></i>Where drivers cross the track, or riders must enter it</span></div>
+<div class="cx-legend"><span><span data-legend-icon="Fatal"></span>Death</span><span><span data-legend-icon="Severe"></span>Severe or serious injury</span><span><span data-legend-icon="Minor"></span>Other injury</span><span><i class="z"></i>Where drivers cross the track, or riders must enter it</span></div>
 <details class="cx-foot"><summary>About the data</summary><ul>
-<li>Crashes are official records from California's crash database (CCRS, CHP and San Diego Sheriff), placed by street number or by distance from a landmark. Pins marked "position estimated" only name a landmark. One 2022 serious crash has no usable location and is not shown.</li>
+<li>Equal 63-month windows: ${eqBefore} crashes from Jan 2015 to Mar 2020, ${eqAfter} from Apr 2020 to Jun 2025 (not counting the 2022 crash with no usable location). Riders hit a fixed object in ${fixedIn("before")} of the first and ${fixedIn("after")} of the second.</li>
+<li>Crashes are official records from California's crash databases (SWITRS for 2015, CCRS from 2016; CHP and San Diego Sheriff), placed by street number or by distance from a landmark. Pins marked "position estimated" only name a landmark. One 2022 serious crash has no usable location and is not shown.</li>
 <li>Solo crashes are often not reported. Local riders count 36–42 crashes since 2020; ${segCount("after")} official records were found.</li>
 <li>The March 2024 fatal crash is recorded in the 2700 block with no coordinates, which by street number falls near the beach parking south of Las Olas. Its official primary factor is bicycling under the influence (VC 21200.5).</li>
 <li>Wheel-stop and post spacing, lane widths and the pre-2020 layout are estimates.</li>
