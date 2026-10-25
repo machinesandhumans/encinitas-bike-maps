@@ -264,7 +264,7 @@ mini.addEventListener("click", (e) => { const d = e.target.closest(".mm-dot"); i
 function setEra(era) {
   state.era = era;
   document.querySelectorAll("[data-era-btn]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.eraBtn === era)));
-  document.querySelector("#era-note").textContent = era === "after" ? "Since April 2020: wheel stops and flexible posts separate both tracks from traffic." : "January 2016 to March 2020: painted bike lanes with no barriers (lane positions assumed the same).";
+  document.querySelector("#era-note").textContent = era === "after" ? "Since April 2020: wheel stops and flexible posts separate both tracks from traffic." : "January 2015 to March 2020: painted bike lanes with no barriers (lane positions assumed the same).";
   hidePop(); schedule();
 }
 document.querySelectorAll("[data-era-btn]").forEach((b) => b.addEventListener("click", () => setEra(b.dataset.eraBtn)));

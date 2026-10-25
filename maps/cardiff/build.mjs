@@ -17,6 +17,9 @@ const crashes = CRASHES.map((c) => ({ ...c, s: c.addr != null ? sOfAddr(c.addr) 
 
 const DATA = { NB_TRACK: D.NB_TRACK, SB_TRACK: D.SB_TRACK, DRIVES: D.DRIVES, BUILDINGS: D.BUILDINGS, LOTS: D.LOTS, COAST: D.COAST, POIS: D.POIS, RANGE: D.RANGE, LIMITS: D.LIMITS, BRIDGES: D.BRIDGES, UNLIT: D.UNLIT, CRASHES: crashes };
 
+const inWin = (c, a, b) => !c.edge && c.s != null && c.date >= a && c.date < b;
+const eqBefore = crashes.filter((c) => inWin(c, "2015-01", "2020-04")).length, eqAfter = crashes.filter((c) => inWin(c, "2020-04", "2025-07")).length;
+const fixedIn = (era) => crashes.filter((c) => (era === "after" ? inWin(c, "2020-04", "2025-07") : inWin(c, "2015-01", "2020-04")) && /^Fixed object/.test(c.hit)).length;
 const segCount = (era) => crashes.filter((c) => !c.edge && (era === "after") === c.date >= "2020-04").length;
 
 const CSS = `
@@ -88,7 +91,7 @@ const page = `<title>Cardiff Cycle Track</title>
 <div class="cx iso" data-theme="light"><div class="cx-in">
 <header><h1>Coast Hwy 101 cycle track, Cardiff</h1><p class="cx-sub">Chesterfield Dr to the Solana Beach line, 1.27 miles. Layout from OpenStreetMap, straightened along the road.</p></header>
 <div class="cx-bar">
-  <div class="cx-group" role="group" aria-label="Period"><button class="cx-btn" data-era-btn="before" aria-pressed="false">Jan ’16–Mar ’20 · ${segCount("before")} crashes</button><button class="cx-btn" data-era-btn="after" aria-pressed="true">Apr ’20–Present · ${segCount("after")} crashes</button></div>
+  <div class="cx-group" role="group" aria-label="Period"><button class="cx-btn" data-era-btn="before" aria-pressed="false">Jan ’15–Mar ’20 · ${segCount("before")} crashes</button><button class="cx-btn" data-era-btn="after" aria-pressed="true">Apr ’20–Present · ${segCount("after")} crashes</button></div>
   <div class="cx-group" role="group" aria-label="Ride along"><button class="cx-btn" data-ride="1" aria-pressed="false">Ride north</button><button class="cx-btn" data-ride="-1" aria-pressed="false">Ride south</button></div>
   <div class="cx-group" role="group" aria-label="Zoom"><button class="cx-btn" data-zoom="0" aria-pressed="true">Close</button><button class="cx-btn" data-zoom="1" aria-pressed="false">Block</button><button class="cx-btn" data-zoom="2" aria-pressed="false">Wide</button></div>
   <span id="era-note"></span>
@@ -97,7 +100,8 @@ const page = `<title>Cardiff Cycle Track</title>
 <svg id="mini" viewBox="0 0 1000 96" role="img" aria-label="Whole corridor with crash locations; tap to jump there"></svg>
 <div class="cx-legend"><span><i></i>Crash, minor injury</span><span><i class="r"></i>Severe, serious or fatal</span><span><i class="z"></i>Where drivers cross the track, or riders must enter it</span></div>
 <details class="cx-foot"><summary>About the data</summary><ul>
-<li>Crashes are official records from California's crash database (CCRS, CHP and San Diego Sheriff), placed by street number or by distance from a landmark. Pins marked "position estimated" only name a landmark. One 2022 serious crash has no usable location and is not shown.</li>
+<li>Equal 63-month windows: ${eqBefore} crashes from Jan 2015 to Mar 2020, ${eqAfter} from Apr 2020 to Jun 2025 (not counting the 2022 crash with no usable location). Riders hit a fixed object in ${fixedIn("before")} of the first and ${fixedIn("after")} of the second.</li>
+<li>Crashes are official records from California's crash databases (SWITRS for 2015, CCRS from 2016; CHP and San Diego Sheriff), placed by street number or by distance from a landmark. Pins marked "position estimated" only name a landmark. One 2022 serious crash has no usable location and is not shown.</li>
 <li>Solo crashes are often not reported. Local riders count 36–42 crashes since 2020; ${segCount("after")} official records were found.</li>
 <li>The March 2024 fatal crash is recorded in the 2700 block with no coordinates, which by street number falls near the beach parking south of Las Olas. Its official primary factor is bicycling under the influence (VC 21200.5).</li>
 <li>Wheel-stop and post spacing, lane widths and the pre-2020 layout are estimates.</li>

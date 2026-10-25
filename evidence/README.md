@@ -31,7 +31,7 @@ Each corridor file has the same sections: *Official data*, *Government documents
 
 ## Strongest items so far (Oct 25, 2026)
 
-1. **Cardiff official counts:** 4 bike crashes in 4.25 yrs before the cycle track (0.9/yr), 11 in 6.16 yrs after (1.8/yr); 6 of the 11 after hit a fixed object. Source: CCRS extract in `data/ccrs/`. No ridership counts exist, so this is crashes per year, not per rider.
+1. **Cardiff official counts, equal 63-month windows:** 6 bike crashes from Jan 2015 to Mar 2020, 9 from Apr 2020 to Jun 2025 (1.1 vs 1.7/yr). Riders hit a fixed object in **0 before and 6 after**. Crashes involving cars fell (5 to 2). Sources: SWITRS 2015 (`data/switrs/`) and CCRS (`data/ccrs/`); see [cardiff-101/equal-windows.md](cardiff-101/equal-windows.md). No ridership counts exist, so this is crashes per year, not per rider.
 2. **March 2024 fatality location:** the Sheriff's sergeant told The Coast News it was in the **northbound bike lane, closer to the 2800 block, just north of the "Cardiff by the Sea" welcome sign**, near the Solana Beach line, which is where the NB track begins. The state record says 2700 block with no coordinates. See [cardiff-101](cardiff-101/README.md#march-2024-fatality).
 3. **IIHS 2019 study** (DC, NYC, Portland): street-level two-way protected lanes carried much higher crash-or-fall risk than major roads; collisions in protected lanes clustered at intersections and driveways. Caveat logged: its strongest result rests on one outlier segment.
 4. **Thomas & De Robertis 2013 review:** one-way cycle tracks are generally safer at intersections than two-way ones.

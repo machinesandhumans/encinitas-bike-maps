@@ -8,10 +8,13 @@ Checked = the claim was read in the linked page during this session (Oct 25, 202
 
 | Date | Source | What it shows | Link |
 |---|---|---|---|
+| Downloaded Oct 25, 2026 | **OFFICIAL** SWITRS 2015 via UC Berkeley TIMS | 2 bike crashes on the stretch in 2015, both drivers turning across riders (right hook in the 2600 block, Mar 18; left turn from a lot in the 2790 block, May 9). | [`data/switrs/`](../../data/switrs/README.md) |
 | Pulled Oct 23, 2026 | **OFFICIAL** CCRS (CHP + SD Sheriff), project extract | Before (Jan 2016 to Mar 2020): 4 bike crashes in 4.25 yrs, 0.9/yr. After (Apr 2020 to May 2026): 11 in 6.16 yrs, 1.8/yr. After: 6 hit a fixed object (4 SB, 2 NB); 3 NB involved a car or pedestrian. | [`data/ccrs/cardiff_101_cycle_track_bike_crashes.csv`](../../data/ccrs/cardiff_101_cycle_track_bike_crashes.csv) |
 | Mar 17, 2024 crash | **OFFICIAL** CCRS record 4622805 | Fatal, hit fixed object, "2700 block", no coordinates, bike direction N, primary factor VC 21200.5 (bicycling under the influence), dark with no street lights. | same file |
 | Reported Mar 2024 | **OFFICIAL** Sheriff Sgt. Jeremy Collis, via The Coast News | Rider was found "in a northbound bike lane just north of the Solana Beach city line near South Cardiff State Beach", "closer to the 2800 block, just north of the Cardiff by the Sea welcome sign." Found about 12:01 a.m. next to an Electra Townie, no helmet, no sign of a vehicle, no witnesses. | [Coast News](https://thecoastnews.com/sheriff-ids-cyclist-found-dead-in-apparent-solo-crash-in-encinitas/) (checked) |
 | Reported Mar 2024 | **OFFICIAL** SD County Medical Examiner, via The Coast News | Cause: blunt force injuries of the head and neck. Manner: accident. | same article (checked) |
+
+**Equal 63-month windows** (Jan 2015 to Mar 2020 vs Apr 2020 to Jun 2025): 6 crashes before, 9 after (1.1 vs 1.7 per year); riders hit a fixed object in 0 before and 6 after. Details and caveats: [equal-windows.md](equal-windows.md).
 
 ### March 2024 fatality
 

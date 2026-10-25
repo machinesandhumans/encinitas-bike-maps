@@ -1,8 +1,10 @@
-// Official bicycle crash records (CCRS) on Coast Hwy 101 between Chesterfield Dr and the Solana Beach line.
+// Official bicycle crash records (SWITRS 2015 via TIMS, CCRS 2016 on) on Coast Hwy 101 between Chesterfield Dr and the Solana Beach line.
 // Placement: addr = street number (converted with the ADDRESS anchors), s = metres directly, ref + ft = offset from a landmark.
 // side: NB / SB = direction the rider was travelling. approx: the record only names a landmark, position is estimated.
 export const CRASHES = [
-  // Before the cycle track (2016 - Mar 2020)
+  // Before the cycle track (2015 - Mar 2020); 2015 from SWITRS via TIMS (data/switrs/)
+  { id: 6917786, date: "2015-03-18", side: "NB", addr: 2650, hit: "Car (right turn)", injury: "Complaint of pain", factor: "Improper turn (VC 22100)", where: "2600 block S Coast Hwy" },
+  { id: 6976540, date: "2015-05-09", side: "SB", addr: 2790, hit: "Car (left turn)", injury: "Minor", factor: "Left turn, failure to yield (VC 21801)", where: "2790 block S Coast Hwy" },
   { id: 3442993, date: "2018-08-06", side: "SB", s: 2263, hit: "Car door", injury: "Minor", factor: "Dooring (VC 22517)", where: "80 ft south of Chesterfield Dr" },
   { id: 3500100, date: "2018-11-02", side: "SB", s: 431, hit: "Car door", injury: "Minor", factor: "Dooring (VC 22517)", where: "Seaside / south lot entrance", approx: true },
   { id: 3100902, date: "2019-02-11", side: "NB", addr: 2526, hit: "Car (rear end)", injury: "Minor", factor: "Passing on the right (VC 21755)", where: "2526 S Coast Hwy" },
