@@ -1,6 +1,6 @@
 # Encinitas Bike Infrastructure Maps — Project Brief
 
-Last updated: October 24, 2026
+Last updated: October 25, 2026
 
 ## Goal
 Interactive, spatially accurate maps of four Encinitas road projects, showing where the layout narrows riders' options (barriers, blind spots, driveway crossings, entries and exits) and where official crashes happened, before and after each change. The maps must stay objective: official data kept separate from advocate reports, and gaps stated openly.
@@ -40,15 +40,24 @@ What it does: whole 1.27-mile stretch in isometric view; before/after toggle; ri
 - OSM shows the SB path continuing north of Chesterfield on the west side (to about s 2600); the map still starts the SB track at the Chesterfield signal.
 - Mark says the south and north track entrances/exits don't match how the path works. Waiting on his ride-through description before redrawing them.
 
+## Evidence library (Oct 25, 2026)
+- New folder `evidence/` (start at `evidence/README.md`): one file per corridor plus `research/` and `advocate-reports/`. Every item is tagged OFFICIAL / GOV / NEWS / ADVOCATE / RESEARCH with date, link and whether it was checked. Each file has a labeled "What cuts the other way" section and a Gaps list. Saved copies go in each corridor's `sources/` (the cloud environment can't download most sites, so save PDFs from Mark's computer).
+- **Fatality location, new evidence:** Sheriff Sgt. Jeremy Collis told The Coast News the rider was in the northbound bike lane, closer to the 2800 block, just north of the "Cardiff by the Sea" welcome sign near the Solana Beach line; 10News and a Coast Law Group post agree (NB lane, near the track entrance). This supports Mark's south-NB-entrance reading. Still no exact point or object; the Sheriff's collision report would settle it.
+- Santa Fe: official CCRS shows only 1 west-phase bike crash since completion; the stronger evidence is the city's own findings (14/19 conflict points, 7 right-hook locations, back-in parking sight lines). Council authorized a lawsuit over SB 114 on Oct 21, 2026.
+- Medak's "400%" serious-crash figure isn't adjusted for period length (6 yrs vs 14); per year it is about 1.0 to 3.1. Use per-year figures.
+- Quail Gardens is the thinnest: no crash extract and no reported problems found. Needs Mark's description of what's wrong there.
+
 ## Open items
-1. Confirm location of the March 2024 fatal crash.
+1. Confirm location of the March 2024 fatal crash. News sources now place it in the NB lane near the south end (see Evidence library); request the Sheriff's collision report for the exact point and object.
 2. Get the advocate crash list (date, location, what was hit) for a separate, labeled layer.
 3. Site photos: each end of the barrier lines, Ki's / Tower 13 driveways, south NB entrance; rough widths of track and walkway.
 4. Pre-2020 layout (2019 Street View) to make the "before" view accurate.
 5. Build corridors 2–4 on the same template.
 6. Mark's field walk (GitHub Pages review page): first walk 2026-10-24 saved in data/field/cardiff-field-marks-2026-10-24.json (59 marks, order reliable but positions not: the crosshair didn't follow GPS then, so marks bunch on a few points; not applied to the map; photos not to be mapped yet). Needs a second walk with the fixed page for driveways, bollards, posts, barrier ends; and where the SB track starts at the north end (Chesterfield signal or further north). South entrance/exit already set from his satellite notes.
+7. Evidence library follow-ups: Quail Gardens CCRS extract; Santa Fe Nov 5, 2025 staff report (conflict-point and right-hook exhibits); any staff answer to the MTSC's Apr 2025 Cardiff data request; Medak's and Issakov's lists; the Apr/Jun 2025 Santa Fe serious injuries.
 
 ## Where things live
 - Repository: github.com/machinesandhumans/encinitas-bike-maps (see README for folder layout)
 - Rebuild the Cardiff map: `node maps/cardiff/build.mjs` (writes `docs/cardiff/index.html` for GitHub Pages and `maps/cardiff/cardiff-corridor.html` for the Claude artifact)
 - Crash data: `data/ccrs/`
+- Evidence library: `evidence/` (index at `evidence/README.md`)
