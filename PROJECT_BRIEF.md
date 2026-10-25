@@ -14,10 +14,10 @@ Interactive, spatially accurate maps of four Encinitas road projects, showing wh
 | 4 | Quail Gardens Dr | Mini-roundabout at Ecke Ranch Rd, restriping, completed Sep 2025 | Not started |
 
 ## Live map
-Cardiff corridor: https://claude.ai/artifact/JL5C7n5MbsNgWLnG86go3N (shared: anyone with the link; republished Oct 24, 2026 from the current repo build)
+Cardiff corridor: https://claude.ai/artifact/JL5C7n5MbsNgWLnG86go3N (shared: anyone with the link; republished Oct 25, 2026 from the current repo build)
 GitHub Pages: https://machinesandhumans.github.io/encinitas-bike-maps/cardiff/ (live; updates on every push)
 
-What it does: whole 1.27-mile stretch in isometric view; before/after toggle; ride north / ride south; minimap with every crash; tap a pin for the official record.
+What it does: whole 1.27-mile stretch in isometric view; before/after toggle; ride north / ride south; minimap with every crash; tap a pin for the official record. Markers (Mark, Oct 25): skull and crossbones for the fatal crash, crutches for injuries (red = severe, gray = other), shown on pins, minimap, pop-up header and legend.
 
 ## Key facts and decisions so far
 - **Geometry** comes from OpenStreetMap (pulled Oct 23, 2026), straightened along the road. Tracks, driveways, bridge, lots and buildings are real; wheel-stop/post spacing and the pre-2020 layout are estimates.

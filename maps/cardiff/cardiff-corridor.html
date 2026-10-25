@@ -140,15 +140,18 @@ body{background:var(--cx-page);margin:0}
 #scene .pin{cursor:pointer}
 #scene .rider-ring{fill:none;stroke:var(--risk);stroke-width:1.6}
 #scene .pin-hit{fill:transparent;stroke:none}
-#scene .pin[data-sev="serious"] .iso-solid:last-of-type .iso-top,#scene .pin[data-sev="fatal"] .iso-solid:last-of-type .iso-top{fill:var(--risk)}
-#scene .pin[data-sev="serious"] .iso-solid:last-of-type .iso-shade,#scene .pin[data-sev="fatal"] .iso-solid:last-of-type .iso-shade{fill:var(--risk);opacity:.75}
-#scene .pin[data-sev="fatal"] .iso-solid:last-of-type .iso-edge{stroke:var(--anatomy-strong);stroke-width:1.4}
-#scene .pin:focus-visible{outline:none}#scene .pin:focus-visible .iso-edge{stroke:var(--anatomy-lit)}
+.ic{overflow:visible;color:var(--anatomy-mid)}.ic[data-sev="serious"]{color:var(--risk)}.ic[data-sev="fatal"]{color:var(--anatomy-strong)}
+.ic .ic-head{fill:currentColor}.ic .ic-cut{fill:var(--anatomy-card);stroke:var(--anatomy-card);stroke-width:.9;stroke-linecap:round}.ic .ic-bones circle{stroke:none}
+#scene .pin-badge,#mini .mm-badge{fill:var(--anatomy-card);stroke:var(--anatomy-mid);stroke-width:1.2}
+#scene .pin[data-sev="serious"] .pin-badge,#mini .mm-dot[data-sev="serious"] .mm-badge{stroke:var(--risk)}
+#scene .pin[data-sev="fatal"] .pin-badge,#mini .mm-dot[data-sev="fatal"] .mm-badge{stroke:var(--risk);stroke-width:2.2}
+#scene .pin:focus-visible{outline:none}#scene .pin:focus-visible .pin-badge{stroke:var(--anatomy-lit);stroke-width:2.4}
 #pop{position:absolute;width:250px;padding:10px 12px;background:var(--anatomy-card);box-shadow:0 0 0 1px var(--anatomy-hi),0 6px 18px #0003;font-size:12.5px;line-height:1.45;display:grid;gap:3px}
 #pop b{padding-right:28px}
 .pop-x{position:absolute;top:2px;right:2px;width:32px;height:32px;border:0;background:none;color:inherit;font-size:20px;line-height:1;cursor:pointer}
 #pop[hidden]{display:none}
 #pop b{color:var(--anatomy-strong);font-weight:600}
+#pop .pop-h{display:flex;align-items:center;gap:8px}#pop .pop-ic{flex:none;width:26px;height:26px}
 .cx-hint{position:absolute;left:12px;bottom:10px;font:10.5px var(--anatomy-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--anatomy-muted);pointer-events:none}
 #where{position:absolute;right:12px;bottom:10px;font:10.5px var(--anatomy-mono);color:var(--anatomy-text);font-variant-numeric:tabular-nums;pointer-events:none}
 #mini{display:block;width:100%;height:auto;cursor:pointer;touch-action:none}
@@ -156,17 +159,14 @@ body{background:var(--cx-page);margin:0}
 #mini .mm-track{stroke:var(--anatomy-mid);stroke-width:2.2}
 #mini .mm-tick{stroke:var(--anatomy-lo);stroke-dasharray:2 3}
 #mini .mm-lbl,#mini .mm-row{fill:var(--anatomy-muted);font:10px var(--anatomy-mono)}
-#mini .mm-dot{fill:var(--anatomy-mid);stroke:var(--anatomy-card);stroke-width:1}
-#mini .mm-dot[data-sev="serious"],#mini .mm-dot[data-sev="fatal"]{fill:var(--risk)}
-#mini .mm-dot[data-sev="fatal"]{stroke:var(--anatomy-strong);stroke-width:1.4}
 #mini .mm-dot[data-dim]{opacity:.15}
 #mini .mm-win{fill:var(--anatomy-hi);fill-opacity:.08;stroke:var(--anatomy-hi);stroke-width:1.2}
 .cx-foot{font-size:12px;color:var(--anatomy-muted)}
 .cx-foot summary{cursor:pointer;color:var(--anatomy-text)}
 .cx-foot ul{margin:6px 0 0;padding-left:18px}
 .cx-legend{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:12px;color:var(--anatomy-muted)}
-.cx-legend i{display:inline-block;width:10px;height:10px;margin-right:6px;vertical-align:-1px;border-radius:50%;background:var(--anatomy-mid)}
-.cx-legend i.r{background:var(--risk)}.cx-legend i.z{border-radius:0;background:var(--risk);opacity:.55}
+.cx-legend>span{display:inline-flex;align-items:center;gap:6px}.cx-legend [data-legend-icon]{display:inline-flex}
+.cx-legend i.z{display:inline-block;width:10px;height:10px;background:var(--risk);opacity:.55}
 @media (max-width:600px){.cx-hint{display:none}}
 </style>
 <div class="cx iso" data-theme="light"><div class="cx-in">
@@ -179,7 +179,7 @@ body{background:var(--cx-page);margin:0}
 </div>
 <div id="stage" tabindex="0" aria-label="Isometric view of the corridor. Drag sideways or use the arrow keys to travel along it."><svg id="scene" class="iso-svg" viewBox="0 0 1000 560" role="img" aria-label="Isometric view of Coast Highway 101 with both cycle tracks, barriers, driveways and crash locations"></svg><div id="pop" hidden></div><span class="cx-hint">Drag to travel · tap a pin</span><span id="where"></span></div>
 <svg id="mini" viewBox="0 0 1000 96" role="img" aria-label="Whole corridor with crash locations; tap to jump there"></svg>
-<div class="cx-legend"><span><i></i>Crash, minor injury</span><span><i class="r"></i>Severe, serious or fatal</span><span><i class="z"></i>Where drivers cross the track, or riders must enter it</span></div>
+<div class="cx-legend"><span><span data-legend-icon="Fatal"></span>Death</span><span><span data-legend-icon="Severe"></span>Severe or serious injury</span><span><span data-legend-icon="Minor"></span>Other injury</span><span><i class="z"></i>Where drivers cross the track, or riders must enter it</span></div>
 <details class="cx-foot"><summary>About the data</summary><ul>
 <li>Equal 63-month windows: 6 crashes from Jan 2015 to Mar 2020, 9 from Apr 2020 to Jun 2025 (not counting the 2022 crash with no usable location). Riders hit a fixed object in 0 of the first and 6 of the second.</li>
 <li>Crashes are official records from California's crash databases (SWITRS for 2015, CCRS from 2016; CHP and San Diego Sheriff), placed by street number or by distance from a landmark. Pins marked "position estimated" only name a landmark. One 2022 serious crash has no usable location and is not shown.</li>
@@ -899,6 +899,15 @@ const onBridge = (s) => BRIDGES.some(([a, b]) => s > a && s < b);
 const SEV = (c) => (/Fatal/.test(c.injury) ? "fatal" : /Severe|Serious/.test(c.injury) ? "serious" : "minor");
 const ERA = (c) => (c.edge ? "edge" : c.date >= "2020-04" ? "after" : "before");
 
+// crash symbols, drawn in a 24 x 24 box: skull and crossbones for a death, a pair of crutches for an injury
+const BONE = (x1, y1, x2, y2) => `<path d="M${x1} ${y1}L${x2} ${y2}" stroke-width="2.4"/><circle cx="${x1 - 0.9}" cy="${y1 + (y2 > y1 ? 0.6 : -0.6)}" r="1.5"/><circle cx="${x1 + 0.6}" cy="${y1 + (y2 > y1 ? -0.9 : 0.9)}" r="1.5"/><circle cx="${x2 + 0.9}" cy="${y2 + (y2 > y1 ? -0.6 : 0.6)}" r="1.5"/><circle cx="${x2 - 0.6}" cy="${y2 + (y2 > y1 ? 0.9 : -0.9)}" r="1.5"/>`;
+const CRUTCH = (x, tilt) => `<g transform="translate(${x} 0) rotate(${tilt} 0 12)" fill="none"><path d="M-3.2 2.4H3.2M-0.9 22.2H0.9" stroke-width="2.4"/><path d="M-2.4 2.6L-0.7 15H0.7L2.4 2.6M-1.8 9.4H1.8M0 15V22"/></g>`;
+const ICON = {
+  fatal: `<g class="ic-bones" stroke="currentColor" fill="currentColor" stroke-linecap="round">${BONE(4.5, 13.5, 19.5, 22)}${BONE(19.5, 13.5, 4.5, 22)}</g><path class="ic-head" d="M12 2.2C7.6 2.2 4.6 5.3 4.6 9.3c0 2.5 1.2 4.3 2.9 5.3V17.6h9V14.6c1.7-1 2.9-2.8 2.9-5.3C19.4 5.3 16.4 2.2 12 2.2Z"/><path class="ic-cut" d="M9 7.9a1.9 1.9 0 1 0 0.01 0ZM15 7.9a1.9 1.9 0 1 0 0.01 0ZM12 11.8l-1.1 2h2.2ZM9.7 15.6v2M12 15.6v2M14.3 15.6v2"/>`,
+  injury: `<g stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${CRUTCH(8.6, -11)}${CRUTCH(15.4, 11)}</g>`,
+};
+const iconSvg = (c, size, x = 0, y = 0, cls = "") => `<svg class="ic ${cls}" data-sev="${SEV(c)}" x="${x}" y="${y}" width="${size}" height="${size}" viewBox="0 0 24 24" aria-hidden="true">${ICON[SEV(c) === "fatal" ? "fatal" : "injury"]}</svg>`;
+
 // ---------- camera ----------
 const VW = 1000, VH = 560;
 const ZOOMS = [{ win: 100, label: "Close", east: -42, west: 50 }, { win: 240, label: "Block", east: -60, west: 75 }, { win: 560, label: "Wide", east: -90, west: 120 }];
@@ -1030,7 +1039,9 @@ function render() {
     const sev = SEV(c);
     const hgt = close ? 5.5 : 14;
     const r = close ? 1.1 : 2.6;
-    items.push({ key: depthAt(c.s, d) + 0.5, svg: `<g class="pin" data-sev="${sev}" data-era="${ERA(c)}" data-id="${c.id}" tabindex="0" role="button" aria-label="${c.date} ${c.injury}: ${c.where}">${solidSvg(cylinder(k[0], k[1], close ? 0.1 : 0.3, 0, hgt, P, 8), { tone: "mid", crease: "none" })}${solidSvg(cylinder(k[0], k[1], r, hgt, close ? 0.45 : 1.2, P, 24), { tone: "hi" })}<path class="pin-hit" d="${solidSvgHit(k, hgt, r)}"/></g>` });
+    // post up from the track, topped by a badge that always faces the viewer
+    const top = iso([k[0], k[1], hgt], P), size = (close ? 30 : 24) * (sev === "fatal" ? 1.25 : 1), br = size * 0.66;
+    items.push({ key: depthAt(c.s, d) + 0.5, svg: `<g class="pin" data-sev="${sev}" data-era="${ERA(c)}" data-id="${c.id}" tabindex="0" role="button" aria-label="${c.date} ${c.injury}: ${c.where}">${solidSvg(cylinder(k[0], k[1], close ? 0.1 : 0.3, 0, hgt, P, 8), { tone: "mid", crease: "none" })}<circle class="pin-badge" cx="${top[0].toFixed(1)}" cy="${(top[1] - br).toFixed(1)}" r="${br.toFixed(1)}"/>${iconSvg(c, size, (top[0] - size / 2).toFixed(1), (top[1] - br - size / 2).toFixed(1))}<path class="pin-hit" d="${solidSvgHit(k, hgt, r)}"/></g>` });
   }
   // rider
   if (state.ride) {
@@ -1054,7 +1065,8 @@ function render() {
 function solidSvgHit(k, h, r) {
   const a = iso([k[0], k[1], 0], P), b = iso([k[0], k[1], h + 0.6], P);
   const rr = Math.max(9, Math.abs(iso([k[0] + r, k[1], 0], P)[0] - a[0]) + 6);
-  return `M${(b[0] - rr).toFixed(1)} ${(b[1] - rr).toFixed(1)}h${2 * rr}v${(a[1] - b[1] + 2 * rr).toFixed(1)}h${-2 * rr}Z`;
+  const top = Math.min(b[1] - rr, b[1] - 46);
+  return `M${(b[0] - rr).toFixed(1)} ${top.toFixed(1)}h${2 * rr}v${(a[1] - top + rr).toFixed(1)}h${-2 * rr}Z`;
 }
 
 // ---------- minimap ----------
@@ -1077,8 +1089,8 @@ function buildMini() {
     const x = mx(c.s), row = c.side === "NB" ? "NB" : "SB";
     const key = row + Math.round(x / 8);
     const n = (stack[key] = (stack[key] ?? 0) + 1) - 1;
-    const y = ROW[row] + (row === "SB" ? -1 : 1) * (n * 7);
-    out.push(`<circle class="mm-dot" data-sev="${SEV(c)}" data-era="${ERA(c)}" data-id="${c.id}" cx="${x.toFixed(1)}" cy="${y}" r="${SEV(c) === "fatal" ? 4.6 : 3.4}"/>`);
+    const y = ROW[row] + (row === "SB" ? -1 : 1) * (n * 10), sz = SEV(c) === "fatal" ? 15 : 11;
+    out.push(`<g class="mm-dot" data-sev="${SEV(c)}" data-era="${ERA(c)}" data-id="${c.id}"><circle class="mm-badge" cx="${x.toFixed(1)}" cy="${y}" r="${(sz * 0.55).toFixed(1)}"/>${iconSvg(c, sz, (x - sz / 2).toFixed(1), y - sz / 2)}</g>`);
   }
   out.push(`<rect class="mm-win" data-win x="0" y="2" width="10" height="${MH - 4}"/>`);
   mini.innerHTML = out.join("");
@@ -1115,7 +1127,7 @@ mini.addEventListener("pointermove", (e) => mdrag && fromMini(e));
 mini.addEventListener("pointerup", () => (mdrag = false));
 
 // crash popover
-const fmt = (c) => `<b>${c.date} · ${c.injury}</b><span>${c.dirText ? c.dirText : c.dirUnknown ? "Direction not recorded (2025 detail not yet published)," : c.side === "NB" ? "Northbound" : "Southbound"} rider · hit ${c.hit.toLowerCase()}</span><span>Official factor: ${c.factor}</span><span>${c.where}${c.approx ? " (position estimated)" : ""}</span>`;
+const fmt = (c) => `<b class="pop-h">${iconSvg(c, 26, 0, 0, "pop-ic")}<span>${c.date} · ${c.injury}</span></b><span>${c.dirText ? c.dirText : c.dirUnknown ? "Direction not recorded (2025 detail not yet published)," : c.side === "NB" ? "Northbound" : "Southbound"} rider · hit ${c.hit.toLowerCase()}</span><span>Official factor: ${c.factor}</span><span>${c.where}${c.approx ? " (position estimated)" : ""}</span>`;
 function showPop(id, x, y) {
   const c = CRASHES.find((k) => String(k.id) === String(id)); if (!c) return;
   pop.innerHTML = fmt(c) + '<button type="button" class="pop-x" aria-label="Close">×</button>'; pop.hidden = false;
@@ -1181,6 +1193,7 @@ function tickRide(now) {
 }
 document.querySelectorAll("[data-ride]").forEach((b) => b.addEventListener("click", () => (state.ride === Number(b.dataset.ride) ? stopRide() : startRide(Number(b.dataset.ride)))));
 
+document.querySelectorAll("[data-legend-icon]").forEach((el) => (el.innerHTML = iconSvg({ injury: el.dataset.legendIcon }, 18)));
 buildMini();
 setEra("after");
 </script>
