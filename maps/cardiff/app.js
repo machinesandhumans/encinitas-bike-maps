@@ -14,9 +14,15 @@ const sbOn = (s) => s >= SB[0][0] && s <= SB[SB.length - 1][0];
 // where each track meets the road: NB riders move over from NB_IN and the barrier begins at NB_SEP; the SB barrier and track end together at SB_OUT
 const NB_SEP = NB[0][0], NB_IN = NB_SEP - 30, SB_OUT = SB[0][0], SB_SEP = SB_OUT;
 const dNB = (s) => lerpLine(NB, s), dSB = (s) => lerpLine(SB, s), dCoast = (s) => lerpLine(COAST, s);
-const TRACK_W = 1.6, BUF = 0.7;
-const eastEdge = (s) => (nbOn(s) ? Math.min(dNB(s), -6.5) - TRACK_W / 2 : -7.6);
-const westEdge = (s) => (sbOn(s) ? Math.max(dSB(s), 6.5) + TRACK_W / 2 : 7.6);
+const BUF = 0.7;
+// riding width measured on Esri (curb to posts), blended between stretches; the track is drawn that wide
+const widthLine = (rows) => rows.map(([a, b, w]) => [(a + b) / 2, w]);
+const W_NB = widthLine(FEAT.trackWidths.NB), W_SB = widthLine(FEAT.trackWidths.SB);
+const half = (side, s) => lerpLine(side === "E" ? W_NB : W_SB, s) / 2;
+// real outer road edge where it lies beyond the drawn track (Chesterfield NB right-turn lanes)
+const edgeOverride = (side, s) => FEAT.roadEdges.find(([a, b, sd]) => sd === side && s >= a && s <= b)?.[3];
+const eastEdge = (s) => Math.min(nbOn(s) ? Math.min(dNB(s), -6.5) - half("E", s) : -7.6, edgeOverride("E", s) ?? 0);
+const westEdge = (s) => Math.max(sbOn(s) ? Math.max(dSB(s), 6.5) + half("W", s) : 7.6, edgeOverride("W", s) ?? 0);
 const nearDrive = (s, side, pad = 5) => DRIVES.some(([a, b, dside]) => dside === side && s > a - pad + 4 && s < b + pad - 4);
 const spanOf = (pts) => [Math.min(...pts.map((p) => p[0])), Math.max(...pts.map((p) => p[0]))];
 const clipTo = (pts, axis, v, keepAbove) => { // Sutherland-Hodgman against one axis-aligned line
@@ -112,13 +118,13 @@ function render() {
   const runs = (on, from, to, step = 3) => { const out = []; let cur = null; for (let s = from; s <= to; s += step) { if (on(s)) { (cur ||= []).push(s); } else if (cur) { out.push(cur); cur = null; } } if (cur) out.push(cur); return out; };
   for (const [on, dfn, sign, side] of [[nbOn, dNB, 1, "E"], [sbOn, dSB, -1, "W"]]) {
     for (const r of runs(on, lo, hi)) {
-      const inner = r.map((s) => [s, dfn(s) + sign * (TRACK_W / 2)]);
-      const bufIn = r.map((s) => [s, dfn(s) + sign * (TRACK_W / 2 + BUF)]);
-      const outer = r.map((s) => [s, dfn(s) - sign * (TRACK_W / 2)]);
+      const inner = r.map((s) => [s, dfn(s) + sign * half(side, s)]);
+      const bufIn = r.map((s) => [s, dfn(s) + sign * (half(side, s) + BUF)]);
+      const outer = r.map((s) => [s, dfn(s) - sign * half(side, s)]);
       marks.push(lineSvg(line(inner, 0.01) + line(outer, 0.01), { tone: "hi" }));
       if (after) {
         marks.push(lineSvg(line(bufIn, 0.01), { tone: "hi" }));
-        let hatch = ""; for (const s of r) if (Math.round(s) % 3 === 0 && !nearDrive(s, side, 4) && !(side === "E" && s > FEAT.nbLaneFrom)) hatch += line([[s, dfn(s) + sign * (TRACK_W / 2)], [s + 1.2, dfn(s) + sign * (TRACK_W / 2 + BUF)]], 0.01);
+        let hatch = ""; for (const s of r) if (Math.round(s) % 3 === 0 && !nearDrive(s, side, 4) && !(side === "E" && s > FEAT.nbLaneFrom)) hatch += line([[s, dfn(s) + sign * half(side, s)], [s + 1.2, dfn(s) + sign * (half(side, s) + BUF)]], 0.01);
         marks.push(lineSvg(hatch, { tone: "faint" }));
         // risk patches where drivers cross the track
         for (const [a, b, dside] of DRIVES) { const ds = (a + b) / 2; if (dside === side && b > s0 - 1 && a < s1 + 1 && on(ds)) marks.push(`<path class="risk" d="${poly([[a, dfn(ds) - 1.2], [b, dfn(ds) - 1.2], [b, dfn(ds) + 1.2], [a, dfn(ds) + 1.2]], 0.02)}"/>`); }
@@ -144,7 +150,7 @@ function render() {
       const start = side === "E" ? NB_SEP : SB_SEP;
       for (let s = Math.ceil(lo / 6.1) * 6.1; s < hi; s += 6.1) {
         if (!on(s) || s < start || nearDrive(s, side) || onBridge(s) || (side === "E" && s > FEAT.nbLaneFrom)) continue;
-        const d = dfn(s) + sign * (TRACK_W / 2 + BUF / 2);
+        const d = dfn(s) + sign * (half(side, s) + BUF / 2);
         const first = side === "E" && s < start + 6.1;
         if (close) {
           const k = toK(s, d);
@@ -168,7 +174,7 @@ function render() {
     if (b < s0 - 6 || a > s1 + 6) continue;
     for (let s = Math.max(a + 0.5, Math.ceil((s0 - 6) / 6.4) * 6.4); s + 4.6 < Math.min(b, s1 + 6); s += 6.4) {
       if (s < a) continue;
-      const d = dSB(s) - TRACK_W / 2 - BUF - 1.1, k = toK(s, d);
+      const d = dSB(s) - half("W", s) - BUF - 1.1, k = toK(s, d);
       items.push({ key: depthAt(s + 2.3, d), svg: close ? solidSvg(slabOf({ x: k[0], y: k[1] - 0.9, w: 4.5, d: 1.8, r: 0.4 }, 0, 1.4, P, 3), { tone: "mid" }) : `<path class="g-park" d="${poly([[s, d - 0.9], [s + 4.5, d - 0.9], [s + 4.5, d + 0.9], [s, d + 0.9]], 0.01)}"/>` });
     }
   }

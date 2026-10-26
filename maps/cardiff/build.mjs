@@ -24,7 +24,7 @@ const sOfAddr = (addr) => Math.round(myA + slope * (addr - mxA));
 const crashes = CRASHES.map((c) => ({ ...c, s: c.addr != null ? sOfAddr(c.addr) : c.s }));
 
 const DATA = { NB_TRACK: D.NB_TRACK, SB_TRACK: D.SB_TRACK, DRIVES: D.DRIVES, BUILDINGS: D.BUILDINGS, LOTS: D.LOTS, COAST: D.COAST, POIS: D.POIS, RANGE: D.RANGE, LIMITS: D.LIMITS, BRIDGES: D.BRIDGES, UNLIT: D.UNLIT, CRASHES: crashes, RIDER,
-  FEAT: { outlines: FEAT.outlines, crosswalks: FEAT.crosswalks, parking: FEAT.parking_buffer, crossovers: FEAT.crossovers, redCurb: FEAT.red_curb, nbLaneFrom: FEAT.track_fixes.nb_lane_from }, ELEV };
+  FEAT: { outlines: FEAT.outlines, crosswalks: FEAT.crosswalks, parking: FEAT.parking_buffer, crossovers: FEAT.crossovers, redCurb: FEAT.red_curb, nbLaneFrom: FEAT.track_fixes.nb_lane_from, trackWidths: FEAT.track_widths, roadEdges: FEAT.road_edges.list }, ELEV };
 
 const segCount = (era) => crashes.filter((c) => !c.edge && (era === "after") === c.date >= "2020-04").length;
 
@@ -128,6 +128,7 @@ const page = `<title>Cardiff Cycle Track</title>
 <li>The March 2024 fatal crash is recorded in the 2700 block with no coordinates, which by street number falls near the beach parking south of Las Olas. Its official primary factor is bicycling under the influence (VC 21200.5).</li>
 <li>Purple pins are rider reports from Serge Issakov's crowdsourced Cardiff 101 Crash List (${RIDER.length} entries, April 2020 to April 2026; tinyurl.com/cardiff101crashlist). They come from riders, friends and witnesses, mostly via social media, and are not verified here. ${riderPlaced} are placed approximately from the landmark they name, ${riderNoLoc} have no usable location and are not shown, and ${riderSame} match an official record at the same place, so only the official pin is shown. They appear in the Apr ’20–Present view only.</li>
 <li>Crosswalks, the Seaside, Cardiff State Beach and Chesterfield entrances, the parking rows beside the SB path, and the places where drivers cross the bike lane were traced on Esri World Imagery (Vantor, January 10, 2026); positions are within about 1 m. The elevation strip under the overview is USGS 3DEP lidar (bare earth); the bridge span is interpolated.</li>
+<li>Track widths are the riding width from the curb (or parapet) to the line of wheel stops and posts, read on the same imagery every 25–50 m (about ±0.5 m). The tightest stretches are southbound at Cardiff Reef (about 2.1 m) and northbound from Cardiff Reef across the bridge (about 2.4 m). The lagoon stretch is widest, at about 3–3.5 m.</li>
 <li>Wheel-stop and post spacing, lane widths and the pre-2020 layout are estimates.</li>
 </ul></details>
 </div></div>
