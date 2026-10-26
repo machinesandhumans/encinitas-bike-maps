@@ -52,6 +52,9 @@ What it does: whole 1.27-mile stretch in isometric view; before/after toggle; ri
 5. Build corridors 2–4 on the same template.
 6. Mark's field walk (GitHub Pages review page): first walk 2026-10-24 saved in data/field/cardiff-field-marks-2026-10-24.json (59 marks, order reliable but positions not: the crosshair didn't follow GPS then, so marks bunch on a few points; not applied to the map; photos not to be mapped yet). Needs a second walk with the fixed page for driveways, bollards, posts, barrier ends; and where the SB track starts at the north end (Chesterfield signal or further north). South entrance/exit already set from his satellite notes.
 
+## Repo visibility
+- Oct 26, 2026: Mark decided to keep this repo public (so GitHub Pages keeps serving the maps on the free plan). A setup that published only `docs/` to a separate public repo was drafted and dropped (commit 20ab8bf, PR #7 history); bring it back if he wants the repo private later.
+
 ## Where things live
 - Repository: github.com/machinesandhumans/encinitas-bike-maps (see README for folder layout)
 - Rebuild the Cardiff map: `node maps/cardiff/build.mjs` (writes `docs/cardiff/index.html` for GitHub Pages and `maps/cardiff/cardiff-corridor.html` for the Claude artifact)
