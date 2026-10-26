@@ -114,6 +114,7 @@ const page = `<title>Cardiff Cycle Track</title>
 <div class="cx-bar">
   <div class="cx-group" role="group" aria-label="Period"><button class="cx-btn" data-era-btn="before" aria-pressed="false">Jan ’16–Mar ’20 · ${segCount("before")} crashes</button><button class="cx-btn" data-era-btn="after" aria-pressed="true">Apr ’20–Present · ${segCount("after")} crashes</button></div>
   <div class="cx-group" role="group" aria-label="Rider reports"><button class="cx-btn" data-rider aria-pressed="true">Rider reports · ${riderPlaced} placed</button></div>
+  <div class="cx-group" role="group" aria-label="Parked cars"><button class="cx-btn" data-parked aria-pressed="true">Parked cars</button></div>
   <div class="cx-group" role="group" aria-label="Zoom"><button class="cx-btn" data-zoom="0" aria-pressed="true">Close</button><button class="cx-btn" data-zoom="1" aria-pressed="false">Block</button><button class="cx-btn" data-zoom="2" aria-pressed="false">Wide</button></div>
   <span id="era-note"></span>
 </div>

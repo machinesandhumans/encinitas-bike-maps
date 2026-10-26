@@ -41,7 +41,7 @@ function camera() {
 camera();
 
 // state
-const state = { s0: 180, era: "after", rider: true };
+const state = { s0: 180, era: "after", rider: true, parked: true };
 const W = () => ZOOMS[zoom].win;
 const toK = (s, d, z = 0) => [s - state.s0, -d, z];
 const at = (s, d, z = 0) => iso(toK(s, d, z), P);
@@ -75,8 +75,6 @@ function render() {
   for (const l of LOTS) { const [a, b] = spanOf(l.pts); if (b > s0 && a < s1) ground.push(`<path class="g-lot" d="${poly(l.pts)}"/>`); }
   // lagoon outlet: water runs under the bridges from the lagoon (east) to the sea
   for (const [a, b] of BRIDGES) if (b > s0 && a < s1) ground.push(`<path class="g-sea" d="${poly([[Math.max(a + 2, s0), SPAN.east], [Math.min(b - 2, s1), SPAN.east], [Math.min(b - 2, s1), SPAN.west], [Math.max(a + 2, s0), SPAN.west]])}"/>`);
-  // entrances traced on Esri, under the road so only the part beyond the curb shows
-  for (const o of FEAT.outlines) { const [a, b] = spanOf(o.pts); if (b > s0 && a < s1) ground.push(`<path class="g-drive" d="${poly(o.pts)}"/>`); }
   // road surface (travel lanes + both tracks)
   ground.push(`<path class="g-road" d="${poly(band(lo, hi, eastEdge, westEdge, 3))}"/>`);
   // bridge deck, edged so it reads as a structure over the water
@@ -84,6 +82,14 @@ function render() {
   // walkway west of the SB track
   const wl = Math.max(lo, SB[0][0] + 30), wh = Math.min(hi, SB[SB.length - 1][0]);
   if (wh > wl) ground.push(`<path class="g-walk" d="${poly(band(wl, wh, (s) => westEdge(s), (s) => westEdge(s) + 1.4))}"/>`);
+  // entrances traced on Esri, joined back to the drawn road edge so they read as one surface with the road
+  for (const o of FEAT.outlines) {
+    const [a, b] = spanOf(o.pts); if (b < s0 || a > s1) continue;
+    const edge = o.side === "E" ? (s) => eastEdge(s) + 0.2 : (s) => westEdge(s) - 0.2;
+    const first = o.pts[0][0], last = o.pts[o.pts.length - 1][0], back = [];
+    for (let s = last; Math.sign(first - last) * (first - s) > 0; s += Math.sign(first - last) * 2) back.push([s, edge(s)]);
+    ground.push(`<path class="g-drive" d="${poly([[first, edge(first)], ...o.pts, ...back])}"/>`);
+  }
   // driveways
   for (const [a, b, side] of DRIVES) if (b > s0 - 4 && a < s1 + 4) {
     const ds = (a + b) / 2, dd = side === "E" ? [eastEdge(ds) + 0.2, Math.max(eastEdge(ds) - 14, SPAN.east)] : [westEdge(ds) - 0.2, Math.min(westEdge(ds) + 16, SPAN.west)];
@@ -157,7 +163,7 @@ function render() {
     items.push({ key: depthAt((ka + kb) / 2, d), svg: solidSvg(slabOf({ x: k[0], y: k[1], w: kb - ka, d: 0.35, r: 0.05 }, 0, 1.1, P, 2), { tone: "mid" }) });
   }
   // parked cars between the SB path and traffic (Esri, after view): a row of low boxes just inside the path's buffer
-  if (after) for (const p of FEAT.parking) {
+  if (after && state.parked) for (const p of FEAT.parking) {
     const [a, b] = p.s;
     if (b < s0 - 6 || a > s1 + 6) continue;
     for (let s = Math.max(a + 0.5, Math.ceil((s0 - 6) / 6.4) * 6.4); s + 4.6 < Math.min(b, s1 + 6); s += 6.4) {
@@ -321,6 +327,9 @@ document.querySelectorAll("[data-zoom]").forEach((b) => b.addEventListener("clic
   document.querySelectorAll("[data-zoom]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
   state.s0 = clampS(mid - W() / 2); schedule();
 }));
+
+// parked cars on or off
+document.querySelector("[data-parked]").addEventListener("click", (e) => { state.parked = !state.parked; e.currentTarget.setAttribute("aria-pressed", String(state.parked)); schedule(); });
 
 // rider reports on or off
 document.querySelector("[data-rider]").addEventListener("click", (e) => { state.rider = !state.rider; e.currentTarget.setAttribute("aria-pressed", String(state.rider)); hidePop(); schedule(); });
