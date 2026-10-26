@@ -10,6 +10,9 @@ import { CRASHES } from "./crashes.mjs";
 const HERE = dirname(fileURLToPath(import.meta.url));
 // Serge Issakov's crowdsourced Cardiff 101 Crash List: advocate reports, kept apart from the official records
 const RIDER = JSON.parse(readFileSync(join(HERE, "../../data/advocate/cardiff-101-crash-list.json"), "utf8")).reports;
+// Features traced on Esri World Imagery (Jan 2026) and the USGS 3DEP road profile
+const FEAT = JSON.parse(readFileSync(join(HERE, "../../data/field/cardiff-features-esri.json"), "utf8"));
+const ELEV = JSON.parse(readFileSync(join(HERE, "../../data/elevation/cardiff-101-profile.json"), "utf8")).profile;
 const riderPlaced = RIDER.filter((r) => r.s != null && !r.matchesOfficial).length;
 const riderNoLoc = RIDER.filter((r) => r.s == null && !r.matchesOfficial).length;
 const riderSame = RIDER.filter((r) => r.matchesOfficial).length;
@@ -20,7 +23,8 @@ const slope = D.ADDRESS.reduce((a, [x, y]) => a + (x - mxA) * (y - myA), 0) / D.
 const sOfAddr = (addr) => Math.round(myA + slope * (addr - mxA));
 const crashes = CRASHES.map((c) => ({ ...c, s: c.addr != null ? sOfAddr(c.addr) : c.s }));
 
-const DATA = { NB_TRACK: D.NB_TRACK, SB_TRACK: D.SB_TRACK, DRIVES: D.DRIVES, BUILDINGS: D.BUILDINGS, LOTS: D.LOTS, COAST: D.COAST, POIS: D.POIS, RANGE: D.RANGE, LIMITS: D.LIMITS, BRIDGES: D.BRIDGES, UNLIT: D.UNLIT, CRASHES: crashes, RIDER };
+const DATA = { NB_TRACK: D.NB_TRACK, SB_TRACK: D.SB_TRACK, DRIVES: D.DRIVES, BUILDINGS: D.BUILDINGS, LOTS: D.LOTS, COAST: D.COAST, POIS: D.POIS, RANGE: D.RANGE, LIMITS: D.LIMITS, BRIDGES: D.BRIDGES, UNLIT: D.UNLIT, CRASHES: crashes, RIDER,
+  FEAT: { outlines: FEAT.outlines, crosswalks: FEAT.crosswalks, parking: FEAT.parking_buffer, crossovers: FEAT.crossovers, redCurb: FEAT.red_curb, nbLaneFrom: FEAT.track_fixes.nb_lane_from }, ELEV };
 
 const segCount = (era) => crashes.filter((c) => !c.edge && (era === "after") === c.date >= "2020-04").length;
 
@@ -84,6 +88,14 @@ body{background:var(--cx-page);margin:0}
 .cx-legend i.v{background:var(--anatomy-card);box-shadow:inset 0 0 0 2px var(--rider)}
 #pop .pop-tag{color:var(--rider);font-weight:600}
 .cx-btn[data-rider][aria-pressed="true"]{border-color:var(--rider);color:var(--rider)}
+#scene .g-zebra{fill:#f7f7f2}.cx[data-theme="dark"] #scene .g-zebra{fill:#77777c}
+#scene .g-park{fill:var(--drive)}
+#scene .m-red{stroke:var(--risk);stroke-width:2.4;fill:none}
+#elev{display:block;width:100%;height:auto;margin-top:-10px}
+#elev .el-line{fill:none;stroke:var(--anatomy-mid);stroke-width:1.6}
+#elev .el-fill{fill:var(--anatomy-lo);opacity:.25}
+#elev .el-lbl{fill:var(--anatomy-muted);font:10px var(--anatomy-mono)}
+#elev .el-win{fill:var(--anatomy-hi);fill-opacity:.08;stroke:none}
 #mini .mm-win{fill:var(--anatomy-hi);fill-opacity:.08;stroke:var(--anatomy-hi);stroke-width:1.2}
 .cx-foot{font-size:12px;color:var(--anatomy-muted)}
 .cx-foot summary{cursor:pointer;color:var(--anatomy-text)}
@@ -107,12 +119,14 @@ const page = `<title>Cardiff Cycle Track</title>
 </div>
 <div id="stage" tabindex="0" aria-label="Isometric view of the corridor. Drag sideways or use the arrow keys to travel along it."><svg id="scene" class="iso-svg" viewBox="0 0 1000 560" role="img" aria-label="Isometric view of Coast Highway 101 with both cycle tracks, barriers, driveways and crash locations"></svg><div id="pop" hidden></div><span class="cx-hint">Drag to travel · tap a pin</span><span id="where"></span></div>
 <svg id="mini" viewBox="0 0 1000 96" role="img" aria-label="Whole corridor with crash locations; tap to jump there"></svg>
+<svg id="elev" viewBox="0 0 1000 56" role="img" aria-label="Road elevation along the corridor: about 5 m above sea level through the middle, climbing to about 12 m at the Solana Beach line and 13 m at Chesterfield"></svg>
 <div class="cx-legend"><span><i></i>Crash, minor injury</span><span><i class="r"></i>Severe, serious or fatal</span><span><i class="z"></i>Where drivers cross the track, or riders must enter it</span><span><i class="v"></i>Rider report, not an official record (position approximate)</span></div>
 <details class="cx-foot"><summary>About the data</summary><ul>
 <li>Crashes are official records from California's crash database (CCRS, CHP and San Diego Sheriff), placed by street number or by distance from a landmark. Pins marked "position estimated" only name a landmark. One 2022 serious crash has no usable location and is not shown.</li>
 <li>Solo crashes are often not reported. Local riders count 36–42 crashes since 2020; ${segCount("after")} official records were found.</li>
 <li>The March 2024 fatal crash is recorded in the 2700 block with no coordinates, which by street number falls near the beach parking south of Las Olas. Its official primary factor is bicycling under the influence (VC 21200.5).</li>
 <li>Purple pins are rider reports from Serge Issakov's crowdsourced Cardiff 101 Crash List (${RIDER.length} entries, April 2020 to April 2026; tinyurl.com/cardiff101crashlist). They come from riders, friends and witnesses, mostly via social media, and are not verified here. ${riderPlaced} are placed approximately from the landmark they name, ${riderNoLoc} have no usable location and are not shown, and ${riderSame} match an official record at the same place, so only the official pin is shown. They appear in the Apr ’20–Present view only.</li>
+<li>Crosswalks, the Seaside, Cardiff State Beach and Chesterfield entrances, the parking rows beside the SB path, and the places where drivers cross the bike lane were traced on Esri World Imagery (Vantor, January 10, 2026); positions are within about 1 m. The elevation strip under the overview is USGS 3DEP lidar (bare earth); the bridge span is interpolated.</li>
 <li>Wheel-stop and post spacing, lane widths and the pre-2020 layout are estimates.</li>
 </ul></details>
 </div></div>

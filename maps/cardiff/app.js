@@ -1,6 +1,6 @@
 // Runs in the page after the inlined kit (iso, depthOf, extrude, slabOf, cylinder, solidSvg, lineSvg, onTop, fitProjection, boxCorners...).
 // DATA is injected by build.mjs.
-const { NB_TRACK, SB_TRACK, DRIVES, BUILDINGS, LOTS, COAST, POIS, CRASHES, RIDER, RANGE, LIMITS, BRIDGES, UNLIT } = DATA;
+const { NB_TRACK, SB_TRACK, DRIVES, BUILDINGS, LOTS, COAST, POIS, CRASHES, RIDER, RANGE, LIMITS, BRIDGES, UNLIT, FEAT, ELEV } = DATA;
 
 // ---------- geometry helpers along the road ----------
 const lerpLine = (line, s) => {
@@ -75,6 +75,8 @@ function render() {
   for (const l of LOTS) { const [a, b] = spanOf(l.pts); if (b > s0 && a < s1) ground.push(`<path class="g-lot" d="${poly(l.pts)}"/>`); }
   // lagoon outlet: water runs under the bridges from the lagoon (east) to the sea
   for (const [a, b] of BRIDGES) if (b > s0 && a < s1) ground.push(`<path class="g-sea" d="${poly([[Math.max(a + 2, s0), SPAN.east], [Math.min(b - 2, s1), SPAN.east], [Math.min(b - 2, s1), SPAN.west], [Math.max(a + 2, s0), SPAN.west]])}"/>`);
+  // entrances traced on Esri, under the road so only the part beyond the curb shows
+  for (const o of FEAT.outlines) { const [a, b] = spanOf(o.pts); if (b > s0 && a < s1) ground.push(`<path class="g-drive" d="${poly(o.pts)}"/>`); }
   // road surface (travel lanes + both tracks)
   ground.push(`<path class="g-road" d="${poly(band(lo, hi, eastEdge, westEdge, 3))}"/>`);
   // bridge deck, edged so it reads as a structure over the water
@@ -86,6 +88,15 @@ function render() {
   for (const [a, b, side] of DRIVES) if (b > s0 - 4 && a < s1 + 4) {
     const ds = (a + b) / 2, dd = side === "E" ? [eastEdge(ds) + 0.2, Math.max(eastEdge(ds) - 14, SPAN.east)] : [westEdge(ds) - 0.2, Math.min(westEdge(ds) + 16, SPAN.west)];
     ground.push(`<path class="g-drive" d="${poly([[a, dd[0]], [b, dd[0]], [b, dd[1]], [a, dd[1]]])}"/>`);
+  }
+  // crosswalks: zebra bars across the road (or across a driveway mouth)
+  for (const c of FEAT.crosswalks) {
+    const [a, b] = c.s, m = (a + b) / 2;
+    if (b < s0 || a > s1) continue;
+    // a crosswalk over the highway stops at the road edges; one across a driveway mouth is drawn as traced
+    const across = Math.min(...c.d) < 0 && Math.max(...c.d) > 0;
+    const dA = across ? Math.max(Math.min(...c.d), eastEdge(m)) : Math.min(...c.d), dB = across ? Math.min(Math.max(...c.d), westEdge(m)) : Math.max(...c.d);
+    for (let d = dA + 0.3; d < dB; d += 1.2) marks.push(`<path class="g-zebra" d="${poly([[a, d], [b, d], [b, Math.min(d + 0.6, dB)], [a, Math.min(d + 0.6, dB)]], 0.01)}"/>`);
   }
   // lane markings
   const dash = (d, len = 3, gap = 9) => { let p = ""; for (let s = Math.ceil(lo / (len + gap)) * (len + gap); s < hi; s += len + gap) p += line([[s, d], [Math.min(s + len, hi), d]], 0.01); return p; };
@@ -101,7 +112,7 @@ function render() {
       marks.push(lineSvg(line(inner, 0.01) + line(outer, 0.01), { tone: "hi" }));
       if (after) {
         marks.push(lineSvg(line(bufIn, 0.01), { tone: "hi" }));
-        let hatch = ""; for (const s of r) if (Math.round(s) % 3 === 0 && !nearDrive(s, side, 4)) hatch += line([[s, dfn(s) + sign * (TRACK_W / 2)], [s + 1.2, dfn(s) + sign * (TRACK_W / 2 + BUF)]], 0.01);
+        let hatch = ""; for (const s of r) if (Math.round(s) % 3 === 0 && !nearDrive(s, side, 4) && !(side === "E" && s > FEAT.nbLaneFrom)) hatch += line([[s, dfn(s) + sign * (TRACK_W / 2)], [s + 1.2, dfn(s) + sign * (TRACK_W / 2 + BUF)]], 0.01);
         marks.push(lineSvg(hatch, { tone: "faint" }));
         // risk patches where drivers cross the track
         for (const [a, b, dside] of DRIVES) { const ds = (a + b) / 2; if (dside === side && b > s0 - 1 && a < s1 + 1 && on(ds)) marks.push(`<path class="risk" d="${poly([[a, dfn(ds) - 1.2], [b, dfn(ds) - 1.2], [b, dfn(ds) + 1.2], [a, dfn(ds) + 1.2]], 0.02)}"/>`); }
@@ -109,6 +120,9 @@ function render() {
     }
   }
   if (after) {
+    // where drivers cross the bike lane (Esri): Seaside right-turn merge, Cardiff Reef lot approach, Chesterfield right-turn lane
+    for (const c of FEAT.crossovers) { const [a, b] = c.merge ?? c.s; if (b > s0 && a < s1) { const dfn = c.side === "E" ? dNB : dSB; marks.push(`<path class="risk" d="${poly(band(Math.max(a, s0), Math.min(b, s1), (s) => dfn(s) - 1.4, (s) => dfn(s) + 1.4, 2), 0.02)}"/>`); } }
+    for (const r of FEAT.redCurb) if (r.s[1] > s0 && r.s[0] < s1) marks.push(`<path class="m-red" d="${line([[r.s[0], r.d], [r.s[1], r.d]], 0.02)}"/>`);
     // south entry of the NB track: the rider leaves the lane where the barrier line begins
     if (s0 < NB_SEP && s1 > NB_IN) marks.push(`<path class="risk" d="${poly(band(Math.max(NB_IN, s0), Math.min(NB_SEP, s1), (s) => dNB(s) - 1.4, (s) => dNB(s) + 2.2, 2), 0.02)}"/>`);
     for (const [ua, ub] of UNLIT) if (s0 < ub && s1 > ua) marks.push(`<path class="risk dim" d="${poly(band(Math.max(ua, s0), Math.min(ub, s1), (s) => dSB(s) - 1, (s) => dSB(s) + 1, 4), 0.02)}"/>`);
@@ -123,7 +137,7 @@ function render() {
     for (const [on, dfn, sign, side] of [[nbOn, dNB, 1, "E"], [sbOn, dSB, -1, "W"]]) {
       const start = side === "E" ? NB_SEP : SB_SEP;
       for (let s = Math.ceil(lo / 6.1) * 6.1; s < hi; s += 6.1) {
-        if (!on(s) || s < start || nearDrive(s, side) || onBridge(s)) continue;
+        if (!on(s) || s < start || nearDrive(s, side) || onBridge(s) || (side === "E" && s > FEAT.nbLaneFrom)) continue;
         const d = dfn(s) + sign * (TRACK_W / 2 + BUF / 2);
         const first = side === "E" && s < start + 6.1;
         if (close) {
@@ -141,6 +155,16 @@ function render() {
   for (const [a, b] of BRIDGES) if (b > s0 && a < s1) for (const [d, out] of [[eastEdge((a + b) / 2) - 0.4, -0.35], [westEdge((a + b) / 2) + 0.4, 0]]) {
     const ka = Math.max(a, s0 - 5), kb = Math.min(b, s1 + 5), k = toK(ka, d + out);
     items.push({ key: depthAt((ka + kb) / 2, d), svg: solidSvg(slabOf({ x: k[0], y: k[1], w: kb - ka, d: 0.35, r: 0.05 }, 0, 1.1, P, 2), { tone: "mid" }) });
+  }
+  // parked cars between the SB path and traffic (Esri, after view): a row of low boxes just inside the path's buffer
+  if (after) for (const p of FEAT.parking) {
+    const [a, b] = p.s;
+    if (b < s0 - 6 || a > s1 + 6) continue;
+    for (let s = Math.max(a + 0.5, Math.ceil((s0 - 6) / 6.4) * 6.4); s + 4.6 < Math.min(b, s1 + 6); s += 6.4) {
+      if (s < a) continue;
+      const d = dSB(s) - TRACK_W / 2 - BUF - 1.1, k = toK(s, d);
+      items.push({ key: depthAt(s + 2.3, d), svg: close ? solidSvg(slabOf({ x: k[0], y: k[1] - 0.9, w: 4.5, d: 1.8, r: 0.4 }, 0, 1.4, P, 3), { tone: "mid" }) : `<path class="g-park" d="${poly([[s, d - 0.9], [s + 4.5, d - 0.9], [s + 4.5, d + 0.9], [s, d + 0.9]], 0.01)}"/>` });
+    }
   }
   // buildings
   for (const bl of BUILDINGS) {
@@ -218,7 +242,17 @@ function buildMini() {
   out.push(`<rect class="mm-win" data-win x="0" y="2" width="10" height="${MH - 4}"/>`);
   mini.innerHTML = out.join("");
 }
+const EH = 56, ezMax = 15, ey = (z) => EH - 14 - (z / ezMax) * (EH - 20);
+function buildElev() {
+  const pts = ELEV.filter(([s]) => s >= RANGE.south && s <= RANGE.north);
+  const d = pts.map(([s, z], i) => `${i ? "L" : "M"}${mx(s).toFixed(1)} ${ey(z).toFixed(1)}`).join("");
+  const top = Math.max(...pts.map((p) => p[1])), low = Math.min(...pts.map((p) => p[1]));
+  elev.innerHTML = `<path class="el-fill" d="${d}L${mx(pts.at(-1)[0]).toFixed(1)} ${EH - 14}L${mx(pts[0][0]).toFixed(1)} ${EH - 14}Z"/><path class="el-line" d="${d}"/>` +
+    `<text class="el-lbl" x="4" y="${EH - 2}">Elevation · ${Math.round(low)}–${Math.round(top)} m above sea level (USGS lidar)</text>` +
+    `<rect class="el-win" data-ewin x="0" y="0" width="10" height="${EH - 14}"/>`;
+}
 function drawWindow() {
+  { const r = elev.querySelector("[data-ewin]"); if (r) { r.setAttribute("x", mx(state.s0).toFixed(1)); r.setAttribute("width", Math.max(6, mx(state.s0 + W()) - mx(state.s0)).toFixed(1)); } }
   const r = mini.querySelector("[data-win]");
   r.setAttribute("x", mx(state.s0).toFixed(1));
   r.setAttribute("width", Math.max(6, mx(state.s0 + W()) - mx(state.s0)).toFixed(1));
@@ -230,6 +264,7 @@ function drawWindow() {
 // ---------- interaction ----------
 const scene = document.querySelector("#scene");
 const mini = document.querySelector("#mini");
+const elev = document.querySelector("#elev");
 const pop = document.querySelector("#pop");
 const readout = document.querySelector("#where");
 const clampS = (s) => Math.max(RANGE.south - 20, Math.min(RANGE.north - W() + 20, s));
@@ -291,4 +326,5 @@ document.querySelectorAll("[data-zoom]").forEach((b) => b.addEventListener("clic
 document.querySelector("[data-rider]").addEventListener("click", (e) => { state.rider = !state.rider; e.currentTarget.setAttribute("aria-pressed", String(state.rider)); hidePop(); schedule(); });
 
 buildMini();
+buildElev();
 setEra("after");
