@@ -431,8 +431,12 @@
      16.5
     ],
     [
-     1428,
+     1426,
      16.7
+    ],
+    [
+     1446,
+     13.5
     ]
    ],
    "note": "SB path centre on Esri; replaces OSM points between s 1100 and 1435"
@@ -442,5 +446,157 @@
  "not_visible_on_esri": [
   "Seaside bollards: too small to see at 0.34 m; needs a field check",
   "Dashed green across the restaurant-row driveways (s 1535-1620) and at the campground bus stop (s 2205-2225): faint on Esri, unconfirmed"
- ]
+ ],
+ "track_widths": {
+  "note": "Riding width in metres from the curb, parapet or path edge to the line of wheel stops and posts, read on Esri World Imagery (0.34 m pixels) every 25-50 m; about +/-0.5 m. Where there are no posts (painted lane or path behind parked cars) it is the painted lane or path width. [s0, s1, width]",
+  "SB": [
+   [
+    245,
+    360,
+    2.3
+   ],
+   [
+    360,
+    450,
+    2.6
+   ],
+   [
+    450,
+    555,
+    2.4
+   ],
+   [
+    555,
+    720,
+    3.2
+   ],
+   [
+    720,
+    1060,
+    3.5
+   ],
+   [
+    1060,
+    1440,
+    3.4
+   ],
+   [
+    1440,
+    1645,
+    2.4
+   ],
+   [
+    1645,
+    1748,
+    3.0
+   ],
+   [
+    1748,
+    1795,
+    2.1
+   ],
+   [
+    1795,
+    1890,
+    2.4
+   ],
+   [
+    1890,
+    1960,
+    3.3
+   ],
+   [
+    1960,
+    2310,
+    3.4
+   ]
+  ],
+  "NB": [
+   [
+    287,
+    360,
+    2.3
+   ],
+   [
+    360,
+    700,
+    2.5
+   ],
+   [
+    700,
+    1040,
+    3.0
+   ],
+   [
+    1040,
+    1320,
+    3.2
+   ],
+   [
+    1320,
+    1640,
+    2.6
+   ],
+   [
+    1640,
+    1890,
+    2.4
+   ],
+   [
+    1890,
+    1960,
+    2.4
+   ],
+   [
+    1960,
+    2165,
+    3.4
+   ],
+   [
+    2165,
+    2270,
+    1.8
+   ]
+  ]
+ },
+ "pinch_points": [
+  {
+   "side": "SB",
+   "s": [
+    1748,
+    1795
+   ],
+   "width": 2.1,
+   "label": "SB ~2.1 m wide, curb to posts"
+  },
+  {
+   "side": "NB",
+   "s": [
+    1640,
+    1960
+   ],
+   "width": 2.4,
+   "label": "NB ~2.4 m, Cardiff Reef to the bridge"
+  },
+  {
+   "side": "both",
+   "s": [
+    245,
+    360
+   ],
+   "width": 2.3,
+   "label": "~2.3 m at the south ends"
+  }
+ ],
+ "road_edges": {
+  "note": "Real outer road edge where the drawn tracks would make the road too narrow: [s0, s1, side, d]",
+  "list": [
+   [
+    2165,
+    2270,
+    "E",
+    -15.5
+   ]
+  ]
+ }
 }
