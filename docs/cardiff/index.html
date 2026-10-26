@@ -959,19 +959,28 @@ function band(s0, s1, fnA, fnB, step = 4) {
   for (let s = s0; s <= s1 + 1e-6; s += step) { a.push([s, fnA(s)]); b.push([s, fnB(s)]); }
   return [...a, ...b.reverse()];
 }
+// ground extent (s, d) that covers the whole viewBox, plus a margin for buildings standing just outside it
+function viewExtent(m = 15) {
+  const o = iso([0, 0, 0], P), ax = iso([1, 0, 0], P), ay = iso([0, 1, 0], P);
+  const a = [ax[0] - o[0], ax[1] - o[1]], b = [ay[0] - o[0], ay[1] - o[1]], det = a[0] * b[1] - a[1] * b[0];
+  const ks = [[0, 0], [VW, 0], [0, VH], [VW, VH]].map(([X, Y]) => { const x = X - o[0], y = Y - o[1]; return [(x * b[1] - y * b[0]) / det, (a[0] * y - a[1] * x) / det]; });
+  const ss = ks.map((k) => k[0] + state.s0), ds = ks.map((k) => -k[1]);
+  return { s0: Math.min(...ss) - m, s1: Math.max(...ss) + m, east: Math.min(...ds) - m, west: Math.max(...ds) + m };
+}
 function render() {
-  const s0 = state.s0, s1 = s0 + W();
-  const lo = Math.max(s0, RANGE.south), hi = Math.min(s1, RANGE.north);
+  // draw past the camera window to every corner of the frame, so the ground fills the whole rectangle
+  const SP = viewExtent(), s0 = SP.s0, s1 = SP.s1;
+  const lo = s0, hi = s1;
   const ground = [], marks = [], items = [];
   const after = state.era === "after";
   // land, sea, sand
-  ground.push(`<path class="g-land" d="${poly([[s0, SPAN.east], [s1, SPAN.east], [s1, SPAN.west], [s0, SPAN.west]])}"/>`);
-  ground.push(`<path class="g-sand" d="${poly(band(s0, s1, (s) => Math.min(westEdge(s) + (sbOn(s) ? 1.4 : 0), SPAN.west), (s) => Math.min(dCoast(s), SPAN.west)))}"/>`);
-  ground.push(`<path class="g-sea" d="${poly(band(s0, s1, (s) => Math.min(dCoast(s), SPAN.west), () => SPAN.west))}"/>`);
+  ground.push(`<path class="g-land" d="${poly([[s0, SP.east], [s1, SP.east], [s1, SP.west], [s0, SP.west]])}"/>`);
+  ground.push(`<path class="g-sand" d="${poly(band(s0, s1, (s) => Math.min(westEdge(s) + (sbOn(s) ? 1.4 : 0), SP.west), (s) => Math.min(dCoast(s), SP.west)))}"/>`);
+  ground.push(`<path class="g-sea" d="${poly(band(s0, s1, (s) => Math.min(dCoast(s), SP.west), () => SP.west))}"/>`);
   // lots
   for (const l of LOTS) { const [a, b] = spanOf(l.pts); if (b > s0 && a < s1) ground.push(`<path class="g-lot" d="${poly(l.pts)}"/>`); }
   // lagoon outlet: water runs under the bridges from the lagoon (east) to the sea
-  for (const [a, b] of BRIDGES) if (b > s0 && a < s1) ground.push(`<path class="g-sea" d="${poly([[Math.max(a + 2, s0), SPAN.east], [Math.min(b - 2, s1), SPAN.east], [Math.min(b - 2, s1), SPAN.west], [Math.max(a + 2, s0), SPAN.west]])}"/>`);
+  for (const [a, b] of BRIDGES) if (b > s0 && a < s1) ground.push(`<path class="g-sea" d="${poly([[Math.max(a + 2, s0), SP.east], [Math.min(b - 2, s1), SP.east], [Math.min(b - 2, s1), SP.west], [Math.max(a + 2, s0), SP.west]])}"/>`);
   // road surface (travel lanes + both tracks)
   ground.push(`<path class="g-road" d="${poly(band(lo, hi, eastEdge, westEdge, 3))}"/>`);
   // bridge deck, edged so it reads as a structure over the water
@@ -989,7 +998,7 @@ function render() {
   }
   // driveways
   for (const [a, b, side] of DRIVES) if (b > s0 - 4 && a < s1 + 4) {
-    const ds = (a + b) / 2, dd = side === "E" ? [eastEdge(ds) + 0.2, Math.max(eastEdge(ds) - 14, SPAN.east)] : [westEdge(ds) - 0.2, Math.min(westEdge(ds) + 16, SPAN.west)];
+    const ds = (a + b) / 2, dd = side === "E" ? [eastEdge(ds) + 0.2, Math.max(eastEdge(ds) - 14, SP.east)] : [westEdge(ds) - 0.2, Math.min(westEdge(ds) + 16, SP.west)];
     ground.push(`<path class="g-drive" d="${poly([[a, dd[0]], [b, dd[0]], [b, dd[1]], [a, dd[1]]])}"/>`);
   }
   // crosswalks: zebra bars across the road (or across a driveway mouth)
@@ -1072,7 +1081,7 @@ function render() {
   // buildings
   for (const bl of BUILDINGS) {
     let pts = bl.pts;
-    for (const [axis, v, above] of [[0, s0 - 2, true], [0, s1 + 2, false], [1, SPAN.east, true], [1, SPAN.west, false]]) if (pts.length) pts = clipTo(pts, axis, v, above);
+    for (const [axis, v, above] of [[0, s0 - 2, true], [0, s1 + 2, false], [1, SP.east, true], [1, SP.west, false]]) if (pts.length) pts = clipTo(pts, axis, v, above);
     if (pts.length < 3) continue;
     const [ka, kb] = spanOf(pts), dm = pts.reduce((a, p) => a + p[1], 0) / pts.length;
     items.push({ key: depthAt((ka + kb) / 2, dm) - 3, svg: solidSvg(extrude(pts.map(([s, d]) => [s - state.s0, -d]), 0, bl.h, P, { convex: false }), { tone: "mid" }) });
@@ -1101,11 +1110,11 @@ function render() {
   items.sort((a, b) => a.key - b.key);
   // labels
   const labels = [];
-  for (const [name, s, d] of POIS) if (s > s0 + 4 && s < s1 - 4 && d > SPAN.east + 4 && d < SPAN.west - 4) { const b = BUILDINGS.find((q) => q.name && q.name.includes(name)); labels.push(b ? flatText(b.pts.reduce((a, p) => a + p[0], 0) / b.pts.length, b.pts.reduce((a, p) => a + p[1], 0) / b.pts.length, name, close ? 2.4 : 5, "", b.h) : flatText(s, d, name, close ? 2.4 : 5)); }
+  for (const [name, s, d] of POIS) if (s > s0 + 4 && s < s1 - 4 && d > SP.east + 4 && d < SP.west - 4) { const b = BUILDINGS.find((q) => q.name && q.name.includes(name)); labels.push(b ? flatText(b.pts.reduce((a, p) => a + p[0], 0) / b.pts.length, b.pts.reduce((a, p) => a + p[1], 0) / b.pts.length, name, close ? 2.4 : 5, "", b.h) : flatText(s, d, name, close ? 2.4 : 5)); }
   if (s0 < NB_SEP && s1 > NB_IN && after) labels.push(flatText((NB_IN + NB_SEP) / 2, -15.5, "NB track begins · first wheel stop", close ? 1.6 : 3.6, "warn"));
-  for (const [a, b] of BRIDGES) if (b > s0 && a < s1) { const m = (a + b) / 2; if (m > s0 + 4 && m < s1 - 4) { labels.push(flatText(m, SPAN.east + (close ? 12 : 22), "from San Elijo Lagoon", close ? 2.2 : 4.6, "water")); labels.push(flatText(m, SPAN.west - (close ? 10 : 20), "to the ocean", close ? 2.2 : 4.6, "water")); } }
+  for (const [a, b] of BRIDGES) if (b > s0 && a < s1) { const m = (a + b) / 2; if (m > s0 + 4 && m < s1 - 4) { labels.push(flatText(m, SP.east + (close ? 12 : 22), "from San Elijo Lagoon", close ? 2.2 : 4.6, "water")); labels.push(flatText(m, SP.west - (close ? 10 : 20), "to the ocean", close ? 2.2 : 4.6, "water")); } }
   if (s0 < NB_IN - 45 && s1 > NB_IN - 115) labels.push(flatText(NB_IN - 80, -30, "NB: down the hill from Solana Beach, 45 mph posted", close ? 1.6 : 3.6));
-  const clip = `<clipPath id="win"><path d="${poly([[s0, SPAN.east], [s1, SPAN.east], [s1, SPAN.west], [s0, SPAN.west]])}"/></clipPath>`;
+  const clip = `<clipPath id="win"><path d="${poly([[s0, SP.east], [s1, SP.east], [s1, SP.west], [s0, SP.west]])}"/></clipPath>`;
   scene.innerHTML = clip + `<g clip-path="url(#win)">${ground.join("") + marks.join("")}</g>` + items.map((i) => i.svg).join("") + labels.join("");
   drawWindow();
 }
