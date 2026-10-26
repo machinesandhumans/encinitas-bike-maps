@@ -1,6 +1,6 @@
 # Encinitas Bike Infrastructure Maps — Project Brief
 
-Last updated: October 24, 2026
+Last updated: October 26, 2026
 
 ## Goal
 Interactive, spatially accurate maps of four Encinitas road projects, showing where the layout narrows riders' options (barriers, blind spots, driveway crossings, entries and exits) and where official crashes happened, before and after each change. The maps must stay objective: official data kept separate from advocate reports, and gaps stated openly.
@@ -38,6 +38,8 @@ What it does: whole 1.27-mile stretch in isometric view; before/after toggle; ri
 - Field edits: the satellite review page has Move buildings / Mark driveway tools; Mark copies the edits and pastes them in chat. Save them to `data/field/cardiff-edits.json`, then rerun osm-layout.mjs, build.mjs and review.mjs.
 - Rider-report layer (2026-10-26): Serge Issakov's crowdsourced Cardiff 101 Crash List (data/advocate/cardiff-101-crash-list.json, 40 entries Apr 2020–Apr 2026) drawn as purple pins, separate from official CCRS pins, after view only, toggleable. 23 placed approximately, 14 no location (not shown), 3 match an official record (official pin shows 'also on the rider list'). Ride north/south animation removed at Mark's request.
 - Field walk mode (review page): GPS dot, crosshair and typed marks (driveway start/end, bollard, post, wheel stop, barrier start/end, sign, curb gap, hazard, photo). Meant for GitHub Pages on a phone (geolocation and imagery need https and are blocked in Claude artifacts). "Send everything" shares marks, notes and edits as text for the chat. The crosshair follows GPS until the map is dragged; each mark stores the crosshair, the GPS fix and the time.
+- Esri pass (2026-10-26, approved by Mark): crosswalks, the Seaside / Cardiff State Beach north lot / Chesterfield entrances, the parked-car rows beside the SB path (s 1098-1356, 1371-1433, campground 1983-2197), the places drivers cross the bike lane (Seaside right-turn merge s 515-552, Cardiff Reef approach s 1684-1745, Chesterfield right-turn lane s 2165-2200) and the red curb by the Kraken were traced on Esri World Imagery (Vantor, captured 2026-01-10, 0.34 m) and are now on the map: `data/field/cardiff-features-esri.json`. Esri, OSM crossings and the USGS 3DEP lidar bridge abutments agree within ~1 m. Track fixes applied in osm-layout.mjs: the NB track no longer merges into the road at s 2200 (it becomes a bike lane between the through and right-turn lanes to the stop bar at s 2268; no posts after s 2165), and the SB path at s 1100-1435 moved ~2 m west. Elevation strip under the overview from USGS 3DEP (`data/elevation/cardiff-101-profile.json`; bridge span interpolated). Not confirmed on Esri: Seaside bollards, faint dashed green at restaurant row and the campground bus stop. Google screenshots were used only for checking and are kept out of the repo.
+- Network for cloud sessions: Esri World Imagery (server/services.arcgisonline.com) and USGS 3DEP (elevation.nationalmap.gov) work. Esri Wayback (wayback.maptiles.arcgis.com, metadata.maptiles.arcgis.com) is still blocked; needed to date when the green lanes went in.
 - OSM shows the SB path continuing north of Chesterfield on the west side (to about s 2600); the map still starts the SB track at the Chesterfield signal.
 - Mark says the south and north track entrances/exits don't match how the path works. Waiting on his ride-through description before redrawing them.
 
@@ -45,7 +47,7 @@ What it does: whole 1.27-mile stretch in isometric view; before/after toggle; ri
 1. Confirm location of the March 2024 fatal crash.
 2. Get the advocate crash list (date, location, what was hit) for a separate, labeled layer.
 3. Site photos: each end of the barrier lines, Ki's / Tower 13 driveways, south NB entrance; rough widths of track and walkway.
-4. Pre-2020 layout (2019 Street View) to make the "before" view accurate.
+4. Pre-2020 layout (2019 Street View) to make the "before" view accurate. Esri Wayback dates would also date the green-lane install once the two Wayback hosts are allowed.
 5. Build corridors 2–4 on the same template.
 6. Mark's field walk (GitHub Pages review page): first walk 2026-10-24 saved in data/field/cardiff-field-marks-2026-10-24.json (59 marks, order reliable but positions not: the crosshair didn't follow GPS then, so marks bunch on a few points; not applied to the map; photos not to be mapped yet). Needs a second walk with the fixed page for driveways, bollards, posts, barrier ends; and where the SB track starts at the north end (Chesterfield signal or further north). South entrance/exit already set from his satellite notes.
 

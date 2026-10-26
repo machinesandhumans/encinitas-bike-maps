@@ -1,0 +1,446 @@
+{
+ "note": "Traced on Esri World Imagery (Vantor Vivid Premium, captured 2026-01-10, 0.34 m source pixels) from images resampled into the map frame. s = metres along the road (map frame), d = metres from the map centreline, + west. Reading error about +/-1 m. Esri, OpenStreetMap crossings and the USGS 3DEP lidar bridge abutments agree within about 1 m. Approved by Mark 2026-10-26.",
+ "source": {
+  "imagery": "Esri World Imagery, Vantor Vivid Premium 2026-01-10",
+  "elevation": "USGS 3DEP bare-earth DEM (1 m)"
+ },
+ "driveways": [
+  {
+   "name": "Seaside / Cardiff State Beach south lot",
+   "side": "W",
+   "s": [
+    429,
+    456
+   ],
+   "throat": [
+    431,
+    447.5
+   ],
+   "note": "curb returns flare from d 13 (s 410) to d 18; crosswalk across the driveway"
+  },
+  {
+   "name": "Cardiff State Beach north lot (Cardiff Reef signal)",
+   "side": "W",
+   "s": [
+    1668,
+    1684
+   ],
+   "note": "signalised; entry lane north of a small island, exit south of it"
+  },
+  {
+   "name": "Chesterfield Dr",
+   "side": "E",
+   "s": [
+    2272,
+    2300
+   ],
+   "note": "signalised; road east edge at d -15 to -17"
+  }
+ ],
+ "outlines": [
+  {
+   "name": "Seaside entrance",
+   "side": "W",
+   "pts": [
+    [
+     410,
+     12.8
+    ],
+    [
+     420,
+     14.6
+    ],
+    [
+     427,
+     16.6
+    ],
+    [
+     431,
+     18.2
+    ],
+    [
+     429.5,
+     20
+    ],
+    [
+     427.8,
+     23.6
+    ],
+    [
+     423.3,
+     40
+    ],
+    [
+     438.4,
+     40
+    ],
+    [
+     448.5,
+     22.5
+    ],
+    [
+     449.5,
+     21
+    ],
+    [
+     452,
+     19.6
+    ],
+    [
+     458,
+     18.4
+    ]
+   ],
+   "hatch": {
+    "s": [
+     430,
+     440
+    ],
+    "d": [
+     25,
+     40
+    ],
+    "note": "diagonal hatching in the south half of the driveway"
+   }
+  },
+  {
+   "name": "Cardiff State Beach north lot entrance",
+   "side": "W",
+   "pts": [
+    [
+     1666,
+     13.8
+    ],
+    [
+     1668.5,
+     15
+    ],
+    [
+     1669,
+     20
+    ],
+    [
+     1671,
+     26
+    ],
+    [
+     1676,
+     33
+    ],
+    [
+     1678,
+     40
+    ],
+    [
+     1694,
+     40
+    ],
+    [
+     1694,
+     36
+    ],
+    [
+     1688,
+     30
+    ],
+    [
+     1683,
+     25
+    ],
+    [
+     1682,
+     20
+    ],
+    [
+     1682.5,
+     16
+    ],
+    [
+     1685,
+     13.6
+    ]
+   ]
+  },
+  {
+   "name": "Chesterfield Dr",
+   "side": "E",
+   "pts": [
+    [
+     2266,
+     -16.8
+    ],
+    [
+     2271.7,
+     -17.4
+    ],
+    [
+     2274,
+     -19.5
+    ],
+    [
+     2276,
+     -22.5
+    ],
+    [
+     2276.6,
+     -28.6
+    ],
+    [
+     2278,
+     -34
+    ],
+    [
+     2299,
+     -34
+    ],
+    [
+     2298,
+     -30
+    ],
+    [
+     2298,
+     -18
+    ],
+    [
+     2299.5,
+     -14.5
+    ],
+    [
+     2301,
+     -13
+    ]
+   ]
+  }
+ ],
+ "crosswalks": [
+  {
+   "name": "Seaside lot entrance (across driveway)",
+   "s": [
+    431.2,
+    447.4
+   ],
+   "d": [
+    18.6,
+    22.6
+   ]
+  },
+  {
+   "name": "Las Olas",
+   "s": [
+    1357.5,
+    1361.5
+   ],
+   "d": [
+    18,
+    -8
+   ]
+  },
+  {
+   "name": "Chart House",
+   "s": [
+    1516,
+    1519.5
+   ],
+   "d": [
+    13.5,
+    -11.5
+   ]
+  },
+  {
+   "name": "Cardiff Reef signal",
+   "s": [
+    1659.5,
+    1662.5
+   ],
+   "d": [
+    13,
+    -9.8
+   ]
+  },
+  {
+   "name": "Cardiff Reef lot entrance (across driveway)",
+   "s": [
+    1677,
+    1682
+   ],
+   "d": [
+    15.5,
+    19
+   ]
+  },
+  {
+   "name": "Chesterfield",
+   "s": [
+    2299,
+    2304
+   ],
+   "d": [
+    13.5,
+    -11.8
+   ]
+  }
+ ],
+ "parking_buffer": [
+  {
+   "side": "W",
+   "s": [
+    1098,
+    1356
+   ],
+   "d": [
+    9.5,
+    12.8
+   ],
+   "note": "SB path (d 13 to 16.5) runs behind a row of parked cars"
+  },
+  {
+   "side": "W",
+   "s": [
+    1371,
+    1433
+   ],
+   "d": [
+    12,
+    15.5
+   ],
+   "note": "hatched no-parking s 1363-1371 by the Las Olas crosswalk; path d 15 to 18.5"
+  },
+  {
+   "side": "W",
+   "pts": [
+    [
+     1983,
+     9.2,
+     11.7
+    ],
+    [
+     2050,
+     8.8,
+     11.2
+    ],
+    [
+     2140,
+     7.5,
+     10
+    ],
+    [
+     2197,
+     7.5,
+     10
+    ]
+   ],
+   "s": [
+    1983,
+    2197
+   ],
+   "note": "campground: parked cars between the SB path and traffic; ladder-hatched buffer s 1963-1980 before the first stall; ends at the bus stop hatching s 2200-2215"
+  }
+ ],
+ "crossovers": [
+  {
+   "name": "Seaside right-turn lane",
+   "side": "W",
+   "s": [
+    456,
+    552
+   ],
+   "d": [
+    11.6,
+    14.8
+   ],
+   "merge": [
+    515,
+    552
+   ],
+   "note": "green SB bike lane between the through lane and the right-turn lane; posts end at s 552 and turning cars cross the dashed line s 515-552"
+  },
+  {
+   "name": "Cardiff Reef dashed green",
+   "side": "W",
+   "s": [
+    1684,
+    1745
+   ],
+   "d": [
+    10.5,
+    13
+   ],
+   "note": "SB bike lane on the approach to the lot signal"
+  },
+  {
+   "name": "Chesterfield NB right-turn lane",
+   "side": "E",
+   "s": [
+    2165,
+    2200
+   ],
+   "d": [
+    -12,
+    -8
+   ],
+   "note": "posted buffer ends s 2165; riders shift west across the new right-turn lane, green box s 2199-2210, then a bike lane d -7.8 to -9.6 between the through and right-turn lanes to the stop bar at s 2268"
+  }
+ ],
+ "red_curb": [
+  {
+   "side": "E",
+   "s": [
+    1607,
+    1621
+   ],
+   "d": -11,
+   "note": "red curb by the Kraken"
+  }
+ ],
+ "track_fixes": {
+  "nb_north_end": {
+   "replace_from_s": 2168.5,
+   "pts": [
+    [
+     2168.5,
+     -11.7
+    ],
+    [
+     2185,
+     -10
+    ],
+    [
+     2200,
+     -8.7
+    ],
+    [
+     2268,
+     -8.7
+    ]
+   ],
+   "note": "the map merges the NB track into the road at s 2200; it actually continues as a bike lane between lanes to the Chesterfield stop bar"
+  },
+  "sb_observations": "Esri puts the SB path about 2 m further west than the OSM-derived line between s 1100 and 1435; elsewhere within about 1 m.",
+  "sb_centre": {
+   "pts": [
+    [
+     1105,
+     14.8
+    ],
+    [
+     1356,
+     14.8
+    ],
+    [
+     1366,
+     16.5
+    ],
+    [
+     1428,
+     16.7
+    ]
+   ],
+   "note": "SB path centre on Esri; replaces OSM points between s 1100 and 1435"
+  },
+  "nb_lane_from": 2165
+ },
+ "not_visible_on_esri": [
+  "Seaside bollards: too small to see at 0.34 m; needs a field check",
+  "Dashed green across the restaurant-row driveways (s 1535-1620) and at the campground bus stop (s 2205-2225): faint on Esri, unconfirmed"
+ ]
+}
