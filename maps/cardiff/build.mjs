@@ -77,6 +77,7 @@ body{background:var(--cx-page);margin:0}
 #mini .mm-track{stroke:var(--anatomy-mid);stroke-width:2.2}
 #mini .mm-tick{stroke:var(--anatomy-lo);stroke-dasharray:2 3}
 #mini .mm-lbl,#mini .mm-row{fill:var(--anatomy-muted);font:10px var(--anatomy-mono)}
+#mini .mm-beach{fill:var(--sand)}#mini .mm-beach-lbl{fill:var(--yellow)}
 #mini .mm-dot{fill:var(--anatomy-mid);stroke:var(--anatomy-card);stroke-width:1}
 #mini .mm-dot[data-sev="serious"],#mini .mm-dot[data-sev="fatal"]{fill:var(--risk)}
 #mini .mm-dot[data-sev="fatal"]{stroke:var(--anatomy-strong);stroke-width:1.4}

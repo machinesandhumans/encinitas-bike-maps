@@ -198,11 +198,14 @@ function render() {
     items.push({ key: depthAt(c.s, d) + 0.5, svg: `<g class="pin" data-sev="${sev}" data-era="${ERA(c)}" data-id="${c.id}" tabindex="0" role="button" aria-label="${c.date} ${c.injury}: ${c.where}">${solidSvg(cylinder(k[0], k[1], close ? 0.1 : 0.3, 0, hgt, P, 8), { tone: "mid", crease: "none" })}${solidSvg(cylinder(k[0], k[1], r, hgt, close ? 0.45 : 1.2, P, 24), { tone: "hi" })}<path class="pin-hit" d="${solidSvgHit(k, hgt, r)}"/></g>` });
   }
   // rider reports (advocate list): after view only, nudged 1.5 m off the official pin line, no pin where an official record covers the same crash
+  // reports placed at the same landmark are fanned out 5 m apart along the road so each pin can be seen and clicked
   if (after && state.rider) for (const c of RIDER) {
     if (c.s == null || c.matchesOfficial || c.s < s0 - 2 || c.s > s1 + 2) continue;
-    const d = (c.dir === "NB" ? (nbOn(c.s) ? dNB(c.s) : -5) : (sbOn(c.s) ? dSB(c.s) : 5)) + (c.dir === "NB" ? -1.5 : 1.5);
-    const k = toK(c.s, d), hgt = close ? 4.2 : 11, r = close ? 0.9 : 2.1;
-    items.push({ key: depthAt(c.s, d) + 0.5, svg: `<g class="pin pin-rider" data-id="r${c.n}" tabindex="0" role="button" aria-label="Rider report ${c.date}: ${esc(c.where)}">${solidSvg(cylinder(k[0], k[1], close ? 0.1 : 0.3, 0, hgt, P, 8), { tone: "mid", crease: "none" })}${solidSvg(cylinder(k[0], k[1], r, hgt, close ? 0.4 : 1, P, 24), { tone: "hi" })}<path class="pin-hit" d="${solidSvgHit(k, hgt, r)}"/></g>` });
+    const same = RIDER.filter((r) => r.s === c.s && r.dir === c.dir && !r.matchesOfficial);
+    const s = c.s + (same.indexOf(c) - (same.length - 1) / 2) * 5;
+    const d = (c.dir === "NB" ? (nbOn(s) ? dNB(s) : -5) : (sbOn(s) ? dSB(s) : 5)) + (c.dir === "NB" ? -1.5 : 1.5);
+    const k = toK(s, d), hgt = close ? 4.2 : 11, r = close ? 0.9 : 2.1;
+    items.push({ key: depthAt(s, d) + 0.5, svg: `<g class="pin pin-rider" data-id="r${c.n}" tabindex="0" role="button" aria-label="Rider report ${c.date}: ${esc(c.where)}">${solidSvg(cylinder(k[0], k[1], close ? 0.1 : 0.3, 0, hgt, P, 8), { tone: "mid", crease: "none" })}${solidSvg(cylinder(k[0], k[1], r, hgt, close ? 0.4 : 1, P, 24), { tone: "hi" })}<path class="pin-hit" d="${solidSvgHit(k, hgt, r)}"/></g>` });
   }
   items.sort((a, b) => a.key - b.key);
   // labels
@@ -230,10 +233,12 @@ function buildMini() {
   const out = [];
   out.push(`<rect class="mm-bg" x="0" y="0" width="${MW}" height="${MH}"/>`);
   const trk = (lineArr, y) => `<path class="mm-track" d="M${mx(lineArr[0][0]).toFixed(1)} ${y}H${mx(lineArr[lineArr.length - 1][0]).toFixed(1)}"/>`;
+  // state beaches: a sand band over each beach's parking lot, named along the bottom
+  for (const [a, b, name] of [[251, 423, "Seaside"], [1710, 1866, "Cardiff State Beach"]]) out.push(`<rect class="mm-beach" x="${mx(a).toFixed(1)}" y="16" width="${(mx(b) - mx(a)).toFixed(1)}" height="64"/><text class="mm-lbl mm-beach-lbl" x="${mx((a + b) / 2).toFixed(1)}" y="90" text-anchor="middle">${name}</text>`);
   out.push(trk(SB, ROW.SB), trk(NB, ROW.NB));
   out.push(`<text class="mm-row" x="${MW - 4}" y="${ROW.SB - 6}" text-anchor="end">SB track · west</text><text class="mm-row" x="${MW - 4}" y="${ROW.NB + 14}" text-anchor="end">NB track · east</text>`);
   const tick = (s, label, y, anchor = "middle") => `<line class="mm-tick" x1="${mx(s)}" y1="${ROW.SB - 4}" x2="${mx(s)}" y2="${ROW.NB + 4}"/><text class="mm-lbl" x="${mx(s)}" y="${y}" text-anchor="${anchor}">${label}</text>`;
-  out.push(tick(LIMITS.cityLine, "Solana Beach line", 12, "start"), tick(300, "", 12), tick(1342, "Las Olas", 12), tick(1430, "Tower 13 · Ki's", 90), tick(1631, "Restaurants", 12), tick(1926, "Bridge", 90), tick(LIMITS.chesterfield, "Chesterfield", 12, "end"));
+  out.push(tick(LIMITS.cityLine, "Solana Beach line", 12, "start"), tick(300, "", 12), tick(1342, "Las Olas", 12), tick(1430, "Tower 13 · Ki's", 90), tick(1631, "Restaurants", 12), tick(1926, "Bridge", 12), tick(LIMITS.chesterfield, "Chesterfield", 12, "end"));
   out.push(`<text class="mm-lbl" x="4" y="90">S</text><text class="mm-lbl" x="${MW - 4}" y="90" text-anchor="end">N</text>`);
   const stack = {};
   for (const c of CRASHES) {
