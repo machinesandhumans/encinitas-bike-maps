@@ -8,6 +8,11 @@ import * as D from "./data.mjs";
 import { CRASHES } from "./crashes.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
+// Serge Issakov's crowdsourced Cardiff 101 Crash List: advocate reports, kept apart from the official records
+const RIDER = JSON.parse(readFileSync(join(HERE, "../../data/advocate/cardiff-101-crash-list.json"), "utf8")).reports;
+const riderPlaced = RIDER.filter((r) => r.s != null && !r.matchesOfficial).length;
+const riderNoLoc = RIDER.filter((r) => r.s == null && !r.matchesOfficial).length;
+const riderSame = RIDER.filter((r) => r.matchesOfficial).length;
 
 // street number -> metres along the road, least-squares line through the address anchors
 const n = D.ADDRESS.length, mxA = D.ADDRESS.reduce((a, [x]) => a + x, 0) / n, myA = D.ADDRESS.reduce((a, [, y]) => a + y, 0) / n;
@@ -15,7 +20,7 @@ const slope = D.ADDRESS.reduce((a, [x, y]) => a + (x - mxA) * (y - myA), 0) / D.
 const sOfAddr = (addr) => Math.round(myA + slope * (addr - mxA));
 const crashes = CRASHES.map((c) => ({ ...c, s: c.addr != null ? sOfAddr(c.addr) : c.s }));
 
-const DATA = { NB_TRACK: D.NB_TRACK, SB_TRACK: D.SB_TRACK, DRIVES: D.DRIVES, BUILDINGS: D.BUILDINGS, LOTS: D.LOTS, COAST: D.COAST, POIS: D.POIS, RANGE: D.RANGE, LIMITS: D.LIMITS, BRIDGES: D.BRIDGES, UNLIT: D.UNLIT, CRASHES: crashes };
+const DATA = { NB_TRACK: D.NB_TRACK, SB_TRACK: D.SB_TRACK, DRIVES: D.DRIVES, BUILDINGS: D.BUILDINGS, LOTS: D.LOTS, COAST: D.COAST, POIS: D.POIS, RANGE: D.RANGE, LIMITS: D.LIMITS, BRIDGES: D.BRIDGES, UNLIT: D.UNLIT, CRASHES: crashes, RIDER };
 
 const segCount = (era) => crashes.filter((c) => !c.edge && (era === "after") === c.date >= "2020-04").length;
 
@@ -24,10 +29,10 @@ const CSS = `
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--cx-page:#0b0b0b;color-scheme:dark}}
 :root[data-theme="dark"]{--cx-page:#0b0b0b;color-scheme:dark}
 body{background:var(--cx-page);margin:0}
-.cx{--sea:#c9d8e0;--sand:#ece6d6;--land:#e4e6dc;--lot:#dadad5;--road:#b9b9bd;--walk:#ddd5bf;--drive:#c8c8cb;--yellow:#c99a1b;--risk:#e5484d;
+.cx{--sea:#c9d8e0;--sand:#ece6d6;--land:#e4e6dc;--lot:#dadad5;--road:#b9b9bd;--walk:#ddd5bf;--drive:#c8c8cb;--yellow:#c99a1b;--risk:#e5484d;--rider:#7c5cd6;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 48px;
   background:var(--anatomy-page);color:var(--anatomy-text);font:14px/1.55 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;min-height:100vh}
-.cx[data-theme="dark"]{--sea:#13202a;--sand:#24221c;--land:#181a16;--lot:#1f1f1f;--road:#2c2c30;--walk:#2a2721;--drive:#353539;--yellow:#c9a13a;--risk:#ff6b6b}
+.cx[data-theme="dark"]{--sea:#13202a;--sand:#24221c;--land:#181a16;--lot:#1f1f1f;--road:#2c2c30;--walk:#2a2721;--drive:#353539;--yellow:#c9a13a;--risk:#ff6b6b;--rider:#a48bff}
 .cx-in{max-width:1100px;margin:0 auto;display:grid;gap:14px}
 .cx h1{margin:0;color:var(--anatomy-strong);font:600 21px/1.25 ui-sans-serif,system-ui;letter-spacing:-.01em;text-wrap:balance}
 .cx-sub{margin:2px 0 0;color:var(--anatomy-muted);font-size:13px}
@@ -56,7 +61,7 @@ body{background:var(--cx-page);margin:0}
 #scene .pin[data-sev="serious"] .iso-solid:last-of-type .iso-shade,#scene .pin[data-sev="fatal"] .iso-solid:last-of-type .iso-shade{fill:var(--risk);opacity:.75}
 #scene .pin[data-sev="fatal"] .iso-solid:last-of-type .iso-edge{stroke:var(--anatomy-strong);stroke-width:1.4}
 #scene .pin:focus-visible{outline:none}#scene .pin:focus-visible .iso-edge{stroke:var(--anatomy-lit)}
-#pop{position:absolute;width:250px;padding:10px 12px;background:var(--anatomy-card);box-shadow:0 0 0 1px var(--anatomy-hi),0 6px 18px #0003;font-size:12.5px;line-height:1.45;display:grid;gap:3px}
+#pop{position:absolute;width:250px;padding:10px 12px;background:var(--anatomy-card);box-shadow:0 0 0 1px var(--anatomy-hi),0 6px 18px #0003;font-size:12.5px;line-height:1.45;display:grid;gap:3px;overflow:auto;box-sizing:border-box;z-index:2}
 #pop b{padding-right:28px}
 .pop-x{position:absolute;top:2px;right:2px;width:32px;height:32px;border:0;background:none;color:inherit;font-size:20px;line-height:1;cursor:pointer}
 #pop[hidden]{display:none}
@@ -72,6 +77,13 @@ body{background:var(--cx-page);margin:0}
 #mini .mm-dot[data-sev="serious"],#mini .mm-dot[data-sev="fatal"]{fill:var(--risk)}
 #mini .mm-dot[data-sev="fatal"]{stroke:var(--anatomy-strong);stroke-width:1.4}
 #mini .mm-dot[data-dim]{opacity:.15}
+#mini .mm-rdot{fill:var(--anatomy-card);stroke:var(--rider);stroke-width:1.6}
+#mini .mm-rdot[data-dim]{opacity:0}
+#scene .pin-rider .iso-solid:last-of-type .iso-top{fill:var(--rider)}
+#scene .pin-rider .iso-solid:last-of-type .iso-shade{fill:var(--rider);opacity:.7}
+.cx-legend i.v{background:var(--anatomy-card);box-shadow:inset 0 0 0 2px var(--rider)}
+#pop .pop-tag{color:var(--rider);font-weight:600}
+.cx-btn[data-rider][aria-pressed="true"]{border-color:var(--rider);color:var(--rider)}
 #mini .mm-win{fill:var(--anatomy-hi);fill-opacity:.08;stroke:var(--anatomy-hi);stroke-width:1.2}
 .cx-foot{font-size:12px;color:var(--anatomy-muted)}
 .cx-foot summary{cursor:pointer;color:var(--anatomy-text)}
@@ -89,17 +101,18 @@ const page = `<title>Cardiff Cycle Track</title>
 <header><h1>Coast Hwy 101 cycle track, Cardiff</h1><p class="cx-sub">Chesterfield Dr to the Solana Beach line, 1.27 miles. Layout from OpenStreetMap, straightened along the road.</p></header>
 <div class="cx-bar">
   <div class="cx-group" role="group" aria-label="Period"><button class="cx-btn" data-era-btn="before" aria-pressed="false">Jan ’16–Mar ’20 · ${segCount("before")} crashes</button><button class="cx-btn" data-era-btn="after" aria-pressed="true">Apr ’20–Present · ${segCount("after")} crashes</button></div>
-  <div class="cx-group" role="group" aria-label="Ride along"><button class="cx-btn" data-ride="1" aria-pressed="false">Ride north</button><button class="cx-btn" data-ride="-1" aria-pressed="false">Ride south</button></div>
+  <div class="cx-group" role="group" aria-label="Rider reports"><button class="cx-btn" data-rider aria-pressed="true">Rider reports · ${riderPlaced} placed</button></div>
   <div class="cx-group" role="group" aria-label="Zoom"><button class="cx-btn" data-zoom="0" aria-pressed="true">Close</button><button class="cx-btn" data-zoom="1" aria-pressed="false">Block</button><button class="cx-btn" data-zoom="2" aria-pressed="false">Wide</button></div>
   <span id="era-note"></span>
 </div>
 <div id="stage" tabindex="0" aria-label="Isometric view of the corridor. Drag sideways or use the arrow keys to travel along it."><svg id="scene" class="iso-svg" viewBox="0 0 1000 560" role="img" aria-label="Isometric view of Coast Highway 101 with both cycle tracks, barriers, driveways and crash locations"></svg><div id="pop" hidden></div><span class="cx-hint">Drag to travel · tap a pin</span><span id="where"></span></div>
 <svg id="mini" viewBox="0 0 1000 96" role="img" aria-label="Whole corridor with crash locations; tap to jump there"></svg>
-<div class="cx-legend"><span><i></i>Crash, minor injury</span><span><i class="r"></i>Severe, serious or fatal</span><span><i class="z"></i>Where drivers cross the track, or riders must enter it</span></div>
+<div class="cx-legend"><span><i></i>Crash, minor injury</span><span><i class="r"></i>Severe, serious or fatal</span><span><i class="z"></i>Where drivers cross the track, or riders must enter it</span><span><i class="v"></i>Rider report, not an official record (position approximate)</span></div>
 <details class="cx-foot"><summary>About the data</summary><ul>
 <li>Crashes are official records from California's crash database (CCRS, CHP and San Diego Sheriff), placed by street number or by distance from a landmark. Pins marked "position estimated" only name a landmark. One 2022 serious crash has no usable location and is not shown.</li>
 <li>Solo crashes are often not reported. Local riders count 36–42 crashes since 2020; ${segCount("after")} official records were found.</li>
 <li>The March 2024 fatal crash is recorded in the 2700 block with no coordinates, which by street number falls near the beach parking south of Las Olas. Its official primary factor is bicycling under the influence (VC 21200.5).</li>
+<li>Purple pins are rider reports from Serge Issakov's crowdsourced Cardiff 101 Crash List (${RIDER.length} entries, April 2020 to April 2026; tinyurl.com/cardiff101crashlist). They come from riders, friends and witnesses, mostly via social media, and are not verified here. ${riderPlaced} are placed approximately from the landmark they name, ${riderNoLoc} have no usable location and are not shown, and ${riderSame} match an official record at the same place, so only the official pin is shown. They appear in the Apr ’20–Present view only.</li>
 <li>Wheel-stop and post spacing, lane widths and the pre-2020 layout are estimates.</li>
 </ul></details>
 </div></div>

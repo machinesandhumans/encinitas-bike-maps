@@ -1,6 +1,6 @@
 // Runs in the page after the inlined kit (iso, depthOf, extrude, slabOf, cylinder, solidSvg, lineSvg, onTop, fitProjection, boxCorners...).
 // DATA is injected by build.mjs.
-const { NB_TRACK, SB_TRACK, DRIVES, BUILDINGS, LOTS, COAST, POIS, CRASHES, RANGE, LIMITS, BRIDGES, UNLIT } = DATA;
+const { NB_TRACK, SB_TRACK, DRIVES, BUILDINGS, LOTS, COAST, POIS, CRASHES, RIDER, RANGE, LIMITS, BRIDGES, UNLIT } = DATA;
 
 // ---------- geometry helpers along the road ----------
 const lerpLine = (line, s) => {
@@ -41,7 +41,7 @@ function camera() {
 camera();
 
 // state
-const state = { s0: 180, era: "after", ride: null, riderS: 0, riderD: 0, riderDir: 1 };
+const state = { s0: 180, era: "after", rider: true };
 const W = () => ZOOMS[zoom].win;
 const toK = (s, d, z = 0) => [s - state.s0, -d, z];
 const at = (s, d, z = 0) => iso(toK(s, d, z), P);
@@ -161,13 +161,12 @@ function render() {
     const r = close ? 1.1 : 2.6;
     items.push({ key: depthAt(c.s, d) + 0.5, svg: `<g class="pin" data-sev="${sev}" data-era="${ERA(c)}" data-id="${c.id}" tabindex="0" role="button" aria-label="${c.date} ${c.injury}: ${c.where}">${solidSvg(cylinder(k[0], k[1], close ? 0.1 : 0.3, 0, hgt, P, 8), { tone: "mid", crease: "none" })}${solidSvg(cylinder(k[0], k[1], r, hgt, close ? 0.45 : 1.2, P, 24), { tone: "hi" })}<path class="pin-hit" d="${solidSvgHit(k, hgt, r)}"/></g>` });
   }
-  // rider
-  if (state.ride) {
-    const k = toK(state.riderS, state.riderD);
-    const dir = state.riderDir;
-    const box = (u0, u1, v0, v1) => [[k[0] + u0 * dir, k[1] + v0], [k[0] + u1 * dir, k[1] + v0], [k[0] + u1 * dir, k[1] + v1], [k[0] + u0 * dir, k[1] + v1]];
-    const rs = [solidSvg(extrude(box(-0.85, 0.85, -0.08, 0.08), 0, 0.9, P), { tone: "hi", lit: true }), solidSvg(extrude(box(-0.35, 0.15, -0.22, 0.22), 0.9, 0.75, P), { tone: "hi", lit: true }), solidSvg(cylinder(k[0] + 0.05 * dir, k[1], 0.16, 1.65, 0.28, P, 12), { tone: "hi", lit: true })];
-    items.push({ key: depthAt(state.riderS, state.riderD) + 0.2, svg: `<g class="rider"><path class="rider-ring" d="${ring(k[0], k[1], 2.4, 0.02, P, 28)}"/><path class="iso-halo" d="${extrude(box(-1, 1, -0.4, 0.4), 0, 0.05, P).fill}" style="filter:blur(2px)"/>${rs.join("")}</g>` });
+  // rider reports (advocate list): after view only, nudged 1.5 m off the official pin line, no pin where an official record covers the same crash
+  if (after && state.rider) for (const c of RIDER) {
+    if (c.s == null || c.matchesOfficial || c.s < s0 - 2 || c.s > s1 + 2) continue;
+    const d = (c.dir === "NB" ? (nbOn(c.s) ? dNB(c.s) : -5) : (sbOn(c.s) ? dSB(c.s) : 5)) + (c.dir === "NB" ? -1.5 : 1.5);
+    const k = toK(c.s, d), hgt = close ? 4.2 : 11, r = close ? 0.9 : 2.1;
+    items.push({ key: depthAt(c.s, d) + 0.5, svg: `<g class="pin pin-rider" data-id="r${c.n}" tabindex="0" role="button" aria-label="Rider report ${c.date}: ${esc(c.where)}">${solidSvg(cylinder(k[0], k[1], close ? 0.1 : 0.3, 0, hgt, P, 8), { tone: "mid", crease: "none" })}${solidSvg(cylinder(k[0], k[1], r, hgt, close ? 0.4 : 1, P, 24), { tone: "hi" })}<path class="pin-hit" d="${solidSvgHit(k, hgt, r)}"/></g>` });
   }
   items.sort((a, b) => a.key - b.key);
   // labels
@@ -209,6 +208,13 @@ function buildMini() {
     const y = ROW[row] + (row === "SB" ? -1 : 1) * (n * 7);
     out.push(`<circle class="mm-dot" data-sev="${SEV(c)}" data-era="${ERA(c)}" data-id="${c.id}" cx="${x.toFixed(1)}" cy="${y}" r="${SEV(c) === "fatal" ? 4.6 : 3.4}"/>`);
   }
+  for (const c of RIDER) {
+    if (c.s == null || c.matchesOfficial) continue;
+    const x = mx(c.s), row = c.dir === "NB" ? "NB" : "SB";
+    const key = row + Math.round(x / 8);
+    const n = (stack[key] = (stack[key] ?? 0) + 1) - 1;
+    out.push(`<circle class="mm-rdot" data-rid="r${c.n}" cx="${x.toFixed(1)}" cy="${ROW[row] + (row === "SB" ? -1 : 1) * (n * 7)}" r="3"/>`);
+  }
   out.push(`<rect class="mm-win" data-win x="0" y="2" width="10" height="${MH - 4}"/>`);
   mini.innerHTML = out.join("");
 }
@@ -216,6 +222,7 @@ function drawWindow() {
   const r = mini.querySelector("[data-win]");
   r.setAttribute("x", mx(state.s0).toFixed(1));
   r.setAttribute("width", Math.max(6, mx(state.s0 + W()) - mx(state.s0)).toFixed(1));
+  mini.querySelectorAll(".mm-rdot").forEach((d) => d.toggleAttribute("data-dim", state.era !== "after" || !state.rider));
   mini.querySelectorAll(".mm-dot").forEach((d) => d.toggleAttribute("data-dim", !(state.era === "after" ? ["after", "edge"] : ["before", "edge"]).includes(d.dataset.era)));
   { const m = Math.round(state.s0 + W() / 2 - LIMITS.cityLine); readout.textContent = m <= 0 ? "At the Solana Beach line" : `${(m * 3.281).toLocaleString("en-US", { maximumFractionDigits: 0 })} ft north of the Solana Beach line`; }
 }
@@ -232,25 +239,31 @@ const goTo = (s) => { state.s0 = clampS(s); schedule(); };
 const scaleX = () => { const a = iso([0, 0, 0], P), b = iso([1, 0, 0], P); return Math.hypot(b[0] - a[0], b[1] - a[1]); };
 let drag = null;
 const stage = document.querySelector("#stage");
-stage.addEventListener("pointerdown", (e) => { if (e.target.closest(".pin")) return; drag = { x: e.clientX, s: state.s0 }; stage.setPointerCapture(e.pointerId); stopRide(); hidePop(); });
+stage.addEventListener("pointerdown", (e) => { if (e.target.closest(".pin")) return; drag = { x: e.clientX, s: state.s0 }; stage.setPointerCapture(e.pointerId); hidePop(); });
 stage.addEventListener("pointermove", (e) => { if (!drag) return; const px = scene.getBoundingClientRect().width / VW; goTo(drag.s - (e.clientX - drag.x) / px / scaleX()); });
 stage.addEventListener("pointerup", () => (drag = null));
 stage.addEventListener("wheel", (e) => { const dx = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY; if (!e.shiftKey && Math.abs(e.deltaX) <= Math.abs(e.deltaY) && !e.ctrlKey) return; e.preventDefault(); goTo(state.s0 + dx * W() / 900); }, { passive: false });
 stage.addEventListener("keydown", (e) => { if (e.key === "ArrowRight") { goTo(state.s0 + W() * 0.2); e.preventDefault(); } if (e.key === "ArrowLeft") { goTo(state.s0 - W() * 0.2); e.preventDefault(); } });
 let mdrag = false;
 const fromMini = (e) => { const r = mini.getBoundingClientRect(); goTo(sOfMx(((e.clientX - r.left) / r.width) * MW) - W() / 2); };
-mini.addEventListener("pointerdown", (e) => { mdrag = true; mini.setPointerCapture(e.pointerId); stopRide(); hidePop(); fromMini(e); });
+mini.addEventListener("pointerdown", (e) => { mdrag = true; mini.setPointerCapture(e.pointerId); hidePop(); fromMini(e); });
 mini.addEventListener("pointermove", (e) => mdrag && fromMini(e));
 mini.addEventListener("pointerup", () => (mdrag = false));
 
 // crash popover
 const fmt = (c) => `<b>${c.date} · ${c.injury}</b><span>${c.dirText ? c.dirText : c.dirUnknown ? "Direction not recorded (2025 detail not yet published)," : c.side === "NB" ? "Northbound" : "Southbound"} rider · hit ${c.hit.toLowerCase()}</span><span>Official factor: ${c.factor}</span><span>${c.where}${c.approx ? " (position estimated)" : ""}</span>`;
+const esc = (t) => String(t).replace(/[&<>"]/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[ch]);
+// an official record that is also on the rider list says so; where the list places it elsewhere, say where
+const alsoOnList = (c) => RIDER.filter((r) => String(r.official) === String(c.id)).map((r) => `<span class="pop-tag">Also on the rider list (#${r.n})${r.matchesOfficial ? "" : ": " + esc(r.locNote || "placed at " + r.where)}</span>`).join("");
+const fmtRider = (r) => `<b>${r.date} · Rider report</b><span class="pop-tag">Not an official record</span><span>${r.dir === "NB" ? "Northbound" : r.dir === "SB" ? "Southbound" : "Direction not stated,"} rider · ${esc(r.what)}</span><span>Injury: ${esc(r.injury)}</span><span>${esc(r.where)} (position approximate)</span>${r.locNote ? `<span>${esc(r.locNote)}</span>` : ""}${r.dateNote ? `<span>Date: ${esc(r.dateNote)}</span>` : ""}<span>Source: ${esc(r.src)}, via the Cardiff 101 Crash List (#${r.n})</span>`;
 function showPop(id, x, y) {
-  const c = CRASHES.find((k) => String(k.id) === String(id)); if (!c) return;
-  pop.innerHTML = fmt(c) + '<button type="button" class="pop-x" aria-label="Close">×</button>'; pop.hidden = false;
+  const rid = String(id).startsWith("r") ? RIDER.find((k) => "r" + k.n === String(id)) : null;
+  const c = rid ? null : CRASHES.find((k) => String(k.id) === String(id)); if (!c && !rid) return;
+  pop.innerHTML = (rid ? fmtRider(rid) : fmt(c) + alsoOnList(c)) + '<button type="button" class="pop-x" aria-label="Close">×</button>'; pop.hidden = false;
   const box = stage.getBoundingClientRect();
   pop.style.left = Math.min(box.width - 260, Math.max(8, x - box.left - 120)) + "px";
-  pop.style.top = Math.max(8, y - box.top - pop.offsetHeight - 14) + "px";
+  pop.style.maxHeight = box.height - 16 + "px"; // long rider reports scroll inside the stage instead of running off it
+  pop.style.top = Math.max(8, Math.min(box.height - pop.offsetHeight - 8, y - box.top - pop.offsetHeight - 14)) + "px";
 }
 function hidePop() { pop.hidden = true; }
 pop.addEventListener("pointerdown", (e) => e.stopPropagation());
@@ -274,41 +287,8 @@ document.querySelectorAll("[data-zoom]").forEach((b) => b.addEventListener("clic
   state.s0 = clampS(mid - W() / 2); schedule();
 }));
 
-// ride along a track
-const still = matchMedia("(prefers-reduced-motion: reduce)");
-let rideFrame = 0, last = 0;
-function riderPath(dir, s) {
-  if (dir > 0) { // northbound: comes down the hill in the right lane, joins the track at its south end
-    if (s < NB_IN) return -5.2;
-    if (s < NB_SEP) return -5.2 + (dNB(NB_SEP) + 5.2) * ((s - NB_IN) / (NB_SEP - NB_IN)) ** 1.4;
-    return nbOn(s) ? dNB(s) : -5.2;
-  }
-  if (s < SB_OUT) return 5.2;
-  return sbOn(s) ? dSB(s) : 5.2;
-}
-function startRide(dir) {
-  stopRide();
-  state.ride = dir; state.riderDir = dir;
-  state.riderS = dir > 0 ? RANGE.south + 10 : LIMITS.chesterfield - 5;
-  document.querySelectorAll("[data-ride]").forEach((b) => b.setAttribute("aria-pressed", String(Number(b.dataset.ride) === dir)));
-  hidePop();
-  if (still.matches) { state.riderD = riderPath(dir, state.riderS); state.s0 = clampS(state.riderS - W() * 0.4); schedule(); return; }
-  last = 0; rideFrame = requestAnimationFrame(tickRide);
-}
-function stopRide() { if (rideFrame) cancelAnimationFrame(rideFrame); rideFrame = 0; if (state.ride) { state.ride = null; document.querySelectorAll("[data-ride]").forEach((b) => b.setAttribute("aria-pressed", "false")); schedule(); } }
-function tickRide(now) {
-  const dt = last ? Math.min(0.05, (now - last) / 1000) : 1 / 60; last = now;
-  const nearHazard = (s) => (state.ride > 0 ? Math.abs(s - (NB_IN + NB_SEP) / 2) < 30 || DRIVES.some(([a, b, side]) => side === "E" && s > a - 6 && s < b + 6) : DRIVES.some(([a, b, side]) => side === "W" && s > a - 6 && s < b + 6));
-  const speed = nearHazard(state.riderS) ? 7 : 22;
-  state.riderS += state.ride * speed * dt;
-  state.riderD = riderPath(state.ride, state.riderS);
-  state.s0 = clampS(state.riderS - W() * (state.ride > 0 ? 0.35 : 0.65));
-  render();
-  const done = state.ride > 0 ? state.riderS > NB[NB.length - 1][0] + 20 : state.riderS < 200;
-  if (done) { stopRide(); return; }
-  rideFrame = requestAnimationFrame(tickRide);
-}
-document.querySelectorAll("[data-ride]").forEach((b) => b.addEventListener("click", () => (state.ride === Number(b.dataset.ride) ? stopRide() : startRide(Number(b.dataset.ride)))));
+// rider reports on or off
+document.querySelector("[data-rider]").addEventListener("click", (e) => { state.rider = !state.rider; e.currentTarget.setAttribute("aria-pressed", String(state.rider)); hidePop(); schedule(); });
 
 buildMini();
 setEra("after");
