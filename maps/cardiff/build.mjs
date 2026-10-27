@@ -62,15 +62,18 @@ body{background:var(--cx-page);margin:0}
 #scene .pin{cursor:pointer}
 #scene .rider-ring{fill:none;stroke:var(--risk);stroke-width:1.6}
 #scene .pin-hit{fill:transparent;stroke:none}
-#scene .pin[data-sev="serious"] .iso-solid:last-of-type .iso-top,#scene .pin[data-sev="fatal"] .iso-solid:last-of-type .iso-top{fill:var(--risk)}
-#scene .pin[data-sev="serious"] .iso-solid:last-of-type .iso-shade,#scene .pin[data-sev="fatal"] .iso-solid:last-of-type .iso-shade{fill:var(--risk);opacity:.75}
-#scene .pin[data-sev="fatal"] .iso-solid:last-of-type .iso-edge{stroke:var(--anatomy-strong);stroke-width:1.4}
-#scene .pin:focus-visible{outline:none}#scene .pin:focus-visible .iso-edge{stroke:var(--anatomy-lit)}
+.ic{overflow:visible;color:var(--anatomy-mid)}.ic[data-sev="serious"]{color:var(--risk)}.ic[data-sev="fatal"]{color:var(--anatomy-strong)}
+.ic .ic-head{fill:currentColor}.ic .ic-cut{fill:var(--anatomy-card);stroke:var(--anatomy-card);stroke-width:.9;stroke-linecap:round}.ic .ic-bones circle{stroke:none}
+#scene .pin-badge,#mini .mm-badge{fill:var(--anatomy-card);stroke:var(--anatomy-mid);stroke-width:1.2}
+#scene .pin[data-sev="serious"] .pin-badge,#mini .mm-dot[data-sev="serious"] .mm-badge{stroke:var(--risk)}
+#scene .pin[data-sev="fatal"] .pin-badge,#mini .mm-dot[data-sev="fatal"] .mm-badge{stroke:var(--risk);stroke-width:2.2}
+#scene .pin:focus{outline:none}#scene .pin:focus-visible .pin-badge,#scene .pin-rider:focus-visible .iso-edge{stroke:var(--anatomy-lit);stroke-width:2.4}
 #pop{position:absolute;width:250px;padding:10px 12px;background:var(--anatomy-card);box-shadow:0 0 0 1px var(--anatomy-hi),0 6px 18px #0003;font-size:12.5px;line-height:1.45;display:grid;gap:3px;overflow:auto;box-sizing:border-box;z-index:2}
 #pop b{padding-right:28px}
 .pop-x{position:absolute;top:2px;right:2px;width:32px;height:32px;border:0;background:none;color:inherit;font-size:20px;line-height:1;cursor:pointer}
 #pop[hidden]{display:none}
 #pop b{color:var(--anatomy-strong);font-weight:600}
+#pop .pop-h{display:flex;align-items:center;gap:8px}#pop .pop-ic{flex:none;width:26px;height:26px}
 .cx-hint{position:absolute;left:12px;bottom:10px;font:10.5px var(--anatomy-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--anatomy-muted);pointer-events:none}
 #where{position:absolute;right:12px;bottom:10px;font:10.5px var(--anatomy-mono);color:var(--anatomy-text);font-variant-numeric:tabular-nums;pointer-events:none}
 #mini{display:block;width:100%;height:auto;cursor:pointer;touch-action:none}
@@ -79,9 +82,6 @@ body{background:var(--cx-page);margin:0}
 #mini .mm-tick{stroke:var(--anatomy-lo);stroke-dasharray:2 3}
 #mini .mm-lbl,#mini .mm-row{fill:var(--anatomy-muted);font:10px var(--anatomy-mono)}
 #mini .mm-beach{fill:var(--sand)}#mini .mm-beach-lbl{fill:var(--yellow)}
-#mini .mm-dot{fill:var(--anatomy-mid);stroke:var(--anatomy-card);stroke-width:1}
-#mini .mm-dot[data-sev="serious"],#mini .mm-dot[data-sev="fatal"]{fill:var(--risk)}
-#mini .mm-dot[data-sev="fatal"]{stroke:var(--anatomy-strong);stroke-width:1.4}
 #mini .mm-dot[data-dim]{opacity:.15}
 #mini .mm-rdot{fill:var(--anatomy-card);stroke:var(--rider);stroke-width:1.6}
 #mini .mm-rdot[data-dim]{opacity:0}
@@ -105,7 +105,8 @@ body{background:var(--cx-page);margin:0}
 .cx-foot ul{margin:6px 0 0;padding-left:18px}
 .cx-legend{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:12px;color:var(--anatomy-muted)}
 .cx-legend i{display:inline-block;width:10px;height:10px;margin-right:6px;vertical-align:-1px;border-radius:50%;background:var(--anatomy-mid)}
-.cx-legend i.r{background:var(--risk)}.cx-legend i.z{border-radius:0;background:var(--risk);opacity:.55}
+.cx-legend i.z{border-radius:0;background:var(--risk);opacity:.55}
+.cx-legend>span{display:inline-flex;align-items:center;gap:6px}.cx-legend>span>i{margin-right:0}.cx-legend [data-legend-icon]{display:inline-flex}
 @media (max-width:600px){.cx-hint{display:none}}
 `;
 
@@ -124,7 +125,7 @@ const page = `<title>Cardiff Cycle Track</title>
 <div id="stage" tabindex="0" aria-label="Isometric view of the corridor. Drag sideways or use the arrow keys to travel along it."><svg id="scene" class="iso-svg" viewBox="0 0 1000 560" role="img" aria-label="Isometric view of Coast Highway 101 with both cycle tracks, barriers, driveways and crash locations"></svg><div id="pop" hidden></div><span class="cx-hint">Drag to travel · tap a pin</span><span id="where"></span></div>
 <svg id="mini" viewBox="0 0 1000 96" role="img" aria-label="Whole corridor with crash locations; tap to jump there"></svg>
 <svg id="elev" viewBox="0 0 1000 56" role="img" aria-label="Road elevation along the corridor: about 5 m above sea level through the middle, climbing to about 12 m at the Solana Beach line and 13 m at Chesterfield"></svg>
-<div class="cx-legend"><span><i></i>Crash, minor injury</span><span><i class="r"></i>Severe, serious or fatal</span><span><i class="z"></i>Where drivers cross the track, or riders must enter it</span><span><i class="v"></i>Rider report, not an official record (position approximate)</span></div>
+<div class="cx-legend"><span><span data-legend-icon="Fatal"></span>Death</span><span><span data-legend-icon="Severe"></span>Severe or serious injury</span><span><span data-legend-icon="Minor"></span>Other injury</span><span><i class="z"></i>Where drivers cross the track, or riders must enter it</span><span><i class="v"></i>Rider report, not an official record (position approximate)</span></div>
 <details class="cx-foot"><summary>About the data</summary><ul>
 <li>Crashes are official records from California's crash database (CCRS, CHP and San Diego Sheriff), placed by street number or by distance from a landmark. Pins marked "position estimated" only name a landmark. One 2022 serious crash has no usable location and is not shown.</li>
 <li>Solo crashes are often not reported. Local riders count 36–42 crashes since 2020; ${segCount("after")} official records were found.</li>
