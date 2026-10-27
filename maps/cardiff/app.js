@@ -250,7 +250,7 @@ function carSvg(k) {
   }
   quads.sort((p, q) => p[0] - q[0]);
   const far = CAR.filter(([, z]) => z > 0.7).map(([x, z]) => pt(x, farY, z)).join("L");
-  return `<g class="iso-solid car">${quads.map((q) => q[1]).join("")}<path class="iso-line iso-crease" data-tone="faint" d="M${far}"/><path class="iso-fill" d="${face(nearY)}"/><path class="iso-shade" data-shade="2" d="${face(nearY)}"/><path class="iso-line iso-edge" data-tone="hi" d="${face(nearY)}"/></g>`;
+  return `<g class="iso-solid car">${quads.map((q) => q[1]).join("")}<path class="iso-line iso-crease" data-tone="faint" d="M${far}"/><path class="iso-fill" d="${face(nearY)}"/><path class="iso-shade" data-shade="2" d="${face(nearY)}"/></g>`;
 }
 
 function solidSvgHit(k, h, r) {
