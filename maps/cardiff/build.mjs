@@ -67,7 +67,7 @@ body{background:var(--cx-page);margin:0}
 #scene .pin-badge,#mini .mm-badge{fill:var(--anatomy-card);stroke:var(--anatomy-mid);stroke-width:1.2}
 #scene .pin[data-sev="serious"] .pin-badge,#mini .mm-dot[data-sev="serious"] .mm-badge{stroke:var(--risk)}
 #scene .pin[data-sev="fatal"] .pin-badge,#mini .mm-dot[data-sev="fatal"] .mm-badge{stroke:var(--risk);stroke-width:2.2}
-#scene .pin:focus{outline:none}#scene .pin:focus-visible .pin-badge,#scene .pin-rider:focus-visible .iso-edge{stroke:var(--anatomy-lit);stroke-width:2.4}
+#scene .pin:focus{outline:none}#scene .pin:focus-visible .pin-badge{stroke:var(--anatomy-lit);stroke-width:2.4}
 #pop{position:absolute;width:250px;padding:10px 12px;background:var(--anatomy-card);box-shadow:0 0 0 1px var(--anatomy-hi),0 6px 18px #0003;font-size:12.5px;line-height:1.45;display:grid;gap:3px;overflow:auto;box-sizing:border-box;z-index:2}
 #pop b{padding-right:28px}
 .pop-x{position:absolute;top:2px;right:2px;width:32px;height:32px;border:0;background:none;color:inherit;font-size:20px;line-height:1;cursor:pointer}
@@ -83,11 +83,9 @@ body{background:var(--cx-page);margin:0}
 #mini .mm-lbl,#mini .mm-row{fill:var(--anatomy-muted);font:10px var(--anatomy-mono)}
 #mini .mm-beach{fill:var(--sand)}#mini .mm-beach-lbl{fill:var(--yellow)}
 #mini .mm-dot[data-dim]{opacity:.15}
-#mini .mm-rdot{fill:var(--anatomy-card);stroke:var(--rider);stroke-width:1.6}
+#scene .pin-rider .pin-badge,#mini .mm-rdot .mm-badge{stroke:var(--rider);stroke-width:2}.ic[data-sev="unknown"]{color:var(--rider)}
 #mini .mm-rdot[data-dim]{opacity:0}
-#scene .pin-rider .iso-solid:last-of-type .iso-top{fill:var(--rider)}
-#scene .pin-rider .iso-solid:last-of-type .iso-shade{fill:var(--rider);opacity:.7}
-.cx-legend i.v{background:var(--anatomy-card);box-shadow:inset 0 0 0 2px var(--rider)}
+.cx-legend i.v{display:inline-block;width:14px;height:14px;border-radius:50%;background:var(--anatomy-card);box-shadow:inset 0 0 0 2px var(--rider)}
 #pop .pop-tag{color:var(--rider);font-weight:600}
 .cx-btn[data-rider][aria-pressed="true"]{border-color:var(--rider);color:var(--rider)}
 #scene .g-zebra{fill:#f7f7f2}.cx[data-theme="dark"] #scene .g-zebra{fill:#77777c}
@@ -125,12 +123,12 @@ const page = `<title>Cardiff Cycle Track</title>
 <div id="stage" tabindex="0" aria-label="Isometric view of the corridor. Drag sideways or use the arrow keys to travel along it."><svg id="scene" class="iso-svg" viewBox="0 0 1000 560" role="img" aria-label="Isometric view of Coast Highway 101 with both cycle tracks, barriers, driveways and crash locations"></svg><div id="pop" hidden></div><span class="cx-hint">Drag to travel · tap a pin</span><span id="where"></span></div>
 <svg id="mini" viewBox="0 0 1000 96" role="img" aria-label="Whole corridor with crash locations; tap to jump there"></svg>
 <svg id="elev" viewBox="0 0 1000 56" role="img" aria-label="Road elevation along the corridor: about 5 m above sea level through the middle, climbing to about 12 m at the Solana Beach line and 13 m at Chesterfield"></svg>
-<div class="cx-legend"><span><span data-legend-icon="Fatal"></span>Death</span><span><span data-legend-icon="Severe"></span>Severe or serious injury</span><span><span data-legend-icon="Minor"></span>Other injury</span><span><i class="z"></i>Where drivers cross the track, or riders must enter it</span><span><i class="v"></i>Rider report, not an official record (position approximate)</span></div>
+<div class="cx-legend"><span><span data-legend-icon="Fatal"></span>Death</span><span><span data-legend-icon="Severe"></span>Severe or serious injury</span><span><span data-legend-icon="Minor"></span>Other injury</span><span><i class="z"></i>Where drivers cross the track, or riders must enter it</span><span><i class="v"></i>Purple ring: rider report, not an official record (position approximate; ? = no injury described)</span></div>
 <details class="cx-foot"><summary>About the data</summary><ul>
 <li>Crashes are official records from California's crash database (CCRS, CHP and San Diego Sheriff), placed by street number or by distance from a landmark. Pins marked "position estimated" only name a landmark. One 2022 serious crash has no usable location and is not shown.</li>
 <li>Solo crashes are often not reported. Local riders count 36–42 crashes since 2020; ${segCount("after")} official records were found.</li>
 <li>The March 2024 fatal crash is recorded in the 2700 block with no coordinates, which by street number falls near the beach parking south of Las Olas. Its official primary factor is bicycling under the influence (VC 21200.5).</li>
-<li>Purple pins are rider reports from Serge Issakov's crowdsourced Cardiff 101 Crash List (${RIDER.length} entries, April 2020 to April 2026; tinyurl.com/cardiff101crashlist). They come from riders, friends and witnesses, mostly via social media, and are not verified here. ${riderPlaced} are placed approximately from the landmark they name, ${riderNoLoc} have no usable location and are not shown, and ${riderSame} match an official record at the same place, so only the official pin is shown. They appear in the Apr ’20–Present view only.</li>
+<li>Purple-ringed pins are rider reports from Serge Issakov's crowdsourced Cardiff 101 Crash List (${RIDER.length} entries, April 2020 to April 2026; tinyurl.com/cardiff101crashlist). They come from riders, friends and witnesses, mostly via social media, and are not verified here. ${riderPlaced} are placed approximately from the landmark they name, ${riderNoLoc} have no usable location and are not shown, and ${riderSame} match an official record at the same place, so only the official pin is shown. They appear in the Apr ’20–Present view only. Their icons are read from the injury the list describes: crutches for broken bones, being knocked unconscious or a hospital stay; a bandage for any other injury, or where an ambulance or paramedics were called; a question mark where no injury is described.</li>
 <li>Crosswalks, the Seaside, Cardiff State Beach and Chesterfield entrances, the parking rows beside the SB path, and the places where drivers cross the bike lane were traced on Esri World Imagery (Vantor, January 10, 2026); positions are within about 1 m. The elevation strip under the overview is USGS 3DEP lidar (bare earth); the bridge span is interpolated.</li>
 <li>Track widths are the riding width from the curb (or parapet) to the line of wheel stops and posts, read on the same imagery every 25–50 m (about ±0.5 m). The tightest stretches are southbound at Cardiff Reef (about 2.1 m) and northbound from Cardiff Reef across the bridge (about 2.4 m). The lagoon stretch is widest, at about 3–3.5 m.</li>
 <li>Wheel-stop and post spacing, lane widths and the pre-2020 layout are estimates.</li>
