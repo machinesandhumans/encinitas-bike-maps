@@ -60,6 +60,16 @@ const onBridge = (s) => BRIDGES.some(([a, b]) => s > a && s < b);
 const SEV = (c) => (/Fatal/.test(c.injury) ? "fatal" : /Severe|Serious/.test(c.injury) ? "serious" : "minor");
 const ERA = (c) => (c.edge ? "edge" : c.date >= "2020-04" ? "after" : "before");
 
+// crash symbols, drawn in a 24 x 24 box: skull and crossbones for a death, crutches for a severe injury, a bandage for any other injury
+const BONE = (x1, y1, x2, y2) => `<path d="M${x1} ${y1}L${x2} ${y2}" stroke-width="2.4"/><circle cx="${x1 - 0.9}" cy="${y1 + (y2 > y1 ? 0.6 : -0.6)}" r="1.5"/><circle cx="${x1 + 0.6}" cy="${y1 + (y2 > y1 ? -0.9 : 0.9)}" r="1.5"/><circle cx="${x2 + 0.9}" cy="${y2 + (y2 > y1 ? -0.6 : 0.6)}" r="1.5"/><circle cx="${x2 - 0.6}" cy="${y2 + (y2 > y1 ? 0.9 : -0.9)}" r="1.5"/>`;
+const CRUTCH = (x, tilt) => `<g transform="translate(${x} 0) rotate(${tilt} 0 12)" fill="none"><path d="M-3.2 2.4H3.2M-0.9 22.2H0.9" stroke-width="2.4"/><path d="M-2.4 2.6L-0.7 15H0.7L2.4 2.6M-1.8 9.4H1.8M0 15V22"/></g>`;
+const ICON = {
+  fatal: `<g class="ic-bones" stroke="currentColor" fill="currentColor" stroke-linecap="round">${BONE(4.5, 13.5, 19.5, 22)}${BONE(19.5, 13.5, 4.5, 22)}</g><path class="ic-head" d="M12 2.2C7.6 2.2 4.6 5.3 4.6 9.3c0 2.5 1.2 4.3 2.9 5.3V17.6h9V14.6c1.7-1 2.9-2.8 2.9-5.3C19.4 5.3 16.4 2.2 12 2.2Z"/><path class="ic-cut" d="M9 7.9a1.9 1.9 0 1 0 0.01 0ZM15 7.9a1.9 1.9 0 1 0 0.01 0ZM12 11.8l-1.1 2h2.2ZM9.7 15.6v2M12 15.6v2M14.3 15.6v2"/>`,
+  serious: `<g stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${CRUTCH(8.6, -11)}${CRUTCH(15.4, 11)}</g>`,
+  minor: `<g transform="rotate(-45 12 12)"><rect x="1.2" y="7.4" width="21.6" height="9.2" rx="4.6" fill="none" stroke="currentColor" stroke-width="1.7"/><rect x="8.2" y="8.6" width="7.6" height="6.8" rx="1" fill="currentColor"/><g fill="currentColor"><circle cx="4.6" cy="10.6" r=".8"/><circle cx="4.6" cy="13.4" r=".8"/><circle cx="19.4" cy="10.6" r=".8"/><circle cx="19.4" cy="13.4" r=".8"/></g></g>`,
+};
+const iconSvg = (c, size, x = 0, y = 0, cls = "") => `<svg class="ic ${cls}" data-sev="${SEV(c)}" x="${x}" y="${y}" width="${size}" height="${size}" viewBox="0 0 24 24" aria-hidden="true">${ICON[SEV(c)]}</svg>`;
+
 // ---------- camera ----------
 const VW = 1000, VH = 560;
 const ZOOMS = [{ win: 100, label: "Close", east: -42, west: 50 }, { win: 240, label: "Block", east: -60, west: 75 }, { win: 560, label: "Wide", east: -90, west: 120 }];
@@ -233,7 +243,9 @@ function render() {
     const sev = SEV(c);
     const hgt = close ? 5.5 : 14;
     const r = close ? 1.1 : 2.6;
-    items.push({ key: depthAt(c.s, d) + 0.5, svg: `<g class="pin" data-sev="${sev}" data-era="${ERA(c)}" data-id="${c.id}" tabindex="0" role="button" aria-label="${c.date} ${c.injury}: ${c.where}">${solidSvg(cylinder(k[0], k[1], close ? 0.1 : 0.3, 0, hgt, P, 8), { tone: "mid", crease: "none" })}${solidSvg(cylinder(k[0], k[1], r, hgt, close ? 0.45 : 1.2, P, 24), { tone: "hi" })}<path class="pin-hit" d="${solidSvgHit(k, hgt, r)}"/></g>` });
+    // post up from the track, topped by a badge that always faces the viewer
+    const top = iso([k[0], k[1], hgt], P), size = (close ? 30 : 24) * (sev === "fatal" ? 1.25 : 1), br = size * 0.66;
+    items.push({ key: depthAt(c.s, d) + 0.5, svg: `<g class="pin" data-sev="${sev}" data-era="${ERA(c)}" data-id="${c.id}" tabindex="0" role="button" aria-label="${c.date} ${c.injury}: ${c.where}">${solidSvg(cylinder(k[0], k[1], close ? 0.1 : 0.3, 0, hgt, P, 8), { tone: "mid", crease: "none" })}<circle class="pin-badge" cx="${top[0].toFixed(1)}" cy="${(top[1] - br).toFixed(1)}" r="${br.toFixed(1)}"/>${iconSvg(c, size, (top[0] - size / 2).toFixed(1), (top[1] - br - size / 2).toFixed(1))}<path class="pin-hit" d="${solidSvgHit(k, hgt, r, br * 2)}"/></g>` });
   }
   // rider reports (advocate list): after view only, nudged 1.5 m off the official pin line, no pin where an official record covers the same crash
   // reports placed at the same landmark are fanned out 5 m apart along the road so each pin can be seen and clicked
@@ -282,10 +294,11 @@ function carSvg(k) {
   return `<g class="iso-solid car">${quads.map((q) => q[1]).join("")}<path class="iso-line iso-crease" data-tone="faint" d="M${far}"/><path class="iso-fill" d="${face(nearY)}"/><path class="iso-shade" data-shade="2" d="${face(nearY)}"/></g>`;
 }
 
-function solidSvgHit(k, h, r) {
+function solidSvgHit(k, h, r, above = 0) {
   const a = iso([k[0], k[1], 0], P), b = iso([k[0], k[1], h + 0.6], P);
-  const rr = Math.max(9, Math.abs(iso([k[0] + r, k[1], 0], P)[0] - a[0]) + 6);
-  return `M${(b[0] - rr).toFixed(1)} ${(b[1] - rr).toFixed(1)}h${2 * rr}v${(a[1] - b[1] + 2 * rr).toFixed(1)}h${-2 * rr}Z`;
+  const rr = Math.max(9, Math.abs(iso([k[0] + r, k[1], 0], P)[0] - a[0]) + 6, above / 2 + 2);
+  const top = b[1] - Math.max(rr, above + 4);
+  return `M${(b[0] - rr).toFixed(1)} ${top.toFixed(1)}h${2 * rr}v${(a[1] - top + rr).toFixed(1)}h${-2 * rr}Z`;
 }
 
 // ---------- minimap ----------
@@ -310,15 +323,15 @@ function buildMini() {
     const x = mx(c.s), row = c.side === "NB" ? "NB" : "SB";
     const key = row + Math.round(x / 8);
     const n = (stack[key] = (stack[key] ?? 0) + 1) - 1;
-    const y = ROW[row] + (row === "SB" ? -1 : 1) * (n * 7);
-    out.push(`<circle class="mm-dot" data-sev="${SEV(c)}" data-era="${ERA(c)}" data-id="${c.id}" cx="${x.toFixed(1)}" cy="${y}" r="${SEV(c) === "fatal" ? 4.6 : 3.4}"/>`);
+    const y = ROW[row] + (row === "SB" ? -1 : 1) * (n * 10), sz = SEV(c) === "fatal" ? 15 : 11;
+    out.push(`<g class="mm-dot" data-sev="${SEV(c)}" data-era="${ERA(c)}" data-id="${c.id}"><circle class="mm-badge" cx="${x.toFixed(1)}" cy="${y}" r="${(sz * 0.55).toFixed(1)}"/>${iconSvg(c, sz, (x - sz / 2).toFixed(1), y - sz / 2)}</g>`);
   }
   for (const c of RIDER) {
     if (c.s == null || c.matchesOfficial) continue;
     const x = mx(c.s), row = c.dir === "NB" ? "NB" : "SB";
     const key = row + Math.round(x / 8);
     const n = (stack[key] = (stack[key] ?? 0) + 1) - 1;
-    out.push(`<circle class="mm-rdot" data-rid="r${c.n}" cx="${x.toFixed(1)}" cy="${ROW[row] + (row === "SB" ? -1 : 1) * (n * 7)}" r="3"/>`);
+    out.push(`<circle class="mm-rdot" data-rid="r${c.n}" cx="${x.toFixed(1)}" cy="${ROW[row] + (row === "SB" ? -1 : 1) * (n * 10)}" r="3"/>`);
   }
   out.push(`<rect class="mm-win" data-win x="0" y="2" width="10" height="${MH - 4}"/>`);
   mini.innerHTML = out.join("");
@@ -367,7 +380,7 @@ mini.addEventListener("pointermove", (e) => mdrag && fromMini(e));
 mini.addEventListener("pointerup", () => (mdrag = false));
 
 // crash popover
-const fmt = (c) => `<b>${c.date} · ${c.injury}</b><span>${c.dirText ? c.dirText : c.dirUnknown ? "Direction not recorded (2025 detail not yet published)," : c.side === "NB" ? "Northbound" : "Southbound"} rider · hit ${c.hit.toLowerCase()}</span><span>Official factor: ${c.factor}</span><span>${c.where}${c.approx ? " (position estimated)" : ""}</span>`;
+const fmt = (c) => `<b class="pop-h">${iconSvg(c, 26, 0, 0, "pop-ic")}<span>${c.date} · ${c.injury}</span></b><span>${c.dirText ? c.dirText : c.dirUnknown ? "Direction not recorded (2025 detail not yet published)," : c.side === "NB" ? "Northbound" : "Southbound"} rider · hit ${c.hit.toLowerCase()}</span><span>Official factor: ${c.factor}</span><span>${c.where}${c.approx ? " (position estimated)" : ""}</span>`;
 const esc = (t) => String(t).replace(/[&<>"]/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[ch]);
 // an official record that is also on the rider list says so; where the list places it elsewhere, say where
 const alsoOnList = (c) => RIDER.filter((r) => String(r.official) === String(c.id)).map((r) => `<span class="pop-tag">Also on the rider list (#${r.n})${r.matchesOfficial ? "" : ": " + esc(r.locNote || "placed at " + r.where)}</span>`).join("");
@@ -409,6 +422,7 @@ document.querySelector("[data-parked]").addEventListener("click", (e) => { state
 // rider reports on or off
 document.querySelector("[data-rider]").addEventListener("click", (e) => { state.rider = !state.rider; e.currentTarget.setAttribute("aria-pressed", String(state.rider)); hidePop(); schedule(); });
 
+document.querySelectorAll("[data-legend-icon]").forEach((el) => (el.innerHTML = iconSvg({ injury: el.dataset.legendIcon }, 18)));
 buildMini();
 buildElev();
 setEra("after");
