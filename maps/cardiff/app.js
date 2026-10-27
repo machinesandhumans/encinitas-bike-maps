@@ -68,7 +68,10 @@ const ICON = {
   serious: `<g stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${CRUTCH(8.6, -11)}${CRUTCH(15.4, 11)}</g>`,
   minor: `<g transform="rotate(-45 12 12)"><rect x="1.2" y="7.4" width="21.6" height="9.2" rx="4.6" fill="none" stroke="currentColor" stroke-width="1.7"/><rect x="8.2" y="8.6" width="7.6" height="6.8" rx="1" fill="currentColor"/><g fill="currentColor"><circle cx="4.6" cy="10.6" r=".8"/><circle cx="4.6" cy="13.4" r=".8"/><circle cx="19.4" cy="10.6" r=".8"/><circle cx="19.4" cy="13.4" r=".8"/></g></g>`,
 };
-const iconSvg = (c, size, x = 0, y = 0, cls = "") => `<svg class="ic ${cls}" data-sev="${SEV(c)}" x="${x}" y="${y}" width="${size}" height="${size}" viewBox="0 0 24 24" aria-hidden="true">${ICON[SEV(c)]}</svg>`;
+// rider reports carry their own sev (null when the list describes no injury: shown as a question mark)
+ICON.unknown = `<path d="M8.4 8.6a3.6 3.6 0 1 1 5.4 3.1c-1.1.7-1.8 1.4-1.8 2.8v.8" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="19.4" r="1.5" fill="currentColor"/>`;
+const sevOf = (c) => ("sev" in c ? c.sev || "unknown" : SEV(c));
+const iconSvg = (c, size, x = 0, y = 0, cls = "") => `<svg class="ic ${cls}" data-sev="${sevOf(c)}" x="${x}" y="${y}" width="${size}" height="${size}" viewBox="0 0 24 24" aria-hidden="true">${ICON[sevOf(c)]}</svg>`;
 
 // ---------- camera ----------
 const VW = 1000, VH = 560;
@@ -255,7 +258,9 @@ function render() {
     const s = c.s + (same.indexOf(c) - (same.length - 1) / 2) * 5;
     const d = (c.dir === "NB" ? (nbOn(s) ? dNB(s) : -5) : (sbOn(s) ? dSB(s) : 5)) + (c.dir === "NB" ? -1.5 : 1.5);
     const k = toK(s, d), hgt = close ? 4.2 : 11, r = close ? 0.9 : 2.1;
-    items.push({ key: depthAt(s, d) + 0.5, svg: `<g class="pin pin-rider" data-id="r${c.n}" tabindex="0" role="button" aria-label="Rider report ${c.date}: ${esc(c.where)}">${solidSvg(cylinder(k[0], k[1], close ? 0.1 : 0.3, 0, hgt, P, 8), { tone: "mid", crease: "none" })}${solidSvg(cylinder(k[0], k[1], r, hgt, close ? 0.4 : 1, P, 24), { tone: "hi" })}<path class="pin-hit" d="${solidSvgHit(k, hgt, r)}"/></g>` });
+    // same badge as an official pin, a little smaller, in a purple ring
+    const top = iso([k[0], k[1], hgt], P), size = (close ? 26 : 20) * (c.sev === "fatal" ? 1.25 : 1), br = size * 0.66;
+    items.push({ key: depthAt(s, d) + 0.5, svg: `<g class="pin pin-rider" data-id="r${c.n}" tabindex="0" role="button" aria-label="Rider report ${c.date}: ${esc(c.where)}">${solidSvg(cylinder(k[0], k[1], close ? 0.1 : 0.3, 0, hgt, P, 8), { tone: "mid", crease: "none" })}<circle class="pin-badge" cx="${top[0].toFixed(1)}" cy="${(top[1] - br).toFixed(1)}" r="${br.toFixed(1)}"/>${iconSvg(c, size, (top[0] - size / 2).toFixed(1), (top[1] - br - size / 2).toFixed(1))}<path class="pin-hit" d="${solidSvgHit(k, hgt, r, br * 2)}"/></g>` });
   }
   items.sort((a, b) => a.key - b.key);
   // labels
@@ -331,7 +336,8 @@ function buildMini() {
     const x = mx(c.s), row = c.dir === "NB" ? "NB" : "SB";
     const key = row + Math.round(x / 8);
     const n = (stack[key] = (stack[key] ?? 0) + 1) - 1;
-    out.push(`<circle class="mm-rdot" data-rid="r${c.n}" cx="${x.toFixed(1)}" cy="${ROW[row] + (row === "SB" ? -1 : 1) * (n * 10)}" r="3"/>`);
+    const y = ROW[row] + (row === "SB" ? -1 : 1) * (n * 10), sz = c.sev === "fatal" ? 15 : 11;
+    out.push(`<g class="mm-rdot" data-rid="r${c.n}"><circle class="mm-badge" cx="${x.toFixed(1)}" cy="${y}" r="${(sz * 0.55).toFixed(1)}"/>${iconSvg(c, sz, (x - sz / 2).toFixed(1), y - sz / 2)}</g>`);
   }
   out.push(`<rect class="mm-win" data-win x="0" y="2" width="10" height="${MH - 4}"/>`);
   mini.innerHTML = out.join("");
@@ -384,7 +390,7 @@ const fmt = (c) => `<b class="pop-h">${iconSvg(c, 26, 0, 0, "pop-ic")}<span>${c.
 const esc = (t) => String(t).replace(/[&<>"]/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[ch]);
 // an official record that is also on the rider list says so; where the list places it elsewhere, say where
 const alsoOnList = (c) => RIDER.filter((r) => String(r.official) === String(c.id)).map((r) => `<span class="pop-tag">Also on the rider list (#${r.n})${r.matchesOfficial ? "" : ": " + esc(r.locNote || "placed at " + r.where)}</span>`).join("");
-const fmtRider = (r) => `<b>${r.date} · Rider report</b><span class="pop-tag">Not an official record</span><span>${r.dir === "NB" ? "Northbound" : r.dir === "SB" ? "Southbound" : "Direction not stated,"} rider · ${esc(r.what)}</span><span>Injury: ${esc(r.injury)}</span><span>${esc(r.where)} (position approximate)</span>${r.locNote ? `<span>${esc(r.locNote)}</span>` : ""}${r.dateNote ? `<span>Date: ${esc(r.dateNote)}</span>` : ""}<span>Source: ${esc(r.src)}, via the Cardiff 101 Crash List (#${r.n})</span>`;
+const fmtRider = (r) => `<b class="pop-h">${iconSvg(r, 26, 0, 0, "pop-ic")}<span>${r.date} · Rider report</span></b><span class="pop-tag">Not an official record</span><span>${r.dir === "NB" ? "Northbound" : r.dir === "SB" ? "Southbound" : "Direction not stated,"} rider · ${esc(r.what)}</span><span>Injury: ${esc(r.injury)}</span><span>${esc(r.where)} (position approximate)</span>${r.locNote ? `<span>${esc(r.locNote)}</span>` : ""}${r.dateNote ? `<span>Date: ${esc(r.dateNote)}</span>` : ""}<span>Source: ${esc(r.src)}, via the Cardiff 101 Crash List (#${r.n})</span>`;
 function showPop(id, x, y) {
   const rid = String(id).startsWith("r") ? RIDER.find((k) => "r" + k.n === String(id)) : null;
   const c = rid ? null : CRASHES.find((k) => String(k.id) === String(id)); if (!c && !rid) return;
