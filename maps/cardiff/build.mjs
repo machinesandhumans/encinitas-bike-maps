@@ -28,6 +28,8 @@ const DATA = { NB_TRACK: D.NB_TRACK, SB_TRACK: D.SB_TRACK, DRIVES: D.DRIVES, BUI
   FEAT: { outlines: FEAT.outlines, crosswalks: FEAT.crosswalks, parking: FEAT.parking_buffer, crossovers: FEAT.crossovers, redCurb: FEAT.red_curb, nbLaneFrom: FEAT.track_fixes.nb_lane_from, trackWidths: FEAT.track_widths, roadEdges: FEAT.road_edges.list }, ELEV };
 
 const segCount = (era) => crashes.filter((c) => !c.edge && (era === "after") === c.date >= "2020-04").length;
+// what each period button shows: every placed crash in that period, the Chesterfield intersection included
+const pinCount = (era) => crashes.filter((c) => c.s != null && (era === "after") === c.date >= "2020-04").length;
 
 const CSS = `
 :root{--cx-page:#f2f2ef;color-scheme:light}
@@ -82,7 +84,7 @@ body{background:var(--cx-page);margin:0}
 #mini .mm-tick{stroke:var(--anatomy-lo);stroke-dasharray:2 3}
 #mini .mm-lbl,#mini .mm-row{fill:var(--anatomy-muted);font:10px var(--anatomy-mono)}
 #mini .mm-beach{fill:var(--sand)}#mini .mm-beach-lbl{fill:var(--yellow)}
-#mini .mm-dot[data-dim]{opacity:.15}
+#mini .mm-dot[data-dim]{display:none}
 #scene .pin-rider .pin-badge,#mini .mm-rdot .mm-badge{stroke:var(--rider);stroke-width:2}.ic[data-sev="unknown"]{color:var(--rider)}
 #mini .mm-rdot[data-dim]{opacity:0}
 .cx-legend i.v{display:inline-block;width:14px;height:14px;border-radius:50%;background:var(--anatomy-card);box-shadow:inset 0 0 0 2px var(--rider)}
@@ -114,7 +116,7 @@ const page = `<title>Cardiff Cycle Track</title>
 <div class="cx iso" data-theme="light"><div class="cx-in">
 <header><h1>Coast Hwy 101 cycle track, Cardiff</h1><p class="cx-sub">Chesterfield Dr to the Solana Beach line, 1.27 miles. Layout from OpenStreetMap, straightened along the road.</p></header>
 <div class="cx-bar">
-  <div class="cx-group" role="group" aria-label="Period"><button class="cx-btn" data-era-btn="before" aria-pressed="false">Jan ’16–Mar ’20 · ${segCount("before")} crashes</button><button class="cx-btn" data-era-btn="after" aria-pressed="true">Apr ’20–Present · ${segCount("after")} crashes</button></div>
+  <div class="cx-group" role="group" aria-label="Period"><button class="cx-btn" data-era-btn="before" aria-pressed="false">Jan ’16–Mar ’20 · ${pinCount("before")} crashes</button><button class="cx-btn" data-era-btn="after" aria-pressed="true">Apr ’20–Present · ${pinCount("after")} crashes</button></div>
   <div class="cx-group" role="group" aria-label="Rider reports"><button class="cx-btn" data-rider aria-pressed="true">Rider reports · ${riderPlaced} placed</button></div>
   <div class="cx-group" role="group" aria-label="Parked cars"><button class="cx-btn" data-parked aria-pressed="true">Parked cars</button></div>
   <div class="cx-group" role="group" aria-label="Zoom"><button class="cx-btn" data-zoom="0" aria-pressed="true">Close</button><button class="cx-btn" data-zoom="1" aria-pressed="false">Block</button><button class="cx-btn" data-zoom="2" aria-pressed="false">Wide</button></div>

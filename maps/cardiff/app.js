@@ -58,7 +58,7 @@ const clipTo = (pts, axis, v, keepAbove) => { // Sutherland-Hodgman against one 
 };
 const onBridge = (s) => BRIDGES.some(([a, b]) => s > a && s < b);
 const SEV = (c) => (/Fatal/.test(c.injury) ? "fatal" : /Severe|Serious/.test(c.injury) ? "serious" : "minor");
-const ERA = (c) => (c.edge ? "edge" : c.date >= "2020-04" ? "after" : "before");
+const ERA = (c) => (c.date >= "2020-04" ? "after" : "before");
 
 // crash symbols, drawn in a 24 x 24 box: skull and crossbones for a death, crutches for a severe injury, a bandage for any other injury
 const BONE = (x1, y1, x2, y2) => `<path d="M${x1} ${y1}L${x2} ${y2}" stroke-width="2.4"/><circle cx="${x1 - 0.9}" cy="${y1 + (y2 > y1 ? 0.6 : -0.6)}" r="1.5"/><circle cx="${x1 + 0.6}" cy="${y1 + (y2 > y1 ? -0.9 : 0.9)}" r="1.5"/><circle cx="${x2 + 0.9}" cy="${y2 + (y2 > y1 ? -0.6 : 0.6)}" r="1.5"/><circle cx="${x2 - 0.6}" cy="${y2 + (y2 > y1 ? 0.9 : -0.9)}" r="1.5"/>`;
@@ -238,7 +238,7 @@ function render() {
     items.push({ key: depthAt((ka + kb) / 2, dm) - 3, svg: solidSvg(extrude(pts.map(([s, d]) => [s - state.s0, -d]), 0, bl.h, P, { convex: false }), { tone: "mid" }) });
   }
   // crash pins
-  const showEra = after ? ["after", "edge"] : ["before", "edge"];
+  const showEra = after ? ["after"] : ["before"];
   for (const c of CRASHES) {
     if (c.s == null || c.s < s0 - 2 || c.s > s1 + 2 || !showEra.includes(ERA(c))) continue;
     const d = c.side === "NB" ? (nbOn(c.s) ? dNB(c.s) : -5) : (sbOn(c.s) ? dSB(c.s) : 5);
@@ -357,7 +357,7 @@ function drawWindow() {
   r.setAttribute("x", mx(state.s0).toFixed(1));
   r.setAttribute("width", Math.max(6, mx(state.s0 + W()) - mx(state.s0)).toFixed(1));
   mini.querySelectorAll(".mm-rdot").forEach((d) => d.toggleAttribute("data-dim", state.era !== "after" || !state.rider));
-  mini.querySelectorAll(".mm-dot").forEach((d) => d.toggleAttribute("data-dim", !(state.era === "after" ? ["after", "edge"] : ["before", "edge"]).includes(d.dataset.era)));
+  mini.querySelectorAll(".mm-dot").forEach((d) => d.toggleAttribute("data-dim", d.dataset.era !== state.era));
   { const m = Math.round(state.s0 + W() / 2 - LIMITS.cityLine); readout.textContent = m <= 0 ? "At the Solana Beach line" : `${(m * 3.281).toLocaleString("en-US", { maximumFractionDigits: 0 })} ft north of the Solana Beach line`; }
 }
 
@@ -406,7 +406,7 @@ pop.addEventListener("click", (e) => { if (e.target.closest(".pop-x")) hidePop()
 document.addEventListener("keydown", (e) => { if (e.key === "Escape") hidePop(); });
 scene.addEventListener("click", (e) => { const p = e.target.closest(".pin"); if (p) { showPop(p.dataset.id, e.clientX, e.clientY); e.stopPropagation(); } });
 scene.addEventListener("keydown", (e) => { const p = e.target.closest?.(".pin"); if (p && (e.key === "Enter" || e.key === " ")) { const r = p.getBoundingClientRect(); showPop(p.dataset.id, r.left + r.width / 2, r.top); e.preventDefault(); } });
-mini.addEventListener("click", (e) => { const d = e.target.closest(".mm-dot"); if (!d) return; const c = CRASHES.find((k) => String(k.id) === d.dataset.id); if (c && ERA(c) !== "edge" && ERA(c) !== state.era) setEra(ERA(c)); });
+mini.addEventListener("click", (e) => { const d = e.target.closest(".mm-dot"); if (!d) return; const c = CRASHES.find((k) => String(k.id) === d.dataset.id); if (c && ERA(c) !== state.era) setEra(ERA(c)); });
 
 // era toggle
 function setEra(era) {
