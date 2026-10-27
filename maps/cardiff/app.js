@@ -227,13 +227,27 @@ function render() {
   scene.innerHTML = clip + `<g clip-path="url(#win)">${ground.join("") + marks.join("")}</g>` + items.map((i) => i.svg).join("") + labels.join("");
   drawWindow();
 }
-// a parked car, nose south (SB traffic): four wheels, a low body, and a shorter glass cabin set toward the rear
+// a parked car: a simple side silhouette (wheel arches, cabin), nose south, extruded across the car's width
+const CAR = (() => {
+  const arch = (cx) => Array.from({ length: 7 }, (_, i) => { const t = Math.PI * (i / 6); return [cx + 0.42 * Math.cos(t), 0.12 + 0.42 * Math.sin(t)]; });
+  // side profile from the nose (x 0) back to the tail (x 4.5); z up, in metres
+  return [[0.05, 0.12], ...arch(1.0).reverse(), [3.08, 0.12], ...arch(3.5).reverse(), [4.45, 0.12], [4.5, 0.45], [4.45, 0.75], [4.1, 0.85], [3.3, 0.9], [2.85, 1.35], [1.55, 1.38], [1.05, 0.92], [0.25, 0.82], [0.02, 0.62], [0, 0.35]];
+})();
 function carSvg(k) {
-  const [x, y] = k, out = [];
-  for (const wx of [0.7, 3.3]) for (const wy of [-0.95, 0.7]) out.push(`<g class="car-wheel">${solidSvg(slabOf({ x: x + wx, y: y + wy, w: 0.6, d: 0.25, r: 0.1 }, 0, 0.45, P, 2), { tone: "mid", crease: "none" })}</g>`);
-  out.push(solidSvg(slabOf({ x, y: y - 0.9, w: 4.5, d: 1.8, r: 0.35 }, 0.3, 0.55, P, 3), { tone: "mid" }));
-  out.push(`<g class="car-cab">${solidSvg(slabOf({ x: x + 1.3, y: y - 0.78, w: 2.3, d: 1.56, r: 0.3 }, 0.85, 0.5, P, 3), { tone: "hi" })}</g>`);
-  return out.join("");
+  const [x0, y0] = k, W = 1.7, { sinA, cosA, sinE, cosE } = cameraOf(P);
+  const nearY = sinA > 0 ? y0 + W / 2 : y0 - W / 2, farY = sinA > 0 ? y0 - W / 2 : y0 + W / 2;
+  const pt = (x, y, z) => iso([x0 + x, y, z], P).map((v) => v.toFixed(1)).join(" ");
+  const face = (y) => "M" + CAR.map(([x, z]) => pt(x, y, z)).join("L") + "Z";
+  const quads = [];
+  for (let i = 0; i < CAR.length; i++) {
+    const [ax, az] = CAR[i], [bx, bz] = CAR[(i + 1) % CAR.length];
+    let nx = bz - az, nz = -(bx - ax); const L = Math.hypot(nx, nz) || 1; nx /= L; nz /= L; // outward normal: the ring runs counterclockwise in (x, z)
+    if (nx * cosA * cosE + nz * sinE <= 0) continue;
+    const depth = ((ax + bx) / 2) * cosA * cosE + ((az + bz) / 2) * sinE;
+    { const d = `M${pt(ax, nearY, az)}L${pt(bx, nearY, bz)}L${pt(bx, farY, bz)}L${pt(ax, farY, az)}Z`; quads.push([depth, `<path class="iso-fill" d="${d}"/>${nz > 0.55 ? "" : `<path class="iso-shade" data-shade="0" d="${d}"/>`}<path class="iso-line iso-crease" data-tone="faint" d="M${pt(bx, nearY, bz)}L${pt(bx, farY, bz)}L${pt(ax, farY, az)}"/>`]); }
+  }
+  quads.sort((p, q) => p[0] - q[0]);
+  return `<g class="iso-solid car">${quads.map((q) => q[1]).join("")}<path class="iso-fill" d="${face(nearY)}"/><path class="iso-shade" data-shade="1" d="${face(nearY)}"/><path class="iso-line iso-edge" data-tone="mid" d="${face(nearY)}"/></g>`;
 }
 
 function solidSvgHit(k, h, r) {
