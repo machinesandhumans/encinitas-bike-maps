@@ -170,6 +170,7 @@ body{background:var(--cx-page);margin:0}
 .cx-btn[data-rider][aria-pressed="true"]{border-color:var(--rider);color:var(--rider)}
 #scene .g-zebra{fill:#f7f7f2}.cx[data-theme="dark"] #scene .g-zebra{fill:#77777c}
 #scene .g-park{fill:var(--drive)}
+#scene .car .iso-fill{stroke:var(--anatomy-face);stroke-width:.9;stroke-linejoin:round}
 #scene .m-red{stroke:var(--risk);stroke-width:2.4;fill:none}
 #elev{display:block;width:100%;height:auto;margin-top:-10px}
 #elev .el-line{fill:none;stroke:var(--anatomy-mid);stroke-width:1.6}
@@ -1118,11 +1119,13 @@ function render() {
   scene.innerHTML = clip + `<g clip-path="url(#win)">${ground.join("") + marks.join("")}</g>` + items.map((i) => i.svg).join("") + labels.join("");
   drawWindow();
 }
-// a parked car: a simple side silhouette (wheel arches, cabin), nose south, extruded across the car's width
+// a parked car: one cookie-cutter side silhouette traced from Mark's icon (wheels are bumps in the outline), nose south,
+// extruded across the car's width. Traced in icon pixels: nose at x 490, wheel bottoms at y 215.
 const CAR = (() => {
-  const arch = (cx) => Array.from({ length: 7 }, (_, i) => { const t = Math.PI * (i / 6); return [cx + 0.42 * Math.cos(t), 0.12 + 0.42 * Math.sin(t)]; });
-  // side profile from the nose (x 0) back to the tail (x 4.5); z up, in metres
-  return [[0.05, 0.12], ...arch(1.0).reverse(), [3.08, 0.12], ...arch(3.5).reverse(), [4.45, 0.12], [4.5, 0.45], [4.45, 0.75], [4.1, 0.85], [3.3, 0.9], [2.85, 1.35], [1.55, 1.38], [1.05, 0.92], [0.25, 0.82], [0.02, 0.62], [0, 0.35]];
+  const X = (px) => (490 - px) * 0.0099, Z = (py) => (215 - py) * 0.0084;
+  const wheel = (cx) => Array.from({ length: 9 }, (_, i) => { const t = Math.PI * (1 + i / 8); return [cx - 38 * Math.cos(t), 190 - 25 * Math.sin(t)]; });
+  const icon = [[482, 190], ...wheel(400), ...wheel(120), [42, 190], [35, 176], [35, 112], [46, 100], [100, 96], [150, 70], [205, 46], [260, 40], [310, 44], [350, 62], [392, 96], [470, 108], [486, 120], [490, 140], [490, 178]];
+  return icon.map(([x, y]) => [X(x), Z(y)]);
 })();
 function carSvg(k) {
   const [x0, y0] = k, W = 1.7, { sinA, cosA, sinE, cosE } = cameraOf(P);
@@ -1135,10 +1138,11 @@ function carSvg(k) {
     let nx = bz - az, nz = -(bx - ax); const L = Math.hypot(nx, nz) || 1; nx /= L; nz /= L; // outward normal: the ring runs counterclockwise in (x, z)
     if (nx * cosA * cosE + nz * sinE <= 0) continue;
     const depth = ((ax + bx) / 2) * cosA * cosE + ((az + bz) / 2) * sinE;
-    { const d = `M${pt(ax, nearY, az)}L${pt(bx, nearY, bz)}L${pt(bx, farY, bz)}L${pt(ax, farY, az)}Z`; quads.push([depth, `<path class="iso-fill" d="${d}"/>${nz > 0.55 ? "" : `<path class="iso-shade" data-shade="0" d="${d}"/>`}<path class="iso-line iso-crease" data-tone="faint" d="M${pt(bx, nearY, bz)}L${pt(bx, farY, bz)}L${pt(ax, farY, az)}"/>`]); }
+    { const d = `M${pt(ax, nearY, az)}L${pt(bx, nearY, bz)}L${pt(bx, farY, bz)}L${pt(ax, farY, az)}Z`; quads.push([depth, `<path class="iso-fill" d="${d}"/>${nz > 0.55 ? "" : `<path class="iso-shade" data-shade="0" d="${d}"/>`}`]); }
   }
   quads.sort((p, q) => p[0] - q[0]);
-  return `<g class="iso-solid car">${quads.map((q) => q[1]).join("")}<path class="iso-fill" d="${face(nearY)}"/><path class="iso-shade" data-shade="1" d="${face(nearY)}"/><path class="iso-line iso-edge" data-tone="mid" d="${face(nearY)}"/></g>`;
+  const far = CAR.filter(([, z]) => z > 0.7).map(([x, z]) => pt(x, farY, z)).join("L");
+  return `<g class="iso-solid car">${quads.map((q) => q[1]).join("")}<path class="iso-line iso-crease" data-tone="faint" d="M${far}"/><path class="iso-fill" d="${face(nearY)}"/><path class="iso-shade" data-shade="2" d="${face(nearY)}"/><path class="iso-line iso-edge" data-tone="hi" d="${face(nearY)}"/></g>`;
 }
 
 function solidSvgHit(k, h, r) {

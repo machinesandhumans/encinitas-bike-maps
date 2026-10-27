@@ -91,6 +91,7 @@ body{background:var(--cx-page);margin:0}
 .cx-btn[data-rider][aria-pressed="true"]{border-color:var(--rider);color:var(--rider)}
 #scene .g-zebra{fill:#f7f7f2}.cx[data-theme="dark"] #scene .g-zebra{fill:#77777c}
 #scene .g-park{fill:var(--drive)}
+#scene .car .iso-fill{stroke:var(--anatomy-face);stroke-width:.9;stroke-linejoin:round}
 #scene .m-red{stroke:var(--risk);stroke-width:2.4;fill:none}
 #elev{display:block;width:100%;height:auto;margin-top:-10px}
 #elev .el-line{fill:none;stroke:var(--anatomy-mid);stroke-width:1.6}
