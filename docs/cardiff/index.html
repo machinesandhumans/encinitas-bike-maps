@@ -900,7 +900,25 @@ const lerpLine = (line, s) => {
   for (let i = 1; i < line.length; i++) if (s <= line[i][0]) { const [a, da] = line[i - 1], [b, db] = line[i]; return da + (db - da) * (s - a) / (b - a || 1); }
   return line[line.length - 1][1];
 };
-const NB = NB_TRACK, SB = [...SB_TRACK].reverse();
+// OSM track nodes wobble a metre or two from one node to the next, which made the road edges look warped. Smooth each track
+// (Gaussian, 50 m) so the road keeps a steady width, but keep the real changes verbatim: the NB start, the NB lane's north end,
+// and where the SB path steps out behind the parked cars and back.
+const smoothLine = (line, sigma, keep) => {
+  const a = line[0][0], b = line[line.length - 1][0], kept = (s) => keep.findIndex(([k0, k1]) => s >= k0 && s <= k1);
+  const zone = (s) => keep.filter(([k0]) => k0 < s).length; // smoothing never reaches across a kept stretch
+  const S = []; for (let s = a; s < b; s += 2) S.push(s); S.push(b);
+  return S.map((s) => {
+    if (kept(s) >= 0) return [s, lerpLine(line, s)];
+    let w = 0, d = 0;
+    for (let t = Math.max(a, s - 3 * sigma); t <= Math.min(b, s + 3 * sigma); t += 2) {
+      if (kept(t) >= 0 || zone(t) !== zone(s)) continue;
+      const g = Math.exp(-((t - s) ** 2) / (2 * sigma * sigma)); w += g; d += g * lerpLine(line, t);
+    }
+    return [s, Math.round((d / w) * 100) / 100];
+  });
+};
+const NB = smoothLine(NB_TRACK, 50, [[NB_TRACK[0][0], NB_TRACK[0][0] + 35], [2160, NB_TRACK[NB_TRACK.length - 1][0]]]);
+const SB = smoothLine([...SB_TRACK].reverse(), 50, [[1080, 1110], [1436, 1476]]);
 const nbOn = (s) => s >= NB[0][0] && s <= NB[NB.length - 1][0];
 const sbOn = (s) => s >= SB[0][0] && s <= SB[SB.length - 1][0];
 // where each track meets the road: NB riders move over from NB_IN and the barrier begins at NB_SEP; the SB barrier and track end together at SB_OUT
