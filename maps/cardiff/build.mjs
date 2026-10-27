@@ -147,9 +147,10 @@ writeFileSync(join(HERE, "cardiff-corridor.html"), page);
 const OUT = join(HERE, "..", "..", "docs", "cardiff");
 mkdirSync(OUT, { recursive: true });
 // GitHub Pages lets browsers reuse a page for 10 minutes, so a fresh merge looked like it never landed. The page asks for
-// version.json (never cached) on open and, if the build is newer than the copy it is running, reloads under a new URL.
+// version.json (never cached) on open, whenever it comes back into view, and every 30 s while open. If the build is newer
+// than the copy it is running, it reloads under a new URL (a few tries per version, since the CDN can lag the deploy).
 const VERSION = createHash("sha1").update(page).digest("hex").slice(0, 10);
 writeFileSync(join(OUT, "version.json"), JSON.stringify({ v: VERSION }) + "\n");
-const fresh = `<script>(function(){var V="${VERSION}";fetch("version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.json()}).then(function(j){if(!j.v||j.v===V)return;var k="cx-reload-"+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,"1")}catch(e){}location.replace(location.pathname+"?v="+j.v+location.hash)}).catch(function(){})})()</script>`;
+const fresh = `<script>(function(){var V="${VERSION}";function check(){fetch("version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.json()}).then(function(j){if(!j.v||j.v===V)return;var k="cx-reload-"+j.v,n=0;try{n=+sessionStorage.getItem(k)||0;if(n>=3)return;sessionStorage.setItem(k,n+1)}catch(e){}setTimeout(function(){location.replace(location.pathname+"?v="+j.v+"-"+Date.now().toString(36)+location.hash)},n*4000)}).catch(function(){})}check();setInterval(function(){if(!document.hidden)check()},30000);document.addEventListener("visibilitychange",function(){if(!document.hidden)check()});addEventListener("pageshow",function(e){if(e.persisted)check()})})()</script>`;
 writeFileSync(join(OUT, "index.html"), `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">${fresh}</head><body style="margin:0">${page}</body></html>`);
 console.log("wrote", (page.length / 1024).toFixed(0) + " KB", "addr slope", slope.toFixed(2), crashes.filter((c) => c.addr).map((c) => `${c.addr}->${c.s}`).join(" "));
