@@ -184,7 +184,7 @@ function render() {
     for (let s = Math.max(a + 0.5, Math.ceil((s0 - 6) / 6.4) * 6.4); s + 4.6 < Math.min(b, s1 + 6); s += 6.4) {
       if (s < a) continue;
       const d = dSB(s) - half("W", s) - BUF - 1.1, k = toK(s, d);
-      items.push({ key: depthAt(s + 2.3, d), svg: close ? solidSvg(slabOf({ x: k[0], y: k[1] - 0.9, w: 4.5, d: 1.8, r: 0.4 }, 0, 1.4, P, 3), { tone: "mid" }) : `<path class="g-park" d="${poly([[s, d - 0.9], [s + 4.5, d - 0.9], [s + 4.5, d + 0.9], [s, d + 0.9]], 0.01)}"/>` });
+      items.push({ key: depthAt(s + 2.3, d), svg: close ? carSvg(k) : `<path class="g-park" d="${poly([[s + 0.2, d - 0.8], [s + 0.6, d - 0.9], [s + 3.9, d - 0.9], [s + 4.5, d - 0.7], [s + 4.5, d + 0.7], [s + 3.9, d + 0.9], [s + 0.6, d + 0.9], [s + 0.2, d + 0.8]], 0.01)}"/>` });
     }
   }
   // buildings
@@ -227,6 +227,15 @@ function render() {
   scene.innerHTML = clip + `<g clip-path="url(#win)">${ground.join("") + marks.join("")}</g>` + items.map((i) => i.svg).join("") + labels.join("");
   drawWindow();
 }
+// a parked car, nose south (SB traffic): four wheels, a low body, and a shorter glass cabin set toward the rear
+function carSvg(k) {
+  const [x, y] = k, out = [];
+  for (const wx of [0.7, 3.3]) for (const wy of [-0.95, 0.7]) out.push(`<g class="car-wheel">${solidSvg(slabOf({ x: x + wx, y: y + wy, w: 0.6, d: 0.25, r: 0.1 }, 0, 0.45, P, 2), { tone: "mid", crease: "none" })}</g>`);
+  out.push(solidSvg(slabOf({ x, y: y - 0.9, w: 4.5, d: 1.8, r: 0.35 }, 0.3, 0.55, P, 3), { tone: "mid" }));
+  out.push(`<g class="car-cab">${solidSvg(slabOf({ x: x + 1.3, y: y - 0.78, w: 2.3, d: 1.56, r: 0.3 }, 0.85, 0.5, P, 3), { tone: "hi" })}</g>`);
+  return out.join("");
+}
+
 function solidSvgHit(k, h, r) {
   const a = iso([k[0], k[1], 0], P), b = iso([k[0], k[1], h + 0.6], P);
   const rr = Math.max(9, Math.abs(iso([k[0] + r, k[1], 0], P)[0] - a[0]) + 6);
