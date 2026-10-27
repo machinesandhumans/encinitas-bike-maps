@@ -40,6 +40,15 @@ const half = (side, s) => lerpLine(side === "E" ? W_NB : W_SB, s) / 2;
 const edgeOverride = (side, s) => FEAT.roadEdges.find(([a, b, sd]) => sd === side && s >= a && s <= b)?.[3];
 const eastEdge = (s) => Math.min(nbOn(s) ? Math.min(dNB(s), -6.5) - half("E", s) : -7.6, edgeOverride("E", s) ?? 0);
 const westEdge = (s) => Math.max(sbOn(s) ? Math.max(dSB(s), 6.5) + half("W", s) : 7.6, edgeOverride("W", s) ?? 0);
+// the space cars drive in: inside both track buffers, less the SB parking lane where cars park
+const PARK_LANE = 2.4;
+const parkedAt = (s) => FEAT.parking.some((p) => s >= p.s[0] && s <= p.s[1]);
+const trafficE = (s) => (nbOn(s) ? dNB(s) + half("E", s) + BUF : eastEdge(s));
+const trafficW = (s) => (sbOn(s) ? dSB(s) - half("W", s) - BUF : westEdge(s)) - (parkedAt(s) ? PARK_LANE : 0);
+const laneRaw = (s) => [(trafficE(s) + trafficW(s)) / 2, (trafficW(s) - trafficE(s)) / 2];
+// averaged over 40 m so the centreline eases across a step (a parking lane starting, a turn lane) instead of jogging
+const laneAvg = (s, k) => { let t = 0, n = 0; for (let x = s - 20; x <= s + 20; x += 4) { t += laneRaw(x)[k]; n++; } return t / n; };
+const laneMid = (s) => laneAvg(s, 0), laneHalf = (s) => laneAvg(s, 1);
 const nearDrive = (s, side, pad = 5) => DRIVES.some(([a, b, dside]) => dside === side && s > a - pad + 4 && s < b + pad - 4);
 const spanOf = (pts) => [Math.min(...pts.map((p) => p[0])), Math.max(...pts.map((p) => p[0]))];
 const clipTo = (pts, axis, v, keepAbove) => { // Sutherland-Hodgman against one axis-aligned line
@@ -137,9 +146,12 @@ function render() {
     for (let d = dA + 0.3; d < dB; d += 1.2) marks.push(`<path class="g-zebra" d="${poly([[a, d], [b, d], [b, Math.min(d + 0.6, dB)], [a, Math.min(d + 0.6, dB)]], 0.01)}"/>`);
   }
   // lane markings
-  const dash = (d, len = 3, gap = 9) => { let p = ""; for (let s = Math.ceil(lo / (len + gap)) * (len + gap); s < hi; s += len + gap) p += line([[s, d], [Math.min(s + len, hi), d]], 0.01); return p; };
-  marks.push(lineSvg(line([[lo, 0.12], [hi, 0.12]], 0.01) + line([[lo, -0.12], [hi, -0.12]], 0.01), { tone: "hi", className: "m-yellow" }));
-  marks.push(lineSvg(dash(3.6) + dash(-3.6), { tone: "hi" }));
+  // the yellow line and lane dashes sit in the middle of the space cars actually drive in (between the track buffers, less any
+  // parking lane), not on the survey centreline, so both directions get even lanes
+  const dash = (at, len = 3, gap = 9) => { let p = ""; for (let s = Math.ceil(lo / (len + gap)) * (len + gap); s < hi; s += len + gap) p += line([[s, at(s)], [Math.min(s + len, hi), at(s + len)]], 0.01); return p; };
+  const ctr = []; for (let s = lo; s <= hi + 3; s += 3) ctr.push([s, laneMid(s)]);
+  marks.push(lineSvg(line(ctr.map(([s, d]) => [s, d + 0.12]), 0.01) + line(ctr.map(([s, d]) => [s, d - 0.12]), 0.01), { tone: "hi", className: "m-yellow" }));
+  marks.push(lineSvg(dash((s) => laneMid(s) + laneHalf(s) / 2) + dash((s) => laneMid(s) - laneHalf(s) / 2), { tone: "hi" }));
   // track edges and buffers
   const runs = (on, from, to, step = 3) => { const out = []; let cur = null; for (let s = from; s <= to; s += step) { if (on(s)) { (cur ||= []).push(s); } else if (cur) { out.push(cur); cur = null; } } if (cur) out.push(cur); return out; };
   for (const [on, dfn, sign, side] of [[nbOn, dNB, 1, "E"], [sbOn, dSB, -1, "W"]]) {
