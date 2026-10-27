@@ -197,7 +197,7 @@ body{background:var(--cx-page);margin:0}
 <div id="stage" tabindex="0" aria-label="Isometric view of the corridor. Drag sideways or use the arrow keys to travel along it."><svg id="scene" class="iso-svg" viewBox="0 0 1000 560" role="img" aria-label="Isometric view of Coast Highway 101 with both cycle tracks, barriers, driveways and crash locations"></svg><div id="pop" hidden></div><span class="cx-hint">Drag to travel · tap a pin</span><span id="where"></span></div>
 <svg id="mini" viewBox="0 0 1000 96" role="img" aria-label="Whole corridor with crash locations; tap to jump there"></svg>
 <svg id="elev" viewBox="0 0 1000 56" role="img" aria-label="Road elevation along the corridor: about 5 m above sea level through the middle, climbing to about 12 m at the Solana Beach line and 13 m at Chesterfield"></svg>
-<div class="cx-legend"><span><span data-legend-icon="Fatal"></span>Death</span><span><span data-legend-icon="Severe"></span>Severe or serious injury</span><span><span data-legend-icon="Minor"></span>Other injury</span><span><i class="z"></i>Where drivers cross the track, or riders must enter it</span><span><i class="v"></i>Purple ring: rider report, not an official record (position approximate; ? = no injury described)</span></div>
+<div class="cx-legend"><span><span data-legend-icon="Fatal"></span>Death</span><span><span data-legend-icon="Severe"></span>Severe or serious injury</span><span><span data-legend-icon="Minor"></span>Other injury</span><span><span data-legend-icon="?"></span>Rider report with no injury described</span><span><i class="z"></i>Where drivers cross the track, or riders must enter it</span><span><i class="v"></i>Purple ring: rider report, not an official record (position approximate)</span></div>
 <details class="cx-foot"><summary>About the data</summary><ul>
 <li>Crashes are official records from California's crash database (CCRS, CHP and San Diego Sheriff), placed by street number or by distance from a landmark. Pins marked "position estimated" only name a landmark. One 2022 serious crash has no usable location and is not shown.</li>
 <li>Solo crashes are often not reported. Local riders count 36–42 crashes since 2020; 11 official records were found.</li>
@@ -1319,7 +1319,7 @@ document.querySelector("[data-parked]").addEventListener("click", (e) => { state
 // rider reports on or off
 document.querySelector("[data-rider]").addEventListener("click", (e) => { state.rider = !state.rider; e.currentTarget.setAttribute("aria-pressed", String(state.rider)); hidePop(); schedule(); });
 
-document.querySelectorAll("[data-legend-icon]").forEach((el) => (el.innerHTML = iconSvg({ injury: el.dataset.legendIcon }, 18)));
+document.querySelectorAll("[data-legend-icon]").forEach((el) => (el.innerHTML = iconSvg(el.dataset.legendIcon === "?" ? { sev: null } : { injury: el.dataset.legendIcon }, 18)));
 buildMini();
 buildElev();
 setEra("after");

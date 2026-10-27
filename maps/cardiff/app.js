@@ -428,7 +428,7 @@ document.querySelector("[data-parked]").addEventListener("click", (e) => { state
 // rider reports on or off
 document.querySelector("[data-rider]").addEventListener("click", (e) => { state.rider = !state.rider; e.currentTarget.setAttribute("aria-pressed", String(state.rider)); hidePop(); schedule(); });
 
-document.querySelectorAll("[data-legend-icon]").forEach((el) => (el.innerHTML = iconSvg({ injury: el.dataset.legendIcon }, 18)));
+document.querySelectorAll("[data-legend-icon]").forEach((el) => (el.innerHTML = iconSvg(el.dataset.legendIcon === "?" ? { sev: null } : { injury: el.dataset.legendIcon }, 18)));
 buildMini();
 buildElev();
 setEra("after");
