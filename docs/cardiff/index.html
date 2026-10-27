@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><script>(function(){var V="8e32c74cf9";fetch("version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.json()}).then(function(j){if(!j.v||j.v===V)return;var k="cx-reload-"+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,"1")}catch(e){}location.replace(location.pathname+"?v="+j.v+location.hash)}).catch(function(){})})()</script></head><body style="margin:0"><title>Cardiff Cycle Track</title>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><script>(function(){var V="39cff95948";fetch("version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.json()}).then(function(j){if(!j.v||j.v===V)return;var k="cx-reload-"+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,"1")}catch(e){}location.replace(location.pathname+"?v="+j.v+location.hash)}).catch(function(){})})()</script></head><body style="margin:0"><title>Cardiff Cycle Track</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <style>
 .iso{
@@ -900,25 +900,24 @@ const lerpLine = (line, s) => {
   for (let i = 1; i < line.length; i++) if (s <= line[i][0]) { const [a, da] = line[i - 1], [b, db] = line[i]; return da + (db - da) * (s - a) / (b - a || 1); }
   return line[line.length - 1][1];
 };
-// OSM track nodes wobble a metre or two from one node to the next, which made the road edges look warped. Smooth each track
-// (Gaussian, 50 m) so the road keeps a steady width, but keep the real changes verbatim: the NB start, the NB lane's north end,
-// and where the SB path steps out behind the parked cars and back.
-const smoothLine = (line, sigma, keep) => {
-  const a = line[0][0], b = line[line.length - 1][0], kept = (s) => keep.findIndex(([k0, k1]) => s >= k0 && s <= k1);
-  const zone = (s) => keep.filter(([k0]) => k0 < s).length; // smoothing never reaches across a kept stretch
-  const S = []; for (let s = a; s < b; s += 2) S.push(s); S.push(b);
+// OSM track nodes wobble a metre or two from one node to the next, which made the road look warped. Each track is instead
+// held at one steady offset per stretch (the median of the OSM nodes there) and only steps where the road really changes:
+// the Seaside turn lane, the parking lane by the lagoon and campground, the centre turn lane along the restaurants and the
+// Chesterfield turn lanes. Steps blend over the gap between stretches; rows with a null offset keep the OSM line as drawn.
+const steady = (line, rows) => {
+  const S = []; for (let s = line[0][0]; s < line[line.length - 1][0]; s += 2) S.push(s); S.push(line[line.length - 1][0]);
+  const at = (s, [a, b, d]) => (d === null ? lerpLine(line, s) : d);
   return S.map((s) => {
-    if (kept(s) >= 0) return [s, lerpLine(line, s)];
-    let w = 0, d = 0;
-    for (let t = Math.max(a, s - 3 * sigma); t <= Math.min(b, s + 3 * sigma); t += 2) {
-      if (kept(t) >= 0 || zone(t) !== zone(s)) continue;
-      const g = Math.exp(-((t - s) ** 2) / (2 * sigma * sigma)); w += g; d += g * lerpLine(line, t);
-    }
-    return [s, Math.round((d / w) * 100) / 100];
+    const i = rows.findIndex(([a, b]) => s >= a && s <= b);
+    if (i >= 0) return [s, at(s, rows[i])];
+    const j = rows.findIndex(([a]) => a > s); // in the gap between rows[j - 1] and rows[j]
+    if (j <= 0) return [s, at(s, rows[j < 0 ? rows.length - 1 : 0])];
+    const p = rows[j - 1], q = rows[j], t = (s - p[1]) / (q[0] - p[1]), e = t * t * (3 - 2 * t);
+    return [s, at(p[1], p) + (at(q[0], q) - at(p[1], p)) * e];
   });
 };
-const NB = smoothLine(NB_TRACK, 50, [[NB_TRACK[0][0], NB_TRACK[0][0] + 35], [2160, NB_TRACK[NB_TRACK.length - 1][0]]]);
-const SB = smoothLine([...SB_TRACK].reverse(), 50, [[1080, 1110], [1436, 1476]]);
+const NB = steady(NB_TRACK, [[NB_TRACK[0][0], 300, null], [340, 1480, -8.4], [1510, 1700, -10.0], [1730, 1960, -8.4], [1990, 2160, -11.1], [2165, NB_TRACK[NB_TRACK.length - 1][0], null]]);
+const SB = steady([...SB_TRACK].reverse(), [[SB_TRACK[SB_TRACK.length - 1][0], 552, 12.5], [590, 1078, 10.0], [1080, 1476, null], [1500, 1720, 11.4], [1745, 1960, 10.0], [1990, SB_TRACK[0][0], 11.8]]);
 const nbOn = (s) => s >= NB[0][0] && s <= NB[NB.length - 1][0];
 const sbOn = (s) => s >= SB[0][0] && s <= SB[SB.length - 1][0];
 // where each track meets the road: NB riders move over from NB_IN and the barrier begins at NB_SEP; the SB barrier and track end together at SB_OUT
